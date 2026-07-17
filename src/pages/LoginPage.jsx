@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal'
 import { db } from '../firebase'
-import { setStoredUser } from '../utils/auth'
+import { getOrCreateDeviceId, setStoredUser } from '../utils/auth'
 import { hashPin } from '../utils/hash'
 
 const MAX_LOGIN_FAILS = 5
@@ -48,7 +48,7 @@ export default function LoginPage() {
           role: 'teacher',
           loginFailCount: 0,
         })
-        setStoredUser({ nickname, role: 'teacher' })
+        setStoredUser({ nickname, role: 'teacher', deviceId: getOrCreateDeviceId() })
         navigate('/home')
         return
       }
@@ -79,7 +79,11 @@ export default function LoginPage() {
         await updateDoc(doc(db, 'users', userDoc.id), { loginFailCount: 0 })
       }
 
-      setStoredUser({ nickname: user.nickname, role: user.role })
+      setStoredUser({
+        nickname: user.nickname,
+        role: user.role,
+        deviceId: getOrCreateDeviceId(),
+      })
       navigate(user.role === 'admin' ? '/admin' : '/home')
     } catch {
       setError('로그인 중 오류가 발생했습니다.')

@@ -4,7 +4,11 @@ import OptionCards from '../components/OptionCards'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
+import { callGeneratePrompt } from '../utils/api'
 import { savePrompt } from '../utils/prompts'
+
+const SYSTEM_PROMPT =
+  '당신은 학교 현장에서 사용할 문서 작성을 돕는 프롬프트 작성 전문가입니다. 사용자가 제공한 문서 유형, 핵심 내용, 톤, 형식을 반영해 ChatGPT나 Claude에 바로 입력할 수 있는 프롬프트를 한국어로 작성하세요. 프롬프트 본문만 출력하고 다른 설명은 덧붙이지 마세요.'
 
 const DOC_TYPE_OPTIONS = [
   { value: 'business-plan', label: '사업계획서' },
@@ -23,17 +27,29 @@ export default function DocumentPromptPage() {
   const [tones, setTones] = useState([])
   const [formats, setFormats] = useState([])
   const [result, setResult] = useState('')
+  const [generating, setGenerating] = useState(false)
+  const [generateError, setGenerateError] = useState('')
 
   if (!user) return null
 
-  const handleGenerate = () => {
-    setResult(
-      `[Mock] 문서유형: ${docType || '미선택'} / 핵심내용: ${content || '미입력'} / 톤: ${
-        tones.length ? tones.join(', ') : '미선택'
-      } / 형식: ${
-        formats.length ? formats.join(', ') : '미선택'
-      } 에 맞는 프롬프트가 여기에 생성됩니다.`,
-    )
+  const handleGenerate = async () => {
+    setGenerateError('')
+    setGenerating(true)
+
+    const userPrompt = `문서유형: ${docType || '미선택'}\n핵심내용: ${content || '미입력'}\n톤: ${
+      tones.length ? tones.join(', ') : '미선택'
+    }\n형식: ${
+      formats.length ? formats.join(', ') : '미선택'
+    }\n\n위 내용을 바탕으로 문서 작성 프롬프트를 작성해주세요.`
+
+    try {
+      const text = await callGeneratePrompt(SYSTEM_PROMPT, userPrompt)
+      setResult(text)
+    } catch (err) {
+      setGenerateError(err.message || 'AI 프롬프트 생성 중 오류가 발생했습니다.')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const handleSave = async () => {
@@ -43,7 +59,12 @@ export default function DocumentPromptPage() {
     }
 
     try {
-      await savePrompt({ nickname: user.nickname, type: 'document', content: result })
+      await savePrompt({
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+        type: 'document',
+        content: result,
+      })
       alert('저장되었습니다!')
     } catch {
       alert('저장 중 오류가 발생했습니다.')
@@ -98,10 +119,17 @@ export default function DocumentPromptPage() {
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+            disabled={generating}
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
-            프롬프트 생성
+            {generating ? 'AI가 프롬프트를 생성하고 있습니다...' : '프롬프트 생성'}
           </button>
+
+          {generateError && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+              {generateError}
+            </p>
+          )}
 
           <PromptResultBox result={result} onSave={handleSave} />
         </div>

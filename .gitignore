@@ -25,3 +25,8 @@ dist-ssr
 
 .env.local
 
+# Firebase Functions
+functions/.env
+functions/.env.*
+functions/node_modules
+

@@ -4,7 +4,11 @@ import OptionCards from '../components/OptionCards'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
+import { callGeneratePrompt } from '../utils/api'
 import { savePrompt } from '../utils/prompts'
+
+const SYSTEM_PROMPT =
+  '당신은 이미지 생성 AI(ChatGPT의 DALL·E, Claude, Gemini 등)에 바로 입력할 수 있는 고품질 프롬프트를 작성하는 전문가입니다. 사용자가 제공한 도구, 주제, 스타일, 분위기를 반영해 해당 도구에 최적화된 프롬프트를 한국어로 작성하세요. 프롬프트 본문만 출력하고 다른 설명은 덧붙이지 마세요.'
 
 const TOOL_OPTIONS = [
   { value: 'chatgpt', label: 'ChatGPT (DALL·E)' },
@@ -22,17 +26,29 @@ export default function ImagePromptPage() {
   const [styles, setStyles] = useState([])
   const [moods, setMoods] = useState([])
   const [result, setResult] = useState('')
+  const [generating, setGenerating] = useState(false)
+  const [generateError, setGenerateError] = useState('')
 
   if (!user) return null
 
-  const handleGenerate = () => {
-    setResult(
-      `[Mock] 선택한 툴: ${tool || '미선택'} / 주제: ${topic || '미입력'} / 스타일: ${
-        styles.length ? styles.join(', ') : '미선택'
-      } / 분위기: ${
-        moods.length ? moods.join(', ') : '미선택'
-      } 에 맞는 프롬프트가 여기에 생성됩니다.`,
-    )
+  const handleGenerate = async () => {
+    setGenerateError('')
+    setGenerating(true)
+
+    const userPrompt = `툴: ${tool || '미선택'}\n주제: ${topic || '미입력'}\n스타일: ${
+      styles.length ? styles.join(', ') : '미선택'
+    }\n분위기: ${
+      moods.length ? moods.join(', ') : '미선택'
+    }\n\n위 내용을 바탕으로 이미지 생성 프롬프트를 작성해주세요.`
+
+    try {
+      const text = await callGeneratePrompt(SYSTEM_PROMPT, userPrompt)
+      setResult(text)
+    } catch (err) {
+      setGenerateError(err.message || 'AI 프롬프트 생성 중 오류가 발생했습니다.')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const handleSave = async () => {
@@ -42,7 +58,12 @@ export default function ImagePromptPage() {
     }
 
     try {
-      await savePrompt({ nickname: user.nickname, type: 'image', content: result })
+      await savePrompt({
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+        type: 'image',
+        content: result,
+      })
       alert('저장되었습니다!')
     } catch {
       alert('저장 중 오류가 발생했습니다.')
@@ -97,10 +118,17 @@ export default function ImagePromptPage() {
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+            disabled={generating}
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
-            프롬프트 생성
+            {generating ? 'AI가 프롬프트를 생성하고 있습니다...' : '프롬프트 생성'}
           </button>
+
+          {generateError && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+              {generateError}
+            </p>
+          )}
 
           <PromptResultBox result={result} onSave={handleSave} />
         </div>

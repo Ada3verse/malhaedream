@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { deletePrompt, getPromptsByNickname } from '../utils/prompts'
@@ -30,17 +30,17 @@ export default function MyPage() {
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
 
-  const loadPrompts = async (nickname) => {
+  const loadPrompts = useCallback(async () => {
+    if (!user) return
     setLoading(true)
-    const list = await getPromptsByNickname(nickname)
+    const list = await getPromptsByNickname(user.nickname, user.deviceId)
     setPrompts(list)
     setLoading(false)
-  }
+  }, [user])
 
   useEffect(() => {
-    if (!user) return
-    loadPrompts(user.nickname)
-  }, [user])
+    loadPrompts()
+  }, [loadPrompts])
 
   const handleCopy = async (item) => {
     try {
@@ -54,8 +54,15 @@ export default function MyPage() {
 
   const handleDelete = async (item) => {
     if (!confirm('정말 삭제하시겠습니까?')) return
-    await deletePrompt(item.id)
-    loadPrompts(user.nickname)
+    try {
+      await deletePrompt(item.id, {
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+      })
+      loadPrompts()
+    } catch {
+      alert('삭제 권한이 없습니다.')
+    }
   }
 
   if (!user) return null
