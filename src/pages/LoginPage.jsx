@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
@@ -22,23 +22,27 @@ export default function LoginPage() {
 
     try {
       const usersRef = collection(db, 'users')
-      const q = query(
-        usersRef,
-        where('nickname', '==', nickname),
-        where('pin', '==', pin),
+      const snapshot = await getDocs(
+        query(usersRef, where('nickname', '==', nickname)),
       )
-      const snapshot = await getDocs(q)
 
       if (snapshot.empty) {
-        setError('닉네임 또는 PIN이 올바르지 않습니다.')
+        await addDoc(usersRef, { nickname, pin, role: 'teacher' })
+        setStoredUser({ nickname, role: 'teacher' })
+        navigate('/home')
         return
       }
 
       const user = snapshot.docs[0].data()
+      if (user.pin !== pin) {
+        setError('PIN이 올바르지 않습니다.')
+        return
+      }
+
       setStoredUser({ nickname: user.nickname, role: user.role })
       navigate(user.role === 'admin' ? '/admin' : '/home')
     } catch {
-      setError('닉네임 또는 PIN이 올바르지 않습니다.')
+      setError('로그인 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -94,6 +98,10 @@ export default function LoginPage() {
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
+
+          <p className="text-center text-xs text-gray-400">
+            처음 사용하시나요? 닉네임과 PIN을 입력하면 자동으로 가입됩니다.
+          </p>
 
           <button
             type="submit"
