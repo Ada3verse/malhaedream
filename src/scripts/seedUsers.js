@@ -7,6 +7,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
+import { hashPin } from '../utils/hash.js'
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -38,7 +39,11 @@ async function seedUsers() {
       continue
     }
 
-    await addDoc(usersRef, user)
+    await addDoc(usersRef, {
+      ...user,
+      pin: await hashPin(user.pin),
+      loginFailCount: 0,
+    })
     console.log(`추가됨: ${user.nickname} (${user.role})`)
   }
 }

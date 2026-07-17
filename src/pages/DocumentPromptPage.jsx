@@ -51,24 +51,29 @@ export default function DocumentPromptPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
-      <header className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
-        <Link to="/home" className="text-sm text-gray-600 hover:text-gray-900">
+    <div className="min-h-screen bg-slate-50 pb-16">
+      <header className="bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+        <Link
+          to="/home"
+          className="text-sm text-white/90 transition hover:text-white"
+        >
           ← 돌아가기
         </Link>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-xl font-semibold text-gray-900">📝 문서 작성 프롬프트</h1>
+        <h1 className="text-2xl font-bold text-navy-800">
+          📝 문서 작성 프롬프트
+        </h1>
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">문서 유형</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">문서 유형</h2>
             <OptionCards options={DOC_TYPE_OPTIONS} onChange={setDocType} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">
+            <h2 className="mb-2 text-sm font-medium text-navy-700">
               어떤 내용의 문서인가요?
             </h2>
             <textarea
@@ -76,24 +81,24 @@ export default function DocumentPromptPage() {
               onChange={(e) => setContent(e.target.value)}
               rows={3}
               placeholder="예: 2학기 학부모 공개수업 안내"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
             />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">말투/톤</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">말투/톤</h2>
             <TagToggleGroup options={TONE_OPTIONS} onChange={setTones} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">출력 형식</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">출력 형식</h2>
             <TagToggleGroup options={FORMAT_OPTIONS} onChange={setFormats} />
           </section>
 
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
           >
             프롬프트 생성
           </button>

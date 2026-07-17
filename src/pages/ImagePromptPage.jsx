@@ -50,24 +50,29 @@ export default function ImagePromptPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
-      <header className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
-        <Link to="/home" className="text-sm text-gray-600 hover:text-gray-900">
+    <div className="min-h-screen bg-slate-50 pb-16">
+      <header className="bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+        <Link
+          to="/home"
+          className="text-sm text-white/90 transition hover:text-white"
+        >
           ← 돌아가기
         </Link>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-xl font-semibold text-gray-900">🖼️ 이미지 생성 프롬프트</h1>
+        <h1 className="text-2xl font-bold text-navy-800">
+          🖼️ 이미지 생성 프롬프트
+        </h1>
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">사용할 도구</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">사용할 도구</h2>
             <OptionCards options={TOOL_OPTIONS} onChange={setTool} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">
+            <h2 className="mb-2 text-sm font-medium text-navy-700">
               어떤 이미지를 만들고 싶으신가요?
             </h2>
             <textarea
@@ -75,24 +80,24 @@ export default function ImagePromptPage() {
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
               placeholder="예: 봄 소풍을 떠나는 초등학생들의 모습"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
             />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">스타일 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">스타일 키워드</h2>
             <TagToggleGroup options={STYLE_OPTIONS} allowCustom onChange={setStyles} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">분위기 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700">분위기 키워드</h2>
             <TagToggleGroup options={MOOD_OPTIONS} allowCustom onChange={setMoods} />
           </section>
 
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
           >
             프롬프트 생성
           </button>

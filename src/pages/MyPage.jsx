@@ -9,8 +9,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-purple-100 text-purple-700',
-  document: 'bg-blue-100 text-blue-700',
+  image: 'bg-blue-100 text-blue-700',
+  document: 'bg-green-100 text-green-700',
 }
 
 function formatDate(timestamp) {
@@ -61,12 +61,12 @@ export default function MyPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
-        <span className="text-lg font-bold text-gray-900">내 프롬프트 보관함</span>
+    <div className="min-h-screen bg-slate-50">
+      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+        <span className="text-lg font-bold text-white">내 프롬프트 보관함</span>
         <Link
           to="/home"
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
+          className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
         >
           돌아가기
         </Link>
@@ -74,9 +74,9 @@ export default function MyPage() {
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {loading ? (
-          <p className="py-12 text-center text-gray-400">불러오는 중...</p>
+          <p className="py-12 text-center text-slate-400">불러오는 중...</p>
         ) : prompts.length === 0 ? (
-          <p className="py-12 text-center text-gray-400">
+          <p className="py-12 text-center text-slate-400">
             저장된 프롬프트가 없습니다.
           </p>
         ) : (
@@ -84,39 +84,39 @@ export default function MyPage() {
             {prompts.map((item) => (
               <li
                 key={item.id}
-                className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      TYPE_BADGE_STYLES[item.type] ?? 'bg-gray-100 text-gray-600'
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
                     }`}
                   >
                     {TYPE_LABELS[item.type] ?? item.type}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-slate-400">
                     {formatDate(item.createdAt)}
                   </span>
                 </div>
 
-                <p className="mt-2 text-sm text-gray-700">
+                <p className="mt-3 text-sm text-slate-700">
                   {item.content.length > 50
                     ? `${item.content.slice(0, 50)}...`
                     : item.content}
                 </p>
 
-                <div className="mt-3 flex gap-2">
+                <div className="mt-4 flex gap-2">
                   <button
                     type="button"
                     onClick={() => handleCopy(item)}
-                    className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-100"
+                    className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
                   >
                     {copiedId === item.id ? '복사됨!' : '복사'}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(item)}
-                    className="rounded-md border border-red-200 px-3 py-1 text-xs text-red-600 hover:bg-red-50"
+                    className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
                   >
                     삭제
                   </button>

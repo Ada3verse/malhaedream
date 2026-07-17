@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "seed:users": "node --env-file=.env.local src/scripts/seedUsers.js"
+    "seed:users": "node --env-file=.env.local src/scripts/seedUsers.js",
+    "migrate:pins": "node --env-file=.env.local src/scripts/migratePin.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

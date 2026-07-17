@@ -42,8 +42,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
             onClick={() => toggleOption(option)}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               active
-                ? 'border-gray-900 bg-gray-900 text-white'
-                : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
             }`}
           >
             {option}
@@ -57,8 +57,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           onClick={toggleCustom}
           className={`rounded-full border px-3 py-1.5 text-sm transition ${
             customActive
-              ? 'border-gray-900 bg-gray-900 text-white'
-              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+              ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
           }`}
         >
           직접입력
@@ -71,7 +71,7 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           placeholder="키워드 직접 입력"
-          className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 sm:w-auto"
+          className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 sm:w-auto"
         />
       )}
     </div>
