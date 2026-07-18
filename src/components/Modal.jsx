@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
 
-export default function Modal({ title, onClose, children }) {
+export default function Modal({
+  title,
+  onClose,
+  children,
+  maxWidthClass = 'max-w-lg',
+  bodyClassName = 'px-6 py-5',
+}) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose()
@@ -19,13 +25,13 @@ export default function Modal({ title, onClose, children }) {
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[80vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+        className={`flex max-h-[80vh] w-full ${maxWidthClass} flex-col overflow-hidden rounded-2xl bg-white shadow-xl`}
       >
         <div className="bg-navy-700 px-6 py-4">
           <h2 className="text-lg font-bold text-white">{title}</h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 text-sm text-slate-700">
+        <div className={`flex-1 overflow-y-auto text-sm text-slate-700 ${bodyClassName}`}>
           {children}
         </div>
 

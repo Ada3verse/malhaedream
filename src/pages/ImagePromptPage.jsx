@@ -7,14 +7,35 @@ import { useAuthGuard } from '../hooks/useAuthGuard'
 import { callGeneratePrompt } from '../utils/api'
 import { savePrompt } from '../utils/prompts'
 
-const SYSTEM_PROMPT =
-  '당신은 이미지 생성 AI(ChatGPT의 DALL·E, Claude, Gemini 등)에 바로 입력할 수 있는 고품질 프롬프트를 작성하는 전문가입니다. 사용자가 제공한 도구, 주제, 스타일, 분위기를 반영해 해당 도구에 최적화된 프롬프트를 한국어로 작성하세요. 프롬프트 본문만 출력하고 다른 설명은 덧붙이지 마세요.'
-
 const TOOL_OPTIONS = [
-  { value: 'chatgpt', label: 'ChatGPT (DALL·E)' },
+  { value: 'chatgpt', label: 'ChatGPT (Duct-tape)' },
   { value: 'claude', label: 'Claude' },
-  { value: 'gemini', label: 'Gemini' },
+  { value: 'gemini', label: 'Gemini (nano banana2)' },
 ]
+
+const CLAUDE_LABEL = TOOL_OPTIONS.find((option) => option.value === 'claude')?.label
+
+function buildSystemPrompt(isEnglishTool) {
+  if (!isEnglishTool) {
+    return '당신은 이미지 생성 AI(Claude)에 바로 입력할 수 있는 고품질 프롬프트를 작성하는 전문가입니다. 사용자가 제공한 주제, 스타일, 분위기를 반영해 한국어로만 프롬프트를 작성하세요. 프롬프트 본문만 출력하고 다른 설명은 덧붙이지 마세요.'
+  }
+
+  return `당신은 이미지 생성 AI(DALL·E, Gemini 등)에 바로 입력할 수 있는 고품질 프롬프트를 작성하는 전문가입니다. 사용자가 제공한 주제, 스타일, 분위기를 반영해 프롬프트를 작성하세요.
+
+반드시 아래 형식을 지켜서 작성하세요:
+1. 영문 프롬프트를 먼저 작성합니다.
+2. 한 줄을 띄웁니다.
+3. "[한국어 해석]" 레이블을 작성합니다.
+4. 그 아래에 영문 프롬프트의 한국어 번역을 작성합니다.
+
+형식 예시:
+A dreamy and emotional illustration of middle school students...
+
+[한국어 해석]
+몽환적이고 감성적인 일러스트 스타일로...
+
+프롬프트 본문만 출력하고 다른 설명은 덧붙이지 마세요.`
+}
 
 const STYLE_OPTIONS = ['사실적인', '일러스트', '수채화', '픽셀아트', '미니멀']
 const MOOD_OPTIONS = ['밝고 따뜻한', '차갑고 세련된', '몽환적인', '역동적인', '차분한']
@@ -31,6 +52,8 @@ export default function ImagePromptPage() {
 
   if (!user) return null
 
+  const isEnglishTool = Boolean(tool) && tool !== CLAUDE_LABEL
+
   const handleGenerate = async () => {
     setGenerateError('')
     setGenerating(true)
@@ -42,7 +65,7 @@ export default function ImagePromptPage() {
     }\n\n위 내용을 바탕으로 이미지 생성 프롬프트를 작성해주세요.`
 
     try {
-      const text = await callGeneratePrompt(SYSTEM_PROMPT, userPrompt)
+      const text = await callGeneratePrompt(buildSystemPrompt(isEnglishTool), userPrompt)
       setResult(text)
     } catch (err) {
       setGenerateError(err.message || 'AI 프롬프트 생성 중 오류가 발생했습니다.')
@@ -131,6 +154,12 @@ export default function ImagePromptPage() {
           )}
 
           <PromptResultBox result={result} onSave={handleSave} />
+
+          {isEnglishTool && (
+            <p className="text-center text-xs text-sky-700">
+              💡 영문 프롬프트를 복사해서 사용하세요.
+            </p>
+          )}
         </div>
       </main>
     </div>
