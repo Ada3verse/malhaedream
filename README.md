@@ -20,7 +20,7 @@
 ## 주요 기능
 
 ### 프롬프트 생성
-- **이미지 생성 프롬프트**: ChatGPT(gpt-image-1), Claude, Gemini(imagen4) 툴별 최적화
+- **이미지 생성 프롬프트**: ChatGPT(Duct-tape), Gemini(nano banana2) 툴별 최적화
   - ChatGPT·Gemini 선택 시 영문 프롬프트 + 한국어 해석 병기
   - 스타일·분위기 키워드 선택으로 구체적인 프롬프트 생성
 - **문서 작성 프롬프트**: 가정통신문, 사업계획서, 행사보고서 등
