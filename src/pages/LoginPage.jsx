@@ -17,6 +17,8 @@ import { hashPin } from '../utils/hash'
 
 const MAX_LOGIN_FAILS = 5
 
+const NICKNAME_PATTERN = /[^가-힣a-zA-Z0-9]/g
+
 export default function LoginPage() {
   const [nickname, setNickname] = useState('')
   const [pin, setPin] = useState('')
@@ -24,6 +26,7 @@ export default function LoginPage() {
   const [showPolicy, setShowPolicy] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isComposing, setIsComposing] = useState(false)
   const navigate = useNavigate()
 
   const handlePinChange = (e) => {
@@ -31,7 +34,20 @@ export default function LoginPage() {
   }
 
   const handleNicknameChange = (e) => {
-    setNickname(e.target.value.replace(/[^가-힣a-zA-Z0-9]/g, '').slice(0, 10))
+    if (isComposing) {
+      setNickname(e.target.value)
+      return
+    }
+    setNickname(e.target.value.replace(NICKNAME_PATTERN, '').slice(0, 10))
+  }
+
+  const handleCompositionStart = () => {
+    setIsComposing(true)
+  }
+
+  const handleCompositionEnd = (e) => {
+    setIsComposing(false)
+    setNickname(e.target.value.replace(NICKNAME_PATTERN, '').slice(0, 10))
   }
 
   const handleSubmit = async (e) => {
@@ -104,23 +120,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center px-4"
-      style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #7c3aed 100%)' }}
-    >
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#1e3a5f] to-[#7c3aed] px-4 dark:bg-none dark:bg-[#1e293b]">
       <div className="absolute right-4 top-4">
         <DarkModeToggle className="!border-white/40 !text-white hover:!bg-white/10" />
       </div>
 
-      <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white p-6 shadow-2xl shadow-navy-900/30 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
+      <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white p-6 shadow-2xl shadow-navy-900/30 dark:border-[#4b5563] dark:bg-[#2d3748] sm:p-8">
         <div className="flex flex-col items-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-600 text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500">
             💬
           </div>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy-700 dark:text-white">
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy-700 dark:text-[#f1f5f9]">
             말해드림
           </h1>
-          <p className="mt-1 text-sm text-slate-400 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-400 dark:text-slate-300">
             AI에게 대신 말해드립니다. 복사만 하세요.
           </p>
         </div>
@@ -138,10 +151,12 @@ export default function LoginPage() {
               type="text"
               value={nickname}
               onChange={handleNicknameChange}
+              onCompositionStart={handleCompositionStart}
+              onCompositionEnd={handleCompositionEnd}
               placeholder="닉네임을 입력하세요 (한글/영문/숫자, 최대 10자)"
               autoComplete="username"
               required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -163,9 +178,9 @@ export default function LoginPage() {
               placeholder="숫자 4자리"
               autoComplete="off"
               required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
-            <p className="mt-1.5 text-xs text-slate-400">
+            <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-400">
               처음 사용하시나요? 닉네임과 PIN을 입력하면 자동으로 가입됩니다.
             </p>
           </div>
