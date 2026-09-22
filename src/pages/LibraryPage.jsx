@@ -8,6 +8,9 @@ import { getSharedPrompts, incrementCopyCount } from '../utils/prompts'
 import { getAllTemplates } from '../utils/templates'
 
 const POPULAR_COPY_THRESHOLD = 5
+const TOP_RANK_LIMIT = 5
+const RANK_COLORS = ['#f59e0b', '#9ca3af', '#cd7f32']
+const DEFAULT_RANK_COLOR = '#1e3a5f'
 
 const TYPE_LABELS = {
   image: '이미지',
@@ -87,6 +90,11 @@ export default function LibraryPage() {
   const filterOptions = ['전체', ...templates.map((template) => template.name)]
   const tagOptions = ['전체', ...new Set(prompts.flatMap((item) => item.tags ?? []))]
 
+  const topPrompts = [...prompts]
+    .filter((item) => (item.copyCount ?? 0) > 0)
+    .sort((a, b) => (b.copyCount ?? 0) - (a.copyCount ?? 0))
+    .slice(0, TOP_RANK_LIMIT)
+
   const filteredPrompts = prompts
     .filter((item) => activeFilter === '전체' || item.templateName === activeFilter)
     .filter(
@@ -122,6 +130,56 @@ export default function LibraryPage() {
         <p className="mt-1 text-sm text-slate-500">
           선생님들이 공유한 프롬프트를 확인하고 바로 복사해보세요.
         </p>
+
+        {topPrompts.length > 0 && (
+          <section className="mt-5">
+            <h2 className="text-lg font-semibold text-navy-800">
+              🔥 인기 프롬프트 TOP 5
+            </h2>
+            <ul className="mt-3 flex flex-col gap-2">
+              {topPrompts.map((item, index) => (
+                <li
+                  key={item.id}
+                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60"
+                >
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                    style={{ backgroundColor: RANK_COLORS[index] ?? DEFAULT_RANK_COLOR }}
+                  >
+                    {index + 1}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {item.templateName ?? TYPE_LABELS[item.type] ?? item.type}
+                      </span>
+                      <span className="shrink-0 text-xs text-slate-400">
+                        📋 {item.copyCount}회 복사
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-sm text-slate-700">
+                      {item.content.length > PREVIEW_LENGTH
+                        ? `${item.content.slice(0, PREVIEW_LENGTH)}...`
+                        : item.content}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setViewingItem(item)}
+                    className="shrink-0 rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                  >
+                    보기
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <hr className="mt-6 border-slate-200" />
+          </section>
+        )}
 
         <div className="mt-5 flex flex-wrap gap-2">
           {filterOptions.map((option) => (

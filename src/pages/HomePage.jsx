@@ -1,17 +1,45 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useToast } from '../components/Toast'
 import { CIRCLED_NUMBERS, GUIDE_STEPS } from '../constants/guide'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
+import { getPromptsByNickname } from '../utils/prompts'
 import { getAllTemplates, updateTemplate } from '../utils/templates'
 import UsageGuideModal from '../components/UsageGuideModal'
 
 const GUIDE_SEEN_KEY = 'malhaedream_guide_seen'
+const RECENT_PROMPTS_LIMIT = 3
+
+const TYPE_LABELS = {
+  image: '이미지',
+  document: '문서',
+}
+
+const TYPE_BADGE_STYLES = {
+  image: 'bg-blue-100 text-blue-700',
+  document: 'bg-green-100 text-green-700',
+}
+
+function formatDate(timestamp) {
+  if (!timestamp?.toDate) return ''
+  return timestamp.toDate().toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 export default function HomePage() {
   const navigate = useNavigate()
   const user = useAuthGuard()
+  const showToast = useToast()
   const [templates, setTemplates] = useState([])
+  const [recentPrompts, setRecentPrompts] = useState([])
+  const [copiedId, setCopiedId] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [showBanner, setShowBanner] = useState(
     () => !localStorage.getItem(GUIDE_SEEN_KEY),
   )
@@ -21,9 +49,27 @@ export default function HomePage() {
     getAllTemplates().then(setTemplates)
   }, [])
 
+  useEffect(() => {
+    if (!user) return
+    getPromptsByNickname(user.nickname, user.deviceId).then((list) =>
+      setRecentPrompts(list.slice(0, RECENT_PROMPTS_LIMIT)),
+    )
+  }, [user])
+
   const handleLogout = () => {
     clearStoredUser()
     navigate('/', { replace: true })
+  }
+
+  const handleCopyRecent = async (item) => {
+    try {
+      await navigator.clipboard.writeText(item.content)
+      setCopiedId(item.id)
+      setTimeout(() => setCopiedId(null), 1500)
+      showToast('복사되었습니다!', 'success')
+    } catch {
+      showToast('복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
+    }
   }
 
   const handleDismissBanner = () => {
@@ -49,6 +95,17 @@ export default function HomePage() {
   if (!user) return null
 
   const isAdmin = user.role === 'admin'
+  const isSearching = Boolean(searchQuery.trim())
+
+  const filteredTemplates = isSearching
+    ? templates.filter((template) => {
+        const keyword = searchQuery.trim().toLowerCase()
+        return (
+          template.name?.toLowerCase().includes(keyword) ||
+          template.description?.toLowerCase().includes(keyword)
+        )
+      })
+    : templates
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -115,10 +172,36 @@ export default function HomePage() {
           어떤 프롬프트가 필요하신가요?
         </h1>
 
+        <div className="relative mt-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="어떤 프롬프트가 필요하세요? (예: 가정통신문, 이미지)"
+            className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-10 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+          />
+          {isSearching && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              aria-label="검색어 지우기"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {isSearching && filteredTemplates.length === 0 && (
+          <p className="mt-8 text-center text-slate-400">
+            검색 결과가 없습니다. 다른 키워드로 검색해보세요.
+          </p>
+        )}
+
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {templates.map((template, index) => (
+          {filteredTemplates.map((template, index) => (
             <div key={template.id} className="flex items-stretch gap-2">
-              {isAdmin && (
+              {isAdmin && !isSearching && (
                 <div className="flex flex-col justify-center gap-1">
                   <button
                     type="button"
@@ -168,6 +251,60 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        {recentPrompts.length > 0 && (
+          <section className="mt-8">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg font-semibold text-navy-800">
+                최근에 만든 프롬프트
+              </h2>
+              <Link
+                to="/mypage"
+                className="text-sm text-navy-600 transition hover:text-navy-700"
+              >
+                전체 보기 →
+              </Link>
+            </div>
+
+            <ul className="mt-3 flex flex-col gap-3">
+              {recentPrompts.map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {TYPE_LABELS[item.type] ?? item.type}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {formatDate(item.createdAt)}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-sm text-slate-700">
+                    {item.content.length > 60
+                      ? `${item.content.slice(0, 60)}...`
+                      : item.content}
+                  </p>
+
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyRecent(item)}
+                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                    >
+                      {copiedId === item.id ? '복사됨!' : '복사'}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
 
       {showGuideModal && (
