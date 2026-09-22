@@ -232,9 +232,8 @@ export default function HomePage() {
               {template.isActive ? (
                 <Link
                   to={`/prompt/${template.type}`}
-                  className="relative flex h-full flex-1 flex-col gap-1.5 overflow-hidden rounded-2xl border border-slate-200 border-l-4 border-l-violet-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(124,58,237,0.15)] dark:border-slate-700 dark:border-l-violet-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(124,58,237,0.25)]"
+                  className="relative flex h-full flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 border-l-4 border-l-violet-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(124,58,237,0.15)] dark:border-slate-700 dark:border-l-violet-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(124,58,237,0.25)]"
                 >
-                  <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-navy-600 to-violet-500" />
                   <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
                     {template.name}
                   </h2>
@@ -243,7 +242,7 @@ export default function HomePage() {
               ) : (
                 <div
                   aria-disabled="true"
-                  className="relative flex h-full flex-1 cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5 dark:border-slate-700 dark:bg-slate-800/60"
+                  className="relative flex h-full flex-1 cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 border-l-4 border-l-slate-300 bg-slate-100 p-5 dark:border-slate-700 dark:border-l-slate-600 dark:bg-slate-800/60"
                 >
                   <span className="absolute right-4 top-4 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400">
                     준비중
