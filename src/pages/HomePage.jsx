@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CIRCLED_NUMBERS, GUIDE_STEPS } from '../constants/guide'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
-import { getAllTemplates } from '../utils/templates'
+import { getAllTemplates, updateTemplate } from '../utils/templates'
 import UsageGuideModal from '../components/UsageGuideModal'
 
 const GUIDE_SEEN_KEY = 'malhaedream_guide_seen'
@@ -31,7 +31,24 @@ export default function HomePage() {
     setShowBanner(false)
   }
 
+  const handleMoveTemplate = async (index, direction) => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= templates.length) return
+
+    const current = templates[index]
+    const target = templates[targetIndex]
+
+    await Promise.all([
+      updateTemplate(current.id, { order: target.order }),
+      updateTemplate(target.id, { order: current.order }),
+    ])
+
+    setTemplates(await getAllTemplates())
+  }
+
   if (!user) return null
+
+  const isAdmin = user.role === 'admin'
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -99,34 +116,57 @@ export default function HomePage() {
         </h1>
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {templates.map((template) =>
-            template.isActive ? (
-              <Link
-                key={template.id}
-                to={`/prompt/${template.type}`}
-                className="flex h-full flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80"
-              >
-                <h2 className="text-lg font-semibold text-navy-800">
-                  {template.name}
-                </h2>
-                <p className="text-sm text-slate-500">{template.description}</p>
-              </Link>
-            ) : (
-              <div
-                key={template.id}
-                aria-disabled="true"
-                className="relative flex h-full cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5"
-              >
-                <span className="absolute right-4 top-4 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-500">
-                  준비중
-                </span>
-                <h2 className="text-lg font-semibold text-slate-500">
-                  {template.name}
-                </h2>
-                <p className="text-sm text-slate-400">{template.description}</p>
-              </div>
-            ),
-          )}
+          {templates.map((template, index) => (
+            <div key={template.id} className="flex items-stretch gap-2">
+              {isAdmin && (
+                <div className="flex flex-col justify-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleMoveTemplate(index, 'up')}
+                    disabled={index === 0}
+                    aria-label="위로 이동"
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveTemplate(index, 'down')}
+                    disabled={index === templates.length - 1}
+                    aria-label="아래로 이동"
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    ↓
+                  </button>
+                </div>
+              )}
+
+              {template.isActive ? (
+                <Link
+                  to={`/prompt/${template.type}`}
+                  className="flex h-full flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80"
+                >
+                  <h2 className="text-lg font-semibold text-navy-800">
+                    {template.name}
+                  </h2>
+                  <p className="text-sm text-slate-500">{template.description}</p>
+                </Link>
+              ) : (
+                <div
+                  aria-disabled="true"
+                  className="relative flex h-full flex-1 cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5"
+                >
+                  <span className="absolute right-4 top-4 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-500">
+                    준비중
+                  </span>
+                  <h2 className="text-lg font-semibold text-slate-500">
+                    {template.name}
+                  </h2>
+                  <p className="text-sm text-slate-400">{template.description}</p>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </main>
 

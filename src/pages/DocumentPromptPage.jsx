@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import AiShortcutLinks from '../components/AiShortcutLinks'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
@@ -173,6 +174,8 @@ export default function DocumentPromptPage() {
               onRefine={handleRefine}
             />
           )}
+
+          {result && <AiShortcutLinks />}
         </div>
       </main>
     </div>

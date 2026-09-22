@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import AiShortcutLinks from '../components/AiShortcutLinks'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
@@ -192,6 +193,8 @@ export default function ImagePromptPage() {
           {result && (
             <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
           )}
+
+          {result && <AiShortcutLinks />}
 
           {isEnglishTool && (
             <p className="text-center text-xs text-sky-700">
