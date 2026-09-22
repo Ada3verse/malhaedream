@@ -6,6 +6,7 @@
 키워드와 조건을 선택하면 ChatGPT·Claude·Gemini에 바로 붙여넣을 수 있는 최적의 프롬프트를 자동으로 생성해드립니다.
 
 🔗 **서비스 바로가기**: https://malhaedream.vercel.app
+📁 **개발 기간**: 2026년 7월
 
 ---
 
@@ -20,26 +21,41 @@
 ## 주요 기능
 
 ### 프롬프트 생성
-- **이미지 생성 프롬프트**: ChatGPT(GPT Image 1.5 · Duct-tape), Gemini(Imagen 4 · nano banana) 툴별 최적화
+- **이미지 생성 프롬프트**: ChatGPT(GPT Image 1.5·Duct-tape), Claude, Gemini(Imagen 4·nano banana) 툴별 최적화
   - ChatGPT·Gemini 선택 시 영문 프롬프트 + 한국어 해석 병기
   - 스타일·분위기 키워드 선택으로 구체적인 프롬프트 생성
-- **문서 작성 프롬프트**: 가정통신문, 사업계획서, 행사보고서 등
-  - 말투·출력 형식 선택 가능
+- **문서 작성 프롬프트**: 아래 7가지 템플릿 제공
+  - 가정통신문, 사업계획서, 행사보고서, 수업 지도안, 형성평가 문항, 수행평가 문항, 학습지
+  - 각 템플릿은 역할 부여 + 맥락 + 요구사항 + 제약조건 + 예시 문체 포함
+- **프롬프트 보완**: 생성된 프롬프트가 마음에 들지 않을 때
+  - 빠른 수정 버튼 (더 구체적으로, 더 간결하게 등)
+  - 자유입력으로 추가 요구사항 직접 입력
+  - 둘 다 조합해서 사용 가능
+- **AI 바로가기**: 프롬프트 생성 후 ChatGPT·Claude·Gemini 바로가기 버튼 제공
 
 ### 계정 및 보안
 - 닉네임 + PIN 4자리 로그인 (첫 입력 시 자동 가입)
 - PIN SHA-256 해싱 저장
 - 로그인 실패 5회 초과 시 잠금, 관리자 해제
+- 본인 PIN 직접 변경 가능
 - 개인정보처리방침 동의 후 서비스 이용
 
 ### 개인 보관함
-- 생성된 프롬프트 저장·복사·삭제
+- 생성된 프롬프트 자동 공유 저장
+- 저장된 프롬프트 복사·삭제
 - 본인 계정 프롬프트만 조회 가능
 
+### 공유 라이브러리
+- 저장된 프롬프트 자동 공개
+- 템플릿 유형별 필터 + 최신순 정렬
+- 원클릭 복사
+
 ### 관리자 페이지
-- 교사 계정 목록 조회
-- PIN 초기화·잠금 해제·계정 삭제
-- 전체 가입자 수 통계
+- 교사 계정 목록 조회, PIN 초기화·잠금 해제·계정 삭제
+- 템플릿 추가·수정·삭제·활성화 토글·순서 변경
+- JSON 일괄 입력으로 템플릿 대량 추가
+- 사용 통계 (가입자 수, 전체 프롬프트 수, 최근 7일 생성 수, 템플릿별 사용 횟수 막대그래프)
+- 공유 라이브러리 관리 (부적절한 프롬프트 비공개 처리)
 
 ---
 
@@ -48,10 +64,10 @@
 | 구분 | 기술 |
 |------|------|
 | Frontend | React, Vite, Tailwind CSS |
-| 프롬프트 엔진 | 템플릿 기반 조합 엔진 (JavaScript, 비용 0원) |
+| 프롬프트 엔진 | 템플릿 기반 조합 엔진 (JavaScript, API 비용 0원) |
 | Database | Firebase Firestore |
 | 인증 | 커스텀 닉네임+PIN (SHA-256 해싱) |
-| 배포 | Vercel (Frontend), Firebase (Functions) |
+| 배포 | Vercel |
 
 ---
 
@@ -61,6 +77,20 @@
 - 로그인 실패 횟수 제한 (5회 초과 시 잠금)
 - .env.local은 .gitignore 처리
 - 개인정보처리방침 고지 및 동의 절차 포함
+- 닉네임 특수문자 입력 방지, 최대 10자 제한
+
+---
+
+## 프롬프트 품질 설계 원칙
+
+말해드림의 모든 템플릿은 아래 6가지 원칙을 기반으로 설계되었습니다.
+
+1. **역할 부여** — AI에게 구체적인 역할 명시 (예: "20년 경력의 중학교 담임교사")
+2. **맥락 제공** — 대상, 상황, 교육과정 기반 명시
+3. **구체적 요구사항** — 포함해야 할 내용을 명확히 지정
+4. **출력 형식** — 표, 개조식, 줄글 등 원하는 형태 지정
+5. **제약 조건** — 하면 안 되는 것 명시 (개인정보 포함 금지 등)
+6. **예시 문체** — 실제 예시로 결과물 방향 안내
 
 ---
 
@@ -68,21 +98,23 @@
 
 ```
 src/
-├── components/       # 공통 컴포넌트
+├── components/         # 공통 컴포넌트 (Toast, Modal, PromptResultBox, PromptRefineBox, AiShortcutLinks 등)
 ├── pages/
 │   ├── LoginPage.jsx
 │   ├── HomePage.jsx
 │   ├── ImagePromptPage.jsx
 │   ├── DocumentPromptPage.jsx
+│   ├── LibraryPage.jsx
 │   ├── MyPage.jsx
 │   └── AdminPage.jsx
 ├── utils/
-│   ├── hash.js        # PIN 해싱
-│   ├── prompts.js      # 프롬프트 Firestore 연동
-│   └── api.js          # Firebase Functions 호출
+│   ├── hash.js             # PIN 해싱
+│   ├── auth.js             # 로그인 세션(localStorage) 관리
+│   ├── prompts.js          # 프롬프트 Firestore 연동
+│   ├── templates.js        # 템플릿 CRUD (관리자용)
+│   └── templateEngine.js   # 템플릿 기반 프롬프트 생성 엔진
+├── scripts/                # 관리자용 Firestore 시드·마이그레이션 스크립트
 └── firebase.js
-functions/
-└── index.js            # Claude API 호출 (서버)
 ```
 
 ---
