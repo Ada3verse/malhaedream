@@ -73,6 +73,7 @@ export default function DocumentPromptPage() {
         deviceId: user.deviceId,
         type: 'document',
         content: result.ko,
+        templateName: selectedTemplate?.name,
       })
       alert('저장되었습니다!')
     } catch {

@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { generateImagePrompt, refinePrompt } from '../utils/templateEngine'
+import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
+
+const DEFAULT_IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
 
 const TOOL_OPTIONS = [
   { value: 'chatgpt', label: 'ChatGPT (GPT Image 1.5 · Duct-tape)' },
@@ -38,6 +40,13 @@ export default function ImagePromptPage() {
   const [result, setResult] = useState(null)
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
+  const [imageTemplateName, setImageTemplateName] = useState(DEFAULT_IMAGE_TEMPLATE_NAME)
+
+  useEffect(() => {
+    getTemplates('image').then((templates) => {
+      if (templates[0]?.name) setImageTemplateName(templates[0].name)
+    })
+  }, [])
 
   if (!user) return null
 
@@ -92,6 +101,7 @@ export default function ImagePromptPage() {
         deviceId: user.deviceId,
         type: 'image',
         content,
+        templateName: imageTemplateName,
       })
       alert('저장되었습니다!')
     } catch {

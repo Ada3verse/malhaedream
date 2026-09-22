@@ -52,6 +52,12 @@ export default function HomePage() {
           >
             내 보관함
           </Link>
+          <Link
+            to="/library"
+            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+          >
+            📚 라이브러리
+          </Link>
           <button
             type="button"
             onClick={handleLogout}

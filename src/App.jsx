@@ -3,6 +3,7 @@ import AdminPage from './pages/AdminPage'
 import DocumentPromptPage from './pages/DocumentPromptPage'
 import HomePage from './pages/HomePage'
 import ImagePromptPage from './pages/ImagePromptPage'
+import LibraryPage from './pages/LibraryPage'
 import LoginPage from './pages/LoginPage'
 import MyPage from './pages/MyPage'
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/prompt/image" element={<ImagePromptPage />} />
         <Route path="/prompt/document" element={<DocumentPromptPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/library" element={<LibraryPage />} />
         <Route
           path="*"
           element={

@@ -17,14 +17,26 @@ function belongsToDevice(promptData, deviceId) {
   return !promptData.deviceId || promptData.deviceId === deviceId
 }
 
-export async function savePrompt({ nickname, deviceId, type, content }) {
+export async function savePrompt({ nickname, deviceId, type, content, templateName }) {
   await addDoc(collection(db, PROMPTS_COLLECTION), {
     nickname,
     deviceId,
     type,
     content,
+    templateName: templateName ?? null,
+    isShared: true,
     createdAt: serverTimestamp(),
   })
+}
+
+export async function getSharedPrompts() {
+  const snapshot = await getDocs(
+    query(collection(db, PROMPTS_COLLECTION), where('isShared', '==', true)),
+  )
+
+  return snapshot.docs
+    .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+    .sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0))
 }
 
 export async function getPromptsByNickname(nickname, deviceId) {
