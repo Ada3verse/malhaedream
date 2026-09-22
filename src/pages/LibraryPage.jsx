@@ -4,8 +4,10 @@ import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
-import { getSharedPrompts } from '../utils/prompts'
+import { getSharedPrompts, incrementCopyCount } from '../utils/prompts'
 import { getAllTemplates } from '../utils/templates'
+
+const POPULAR_COPY_THRESHOLD = 5
 
 const TYPE_LABELS = {
   image: '이미지',
@@ -38,6 +40,7 @@ export default function LibraryPage() {
   const [templates, setTemplates] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('전체')
+  const [activeTagFilter, setActiveTagFilter] = useState('전체')
   const [copiedId, setCopiedId] = useState(null)
   const [viewingItem, setViewingItem] = useState(null)
 
@@ -66,6 +69,15 @@ export default function LibraryPage() {
       await navigator.clipboard.writeText(item.content)
       setCopiedId(item.id)
       setTimeout(() => setCopiedId(null), 1500)
+
+      const nextCopyCount = (item.copyCount ?? 0) + 1
+      setPrompts((prev) =>
+        prev.map((p) => (p.id === item.id ? { ...p, copyCount: nextCopyCount } : p)),
+      )
+      setViewingItem((prev) =>
+        prev && prev.id === item.id ? { ...prev, copyCount: nextCopyCount } : prev,
+      )
+      incrementCopyCount(item.id)
     } catch {
       setCopiedId(null)
       showToast('복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
@@ -73,11 +85,13 @@ export default function LibraryPage() {
   }
 
   const filterOptions = ['전체', ...templates.map((template) => template.name)]
+  const tagOptions = ['전체', ...new Set(prompts.flatMap((item) => item.tags ?? []))]
 
-  const filteredPrompts =
-    activeFilter === '전체'
-      ? prompts
-      : prompts.filter((item) => item.templateName === activeFilter)
+  const filteredPrompts = prompts
+    .filter((item) => activeFilter === '전체' || item.templateName === activeFilter)
+    .filter(
+      (item) => activeTagFilter === '전체' || (item.tags ?? []).includes(activeTagFilter),
+    )
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16">
@@ -126,6 +140,25 @@ export default function LibraryPage() {
           ))}
         </div>
 
+        {tagOptions.length > 1 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {tagOptions.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => setActiveTagFilter(tag)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                  activeTagFilter === tag
+                    ? 'border-navy-600 bg-navy-600 text-white'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="mt-6">
           {loading ? (
             <p className="py-12 text-center text-slate-400">불러오는 중...</p>
@@ -141,17 +174,37 @@ export default function LibraryPage() {
                   className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {item.templateName ?? TYPE_LABELS[item.type] ?? item.type}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {item.templateName ?? TYPE_LABELS[item.type] ?? item.type}
+                      </span>
+                      {(item.copyCount ?? 0) >= POPULAR_COPY_THRESHOLD && (
+                        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-600">
+                          🔥 인기
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs text-slate-400">
                       {formatDate(item.createdAt)}
                     </span>
                   </div>
+
+                  {(item.tags ?? []).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {item.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
                     {item.content.length > PREVIEW_LENGTH
@@ -161,6 +214,7 @@ export default function LibraryPage() {
 
                   <p className="mt-2 text-xs text-slate-400">
                     작성자: {item.nickname}
+                    {(item.copyCount ?? 0) > 0 && ` · 📋 ${item.copyCount}회 복사`}
                   </p>
 
                   <div className="mt-4 flex gap-2">
@@ -205,8 +259,22 @@ export default function LibraryPage() {
             </button>
           </div>
 
+          {(viewingItem.tags ?? []).length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {viewingItem.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
           <p className="mt-2 text-xs text-slate-400">
             작성자: {viewingItem.nickname} · {formatDate(viewingItem.createdAt)}
+            {(viewingItem.copyCount ?? 0) > 0 && ` · 📋 ${viewingItem.copyCount}회 복사`}
           </p>
 
           <div className="mt-3 whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">

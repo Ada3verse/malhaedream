@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AiShortcutLinks from '../components/AiShortcutLinks'
+import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
+import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
@@ -45,6 +47,8 @@ export default function ImagePromptPage() {
   const [generateError, setGenerateError] = useState('')
   const [generating, setGenerating] = useState(false)
   const [imageTemplateName, setImageTemplateName] = useState(DEFAULT_IMAGE_TEMPLATE_NAME)
+  const [showTagModal, setShowTagModal] = useState(false)
+  const [selectedTags, setSelectedTags] = useState([])
 
   useEffect(() => {
     getTemplates('image').then((templates) => {
@@ -103,12 +107,17 @@ export default function ImagePromptPage() {
     setIsRefined(true)
   }
 
-  const handleSave = async () => {
+  const handleSaveClick = () => {
     if (!result) {
       showToast('먼저 프롬프트를 생성해주세요.', 'warning')
       return
     }
 
+    setSelectedTags([])
+    setShowTagModal(true)
+  }
+
+  const performSave = async (tags) => {
     const content = result.en ? `${result.en}\n\n[한국어 해석]\n${result.ko}` : result.ko
 
     try {
@@ -118,10 +127,13 @@ export default function ImagePromptPage() {
         type: 'image',
         content,
         templateName: imageTemplateName,
+        tags,
       })
       showToast('저장되었습니다!', 'success')
     } catch {
       showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+    } finally {
+      setShowTagModal(false)
     }
   }
 
@@ -188,7 +200,12 @@ export default function ImagePromptPage() {
             </p>
           )}
 
-          <PromptResultBox result={result} onSave={handleSave} refined={isRefined} />
+          <PromptResultBox
+            result={result}
+            onSave={handleSaveClick}
+            refined={isRefined}
+            onEdit={setResult}
+          />
 
           {result && (
             <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
@@ -203,6 +220,36 @@ export default function ImagePromptPage() {
           )}
         </div>
       </main>
+
+      {showTagModal && (
+        <Modal
+          title="과목 태그 선택"
+          onClose={() => setShowTagModal(false)}
+          footer={
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => performSave([])}
+                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              >
+                건너뛰기
+              </button>
+              <button
+                type="button"
+                onClick={() => performSave(selectedTags)}
+                className="flex-1 rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700"
+              >
+                저장
+              </button>
+            </div>
+          }
+        >
+          <p className="mb-3 text-sm text-slate-600">
+            이 프롬프트에 해당하는 과목을 선택해주세요 (복수 선택 가능)
+          </p>
+          <TagToggleGroup options={SUBJECT_TAGS} onChange={setSelectedTags} />
+        </Modal>
+      )}
     </div>
   )
 }

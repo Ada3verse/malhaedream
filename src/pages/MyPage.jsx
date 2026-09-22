@@ -12,7 +12,11 @@ import { useToast } from '../components/Toast'
 import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { hashPin } from '../utils/hash'
-import { deletePrompt, getPromptsByNickname } from '../utils/prompts'
+import {
+  deletePrompt,
+  getPromptsByNickname,
+  toggleFavorite,
+} from '../utils/prompts'
 
 const TYPE_LABELS = {
   image: '이미지',
@@ -41,6 +45,8 @@ export default function MyPage() {
   const [prompts, setPrompts] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
+  const [activeTab, setActiveTab] = useState('all')
+  const [activeTagFilter, setActiveTagFilter] = useState('전체')
 
   const [currentPin, setCurrentPin] = useState('')
   const [newPin, setNewPin] = useState('')
@@ -68,6 +74,21 @@ export default function MyPage() {
       setTimeout(() => setCopiedId(null), 1500)
     } catch {
       setCopiedId(null)
+    }
+  }
+
+  const handleToggleFavorite = async (item) => {
+    const nextValue = !item.isFavorite
+    setPrompts((prev) =>
+      prev.map((p) => (p.id === item.id ? { ...p, isFavorite: nextValue } : p)),
+    )
+    try {
+      await toggleFavorite(item.id, nextValue)
+    } catch {
+      setPrompts((prev) =>
+        prev.map((p) => (p.id === item.id ? { ...p, isFavorite: !nextValue } : p)),
+      )
+      showToast('즐겨찾기 변경 중 오류가 발생했습니다.', 'error')
     }
   }
 
@@ -139,6 +160,23 @@ export default function MyPage() {
 
   if (!user) return null
 
+  const sortedPrompts = [...prompts].sort((a, b) => {
+    if (Boolean(a.isFavorite) !== Boolean(b.isFavorite)) {
+      return a.isFavorite ? -1 : 1
+    }
+    return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0)
+  })
+
+  const availableTags = [
+    ...new Set(sortedPrompts.flatMap((item) => item.tags ?? [])),
+  ]
+
+  const displayedPrompts = sortedPrompts
+    .filter((item) => activeTab !== 'favorite' || item.isFavorite)
+    .filter(
+      (item) => activeTagFilter === '전체' || (item.tags ?? []).includes(activeTagFilter),
+    )
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
@@ -167,50 +205,124 @@ export default function MyPage() {
             </Link>
           </div>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {prompts.map((item) => (
-              <li
-                key={item.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                      TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+          <>
+            <div className="mb-4 flex gap-2">
+              {[
+                { value: 'all', label: '전체' },
+                { value: 'favorite', label: '즐겨찾기' },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`rounded-lg border px-4 py-1.5 text-sm font-medium transition ${
+                    activeTab === tab.value
+                      ? 'border-navy-600 bg-navy-600 text-white'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {availableTags.length > 0 && (
+              <div className="mb-4 flex flex-wrap gap-2">
+                {['전체', ...availableTags].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setActiveTagFilter(tag)}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                      activeTagFilter === tag
+                        ? 'border-navy-600 bg-navy-600 text-white'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
                     }`}
                   >
-                    {TYPE_LABELS[item.type] ?? item.type}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    {formatDate(item.createdAt)}
-                  </span>
-                </div>
-
-                <p className="mt-3 text-sm text-slate-700">
-                  {item.content.length > 50
-                    ? `${item.content.slice(0, 50)}...`
-                    : item.content}
-                </p>
-
-                <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(item)}
-                    className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
-                  >
-                    {copiedId === item.id ? '복사됨!' : '복사'}
+                    {tag}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(item)}
-                    className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                ))}
+              </div>
+            )}
+
+            {displayedPrompts.length === 0 ? (
+              <p className="py-12 text-center text-slate-400">
+                조건에 맞는 프롬프트가 없습니다.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {displayedPrompts.map((item) => (
+                  <li
+                    key={item.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
                   >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFavorite(item)}
+                          aria-label="즐겨찾기"
+                          className="text-lg leading-none"
+                        >
+                          {item.isFavorite ? (
+                            <span className="text-amber-400">⭐</span>
+                          ) : (
+                            <span className="text-slate-300">☆</span>
+                          )}
+                        </button>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {TYPE_LABELS[item.type] ?? item.type}
+                        </span>
+                      </div>
+                      <span className="text-xs text-slate-400">
+                        {formatDate(item.createdAt)}
+                      </span>
+                    </div>
+
+                    {(item.tags ?? []).length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {item.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="mt-3 text-sm text-slate-700">
+                      {item.content.length > 50
+                        ? `${item.content.slice(0, 50)}...`
+                        : item.content}
+                    </p>
+
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(item)}
+                        className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                      >
+                        {copiedId === item.id ? '복사됨!' : '복사'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(item)}
+                        className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         )}
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">

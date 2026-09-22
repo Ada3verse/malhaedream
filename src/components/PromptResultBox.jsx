@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function PromptResultBox({ result, onSave, refined = false }) {
+export default function PromptResultBox({ result, onSave, refined = false, onEdit }) {
   const [copied, setCopied] = useState(false)
 
   const en = result?.en
@@ -18,6 +18,9 @@ export default function PromptResultBox({ result, onSave, refined = false }) {
       setCopied(false)
     }
   }
+
+  const handleChangeEn = (e) => onEdit?.({ ...result, en: e.target.value })
+  const handleChangeKo = (e) => onEdit?.({ ...result, ko: e.target.value })
 
   return (
     <div className="rounded-2xl border-2 border-sky-200 bg-white p-5 shadow-md shadow-slate-200/60">
@@ -44,29 +47,46 @@ export default function PromptResultBox({ result, onSave, refined = false }) {
         </div>
       </div>
 
+      {hasResult && (
+        <p className="mt-2 text-xs text-slate-400">
+          ✏️ 직접 클릭해서 수정할 수 있어요
+        </p>
+      )}
+
       {hasResult && en ? (
         <div className="mt-3 flex flex-col gap-3">
           <div>
             <p className="mb-1 text-xs font-semibold text-navy-600">
               📋 영문 프롬프트 (복사 권장)
             </p>
-            <div className="whitespace-pre-wrap rounded-lg border border-sky-100 bg-sky-50 p-4 text-sm text-slate-700">
-              {en}
-            </div>
+            <textarea
+              value={en}
+              onChange={handleChangeEn}
+              rows={6}
+              className="w-full resize-y rounded-lg border border-sky-100 bg-sky-50 p-4 text-sm text-slate-700 transition focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-400/20"
+            />
           </div>
           <div>
             <p className="mb-1 text-xs font-semibold text-navy-600">
               🇰🇷 한국어 해석
             </p>
-            <div className="whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-600">
-              {ko}
-            </div>
+            <textarea
+              value={ko}
+              onChange={handleChangeKo}
+              rows={6}
+              className="w-full resize-y rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-600 transition focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-400/20"
+            />
           </div>
         </div>
       ) : (
-        <div className="mt-3 min-h-32 whitespace-pre-wrap rounded-lg border border-sky-100 bg-sky-50 p-4 text-sm text-slate-700">
-          {ko || '프롬프트를 생성하면 여기에 표시됩니다.'}
-        </div>
+        <textarea
+          value={ko ?? ''}
+          onChange={handleChangeKo}
+          disabled={!hasResult}
+          rows={8}
+          placeholder="프롬프트를 생성하면 여기에 표시됩니다."
+          className="mt-3 min-h-32 w-full resize-y rounded-lg border border-sky-100 bg-sky-50 p-4 text-sm text-slate-700 transition focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-400/20 disabled:cursor-default disabled:text-slate-400"
+        />
       )}
     </div>
   )

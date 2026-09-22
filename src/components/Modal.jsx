@@ -6,6 +6,7 @@ export default function Modal({
   children,
   maxWidthClass = 'max-w-lg',
   bodyClassName = 'px-6 py-5',
+  footer,
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -36,13 +37,15 @@ export default function Modal({
         </div>
 
         <div className="border-t border-slate-100 px-6 py-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700"
-          >
-            닫기
-          </button>
+          {footer ?? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700"
+            >
+              닫기
+            </button>
+          )}
         </div>
       </div>
     </div>

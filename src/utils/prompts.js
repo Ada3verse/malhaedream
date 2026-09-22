@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   query,
   serverTimestamp,
   updateDoc,
@@ -18,16 +19,34 @@ function belongsToDevice(promptData, deviceId) {
   return !promptData.deviceId || promptData.deviceId === deviceId
 }
 
-export async function savePrompt({ nickname, deviceId, type, content, templateName }) {
+export async function savePrompt({
+  nickname,
+  deviceId,
+  type,
+  content,
+  templateName,
+  tags,
+}) {
   await addDoc(collection(db, PROMPTS_COLLECTION), {
     nickname,
     deviceId,
     type,
     content,
     templateName: templateName ?? null,
+    tags: tags ?? [],
     isShared: true,
+    isFavorite: false,
+    copyCount: 0,
     createdAt: serverTimestamp(),
   })
+}
+
+export async function toggleFavorite(id, isFavorite) {
+  await updateDoc(doc(db, PROMPTS_COLLECTION, id), { isFavorite })
+}
+
+export async function incrementCopyCount(id) {
+  await updateDoc(doc(db, PROMPTS_COLLECTION, id), { copyCount: increment(1) })
 }
 
 export async function getSharedPrompts() {
