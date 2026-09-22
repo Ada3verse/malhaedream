@@ -48,8 +48,7 @@
 | 구분 | 기술 |
 |------|------|
 | Frontend | React, Vite, Tailwind CSS |
-| AI 엔진 | Claude API (claude-sonnet-4-6) |
-| Backend | Firebase Functions (Node.js) |
+| 프롬프트 엔진 | 템플릿 기반 조합 엔진 (JavaScript, 비용 0원) |
 | Database | Firebase Firestore |
 | 인증 | 커스텀 닉네임+PIN (SHA-256 해싱) |
 | 배포 | Vercel (Frontend), Firebase (Functions) |
@@ -58,7 +57,6 @@
 
 ## 보안 설계
 
-- API 키는 Firebase Functions 서버에서만 호출 (프론트 미노출)
 - PIN 평문 저장 없음 (SHA-256 해싱)
 - 로그인 실패 횟수 제한 (5회 초과 시 잠금)
 - .env.local은 .gitignore 처리
