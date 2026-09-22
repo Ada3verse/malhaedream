@@ -33,6 +33,26 @@ const EMPTY_TEMPLATE_FORM = {
   quickFixes: '',
 }
 
+const JSON_PLACEHOLDER = `아래 형식으로 JSON을 붙여넣으세요. 단일 객체 또는 배열 모두 가능합니다.
+
+단일 템플릿:
+{
+  "type": "document",
+  "name": "템플릿명",
+  "description": "설명",
+  "isActive": true,
+  "order": 10,
+  "promptTemplate": "프롬프트 내용 {{content}} {{tones}} {{formats}} {{conditions}}",
+  "conditions": ["조건1", "조건2"],
+  "quickFixes": ["빠른수정1", "빠른수정2"]
+}
+
+여러 템플릿 (배열):
+[
+  { ... },
+  { ... }
+]`
+
 export default function AdminPage() {
   const navigate = useNavigate()
   const user = useAuthGuard('admin')
@@ -48,6 +68,12 @@ export default function AdminPage() {
   const [editingTemplateId, setEditingTemplateId] = useState(null)
   const [templateForm, setTemplateForm] = useState(EMPTY_TEMPLATE_FORM)
   const [templateError, setTemplateError] = useState('')
+
+  const [addTab, setAddTab] = useState('form')
+  const [jsonInput, setJsonInput] = useState('')
+  const [jsonPreview, setJsonPreview] = useState(null)
+  const [jsonError, setJsonError] = useState('')
+  const [jsonSaveMessage, setJsonSaveMessage] = useState('')
 
   const loadUsers = useCallback(async () => {
     setLoading(true)
@@ -185,6 +211,46 @@ export default function AdminPage() {
 
     setEditingTemplateId(null)
     setTemplateForm(EMPTY_TEMPLATE_FORM)
+    loadTemplates()
+  }
+
+  const handleJsonPreview = () => {
+    setJsonSaveMessage('')
+
+    try {
+      const parsed = JSON.parse(jsonInput)
+      setJsonPreview(Array.isArray(parsed) ? parsed : [parsed])
+      setJsonError('')
+    } catch {
+      setJsonPreview(null)
+      setJsonError('JSON 형식이 올바르지 않습니다. 다시 확인해주세요.')
+    }
+  }
+
+  const handleJsonSave = async () => {
+    if (!jsonPreview || jsonPreview.length === 0) return
+
+    let nextOrder =
+      templates.length > 0
+        ? Math.max(...templates.map((item) => item.order ?? 0)) + 1
+        : 1
+
+    for (const item of jsonPreview) {
+      await addTemplate({
+        type: item.type ?? 'document',
+        name: item.name ?? '',
+        description: item.description ?? '',
+        promptTemplate: item.promptTemplate ?? '',
+        conditions: Array.isArray(item.conditions) ? item.conditions : [],
+        quickFixes: Array.isArray(item.quickFixes) ? item.quickFixes : [],
+        isActive: item.isActive ?? true,
+        order: item.order ?? nextOrder++,
+      })
+    }
+
+    setJsonSaveMessage(`${jsonPreview.length}개 템플릿이 추가되었습니다.`)
+    setJsonInput('')
+    setJsonPreview(null)
     loadTemplates()
   }
 
@@ -414,112 +480,216 @@ export default function AdminPage() {
             )}
           </div>
 
-          <form
-            onSubmit={handleTemplateSubmit}
-            className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5"
-          >
+          <div className="mt-6 border-t border-slate-100 pt-5">
             <h3 className="text-sm font-semibold text-navy-800">
               {editingTemplateId ? '템플릿 수정' : '템플릿 추가'}
             </h3>
 
-            <div className="flex flex-wrap gap-2">
-              {['document', 'image'].map((type) => (
+            {!editingTemplateId && (
+              <div className="mt-3 flex gap-2">
                 <button
-                  key={type}
                   type="button"
-                  onClick={() => setTemplateForm((prev) => ({ ...prev, type }))}
+                  onClick={() => setAddTab('form')}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                    templateForm.type === type
+                    addTab === 'form'
                       ? 'border-navy-600 bg-navy-600 text-white'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
                   }`}
                 >
-                  {TEMPLATE_TYPE_LABELS[type]}
+                  폼으로 추가
                 </button>
-              ))}
-            </div>
-
-            <input
-              type="text"
-              value={templateForm.name}
-              onChange={(e) =>
-                setTemplateForm((prev) => ({ ...prev, name: e.target.value }))
-              }
-              placeholder="템플릿명 (예: 가정통신문)"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
-            />
-
-            <input
-              type="text"
-              value={templateForm.description}
-              onChange={(e) =>
-                setTemplateForm((prev) => ({ ...prev, description: e.target.value }))
-              }
-              placeholder="설명 (예: 학부모에게 보내는 각종 안내문)"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
-            />
-
-            <div>
-              <textarea
-                value={templateForm.promptTemplate}
-                onChange={(e) =>
-                  setTemplateForm((prev) => ({
-                    ...prev,
-                    promptTemplate: e.target.value,
-                  }))
-                }
-                rows={5}
-                placeholder="프롬프트 템플릿"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
-              />
-              <p className="mt-1 text-xs text-slate-400">
-                사용 가능한 변수: {'{{name}}'} {'{{content}}'} {'{{tones}}'}{' '}
-                {'{{formats}}'} {'{{conditions}}'}
-              </p>
-            </div>
-
-            <textarea
-              value={templateForm.conditions}
-              onChange={(e) =>
-                setTemplateForm((prev) => ({ ...prev, conditions: e.target.value }))
-              }
-              rows={3}
-              placeholder={'조건 (줄바꿈으로 구분)\n예: 학부모가 읽기 쉽게 작성'}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
-            />
-
-            <input
-              type="text"
-              value={templateForm.quickFixes}
-              onChange={(e) =>
-                setTemplateForm((prev) => ({ ...prev, quickFixes: e.target.value }))
-              }
-              placeholder="빠른 수정 버튼 목록 (쉼표로 구분, 예: 더 구체적으로, 더 간결하게)"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
-            />
-
-            {templateError && (
-              <p className="text-sm text-red-600">{templateError}</p>
-            )}
-
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
-              >
-                {editingTemplateId ? '저장' : '추가'}
-              </button>
-              {editingTemplateId && (
                 <button
                   type="button"
-                  onClick={handleCancelTemplateEdit}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                  onClick={() => setAddTab('json')}
+                  className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                    addTab === 'json'
+                      ? 'border-navy-600 bg-navy-600 text-white'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
+                  }`}
                 >
-                  취소
+                  JSON으로 추가
                 </button>
-              )}
-            </div>
-          </form>
+              </div>
+            )}
+
+            {editingTemplateId || addTab === 'form' ? (
+              <form
+                onSubmit={handleTemplateSubmit}
+                className="mt-4 flex flex-col gap-3"
+              >
+                <div className="flex flex-wrap gap-2">
+                  {['document', 'image'].map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setTemplateForm((prev) => ({ ...prev, type }))}
+                      className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                        templateForm.type === type
+                          ? 'border-navy-600 bg-navy-600 text-white'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
+                      }`}
+                    >
+                      {TEMPLATE_TYPE_LABELS[type]}
+                    </button>
+                  ))}
+                </div>
+
+                <input
+                  type="text"
+                  value={templateForm.name}
+                  onChange={(e) =>
+                    setTemplateForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="템플릿명 (예: 가정통신문)"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                />
+
+                <input
+                  type="text"
+                  value={templateForm.description}
+                  onChange={(e) =>
+                    setTemplateForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  placeholder="설명 (예: 학부모에게 보내는 각종 안내문)"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                />
+
+                <div>
+                  <textarea
+                    value={templateForm.promptTemplate}
+                    onChange={(e) =>
+                      setTemplateForm((prev) => ({
+                        ...prev,
+                        promptTemplate: e.target.value,
+                      }))
+                    }
+                    rows={5}
+                    placeholder="프롬프트 템플릿"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  />
+                  <p className="mt-1 text-xs text-slate-400">
+                    사용 가능한 변수: {'{{name}}'} {'{{content}}'} {'{{tones}}'}{' '}
+                    {'{{formats}}'} {'{{conditions}}'}
+                  </p>
+                </div>
+
+                <textarea
+                  value={templateForm.conditions}
+                  onChange={(e) =>
+                    setTemplateForm((prev) => ({
+                      ...prev,
+                      conditions: e.target.value,
+                    }))
+                  }
+                  rows={3}
+                  placeholder={'조건 (줄바꿈으로 구분)\n예: 학부모가 읽기 쉽게 작성'}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                />
+
+                <input
+                  type="text"
+                  value={templateForm.quickFixes}
+                  onChange={(e) =>
+                    setTemplateForm((prev) => ({
+                      ...prev,
+                      quickFixes: e.target.value,
+                    }))
+                  }
+                  placeholder="빠른 수정 버튼 목록 (쉼표로 구분, 예: 더 구체적으로, 더 간결하게)"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                />
+
+                {templateError && (
+                  <p className="text-sm text-red-600">{templateError}</p>
+                )}
+
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+                  >
+                    {editingTemplateId ? '저장' : '추가'}
+                  </button>
+                  {editingTemplateId && (
+                    <button
+                      type="button"
+                      onClick={handleCancelTemplateEdit}
+                      className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                    >
+                      취소
+                    </button>
+                  )}
+                </div>
+              </form>
+            ) : (
+              <div className="mt-4 flex flex-col gap-3">
+                <textarea
+                  value={jsonInput}
+                  onChange={(e) => {
+                    setJsonInput(e.target.value)
+                    setJsonError('')
+                    setJsonSaveMessage('')
+                  }}
+                  rows={10}
+                  placeholder={JSON_PLACEHOLDER}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                />
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleJsonPreview}
+                    className="rounded-lg border-2 border-navy-600 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50"
+                  >
+                    JSON 파싱 미리보기
+                  </button>
+                  {jsonPreview && (
+                    <button
+                      type="button"
+                      onClick={handleJsonSave}
+                      className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+                    >
+                      Firestore에 저장
+                    </button>
+                  )}
+                </div>
+
+                {jsonError && <p className="text-sm text-red-600">{jsonError}</p>}
+                {jsonSaveMessage && (
+                  <p className="text-sm text-emerald-600">{jsonSaveMessage}</p>
+                )}
+
+                {jsonPreview && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-medium text-slate-500">
+                      미리보기 ({jsonPreview.length}개)
+                    </p>
+                    {jsonPreview.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-2 rounded-xl border border-slate-200 p-3"
+                      >
+                        <span className="mt-0.5 shrink-0 rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700">
+                          {TEMPLATE_TYPE_LABELS[item.type] ?? item.type ?? '문서'}
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800">
+                            {item.name || '(이름 없음)'}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>
