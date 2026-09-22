@@ -202,6 +202,14 @@ export default function AdminPage() {
     if (editingTemplateId) {
       await updateTemplate(editingTemplateId, data)
     } else {
+      const isDuplicate = templates.some((item) => item.name === data.name)
+      if (isDuplicate) {
+        setTemplateError(
+          `'${data.name}'은 이미 존재하는 템플릿입니다. 다른 이름을 사용하거나 기존 템플릿을 수정해주세요.`,
+        )
+        return
+      }
+
       const nextOrder =
         templates.length > 0
           ? Math.max(...templates.map((item) => item.order ?? 0)) + 1
@@ -230,15 +238,27 @@ export default function AdminPage() {
   const handleJsonSave = async () => {
     if (!jsonPreview || jsonPreview.length === 0) return
 
+    const existingNames = new Set(templates.map((item) => item.name))
+
     let nextOrder =
       templates.length > 0
         ? Math.max(...templates.map((item) => item.order ?? 0)) + 1
         : 1
 
+    let addedCount = 0
+    let skippedCount = 0
+
     for (const item of jsonPreview) {
+      const name = item.name ?? ''
+
+      if (existingNames.has(name)) {
+        skippedCount += 1
+        continue
+      }
+
       await addTemplate({
         type: item.type ?? 'document',
-        name: item.name ?? '',
+        name,
         description: item.description ?? '',
         promptTemplate: item.promptTemplate ?? '',
         conditions: Array.isArray(item.conditions) ? item.conditions : [],
@@ -246,9 +266,16 @@ export default function AdminPage() {
         isActive: item.isActive ?? true,
         order: item.order ?? nextOrder++,
       })
+
+      existingNames.add(name)
+      addedCount += 1
     }
 
-    setJsonSaveMessage(`${jsonPreview.length}개 템플릿이 추가되었습니다.`)
+    setJsonSaveMessage(
+      skippedCount > 0
+        ? `${addedCount}개 추가, ${skippedCount}개 중복으로 건너뜀`
+        : `${addedCount}개 템플릿이 추가되었습니다.`,
+    )
     setJsonInput('')
     setJsonPreview(null)
     loadTemplates()
