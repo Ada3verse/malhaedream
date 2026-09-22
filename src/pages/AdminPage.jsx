@@ -4,7 +4,9 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  query,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -63,6 +65,12 @@ export default function AdminPage() {
   const [newPin, setNewPin] = useState('')
   const [addError, setAddError] = useState('')
 
+  const [newAdminPin, setNewAdminPin] = useState('')
+  const [confirmAdminPin, setConfirmAdminPin] = useState('')
+  const [adminPinError, setAdminPinError] = useState('')
+  const [adminPinSuccess, setAdminPinSuccess] = useState('')
+  const [changingAdminPin, setChangingAdminPin] = useState(false)
+
   const [templates, setTemplates] = useState([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
   const [editingTemplateId, setEditingTemplateId] = useState(null)
@@ -99,6 +107,45 @@ export default function AdminPage() {
   const handleLogout = () => {
     clearStoredUser()
     navigate('/', { replace: true })
+  }
+
+  const handleChangeAdminPin = async (e) => {
+    e.preventDefault()
+    setAdminPinError('')
+    setAdminPinSuccess('')
+
+    if (!/^\d{4}$/.test(newAdminPin) || !/^\d{4}$/.test(confirmAdminPin)) {
+      setAdminPinError('PIN은 숫자 4자리여야 합니다.')
+      return
+    }
+
+    if (newAdminPin !== confirmAdminPin) {
+      setAdminPinError('PIN이 일치하지 않습니다.')
+      return
+    }
+
+    setChangingAdminPin(true)
+    try {
+      const snapshot = await getDocs(
+        query(collection(db, 'users'), where('nickname', '==', user.nickname)),
+      )
+
+      if (snapshot.empty) {
+        setAdminPinError('계정 정보를 찾을 수 없습니다.')
+        return
+      }
+
+      const hashedPin = await hashPin(newAdminPin)
+      await updateDoc(doc(db, 'users', snapshot.docs[0].id), { pin: hashedPin })
+
+      setAdminPinSuccess('관리자 PIN이 변경되었습니다.')
+      setNewAdminPin('')
+      setConfirmAdminPin('')
+    } catch {
+      setAdminPinError('PIN 변경 중 오류가 발생했습니다.')
+    } finally {
+      setChangingAdminPin(false)
+    }
   }
 
   const handleResetPin = async (targetUser) => {
@@ -357,6 +404,66 @@ export default function AdminPage() {
             </button>
           </form>
           {addError && <p className="mt-2 text-sm text-red-600">{addError}</p>}
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
+          <h2 className="text-base font-semibold text-navy-800">관리자 PIN 변경</h2>
+          <form
+            onSubmit={handleChangeAdminPin}
+            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+          >
+            <div className="sm:w-32">
+              <label
+                htmlFor="new-admin-pin"
+                className="block text-sm font-medium text-slate-700"
+              >
+                새 PIN
+              </label>
+              <input
+                id="new-admin-pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={newAdminPin}
+                onChange={(e) =>
+                  setNewAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              />
+            </div>
+            <div className="sm:w-32">
+              <label
+                htmlFor="confirm-admin-pin"
+                className="block text-sm font-medium text-slate-700"
+              >
+                새 PIN 확인
+              </label>
+              <input
+                id="confirm-admin-pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={confirmAdminPin}
+                onChange={(e) =>
+                  setConfirmAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={changingAdminPin}
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {changingAdminPin ? '변경 중...' : '변경'}
+            </button>
+          </form>
+          {adminPinError && (
+            <p className="mt-2 text-sm text-red-600">{adminPinError}</p>
+          )}
+          {adminPinSuccess && (
+            <p className="mt-2 text-sm text-emerald-600">{adminPinSuccess}</p>
+          )}
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">

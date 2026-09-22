@@ -1,6 +1,16 @@
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
+import { hashPin } from '../utils/hash'
 import { deletePrompt, getPromptsByNickname } from '../utils/prompts'
 
 const TYPE_LABELS = {
@@ -29,6 +39,13 @@ export default function MyPage() {
   const [prompts, setPrompts] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
+
+  const [currentPin, setCurrentPin] = useState('')
+  const [newPin, setNewPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [pinError, setPinError] = useState('')
+  const [pinSuccess, setPinSuccess] = useState('')
+  const [changingPin, setChangingPin] = useState(false)
 
   const loadPrompts = useCallback(async () => {
     if (!user) return
@@ -62,6 +79,59 @@ export default function MyPage() {
       loadPrompts()
     } catch {
       alert('삭제 권한이 없습니다.')
+    }
+  }
+
+  const handleChangePin = async (e) => {
+    e.preventDefault()
+    setPinError('')
+    setPinSuccess('')
+
+    if (!/^\d{4}$/.test(newPin) || !/^\d{4}$/.test(confirmPin)) {
+      setPinError('PIN은 숫자 4자리여야 합니다.')
+      return
+    }
+
+    if (newPin !== confirmPin) {
+      setPinError('새 PIN이 일치하지 않습니다.')
+      return
+    }
+
+    if (currentPin === newPin) {
+      setPinError('현재 PIN과 동일합니다. 다른 PIN을 입력해주세요.')
+      return
+    }
+
+    setChangingPin(true)
+    try {
+      const snapshot = await getDocs(
+        query(collection(db, 'users'), where('nickname', '==', user.nickname)),
+      )
+
+      if (snapshot.empty) {
+        setPinError('계정 정보를 찾을 수 없습니다.')
+        return
+      }
+
+      const userDoc = snapshot.docs[0]
+      const hashedCurrent = await hashPin(currentPin)
+
+      if (userDoc.data().pin !== hashedCurrent) {
+        setPinError('현재 PIN이 올바르지 않습니다.')
+        return
+      }
+
+      const hashedNew = await hashPin(newPin)
+      await updateDoc(doc(db, 'users', userDoc.id), { pin: hashedNew })
+
+      setPinSuccess('PIN이 변경되었습니다.')
+      setCurrentPin('')
+      setNewPin('')
+      setConfirmPin('')
+    } catch {
+      setPinError('PIN 변경 중 오류가 발생했습니다.')
+    } finally {
+      setChangingPin(false)
     }
   }
 
@@ -132,6 +202,84 @@ export default function MyPage() {
             ))}
           </ul>
         )}
+
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
+          <h2 className="text-base font-semibold text-navy-800">내 PIN 변경</h2>
+          <form onSubmit={handleChangePin} className="mt-4 flex flex-col gap-3">
+            <div>
+              <label
+                htmlFor="current-pin"
+                className="block text-sm font-medium text-slate-700"
+              >
+                현재 PIN
+              </label>
+              <input
+                id="current-pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={currentPin}
+                onChange={(e) =>
+                  setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="new-pin"
+                className="block text-sm font-medium text-slate-700"
+              >
+                새 PIN
+              </label>
+              <input
+                id="new-pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={newPin}
+                onChange={(e) =>
+                  setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirm-pin"
+                className="block text-sm font-medium text-slate-700"
+              >
+                새 PIN 확인
+              </label>
+              <input
+                id="confirm-pin"
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={confirmPin}
+                onChange={(e) =>
+                  setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              />
+            </div>
+
+            {pinError && <p className="text-sm text-red-600">{pinError}</p>}
+            {pinSuccess && (
+              <p className="text-sm text-emerald-600">{pinSuccess}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={changingPin}
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-start"
+            >
+              {changingPin ? '변경 중...' : 'PIN 변경'}
+            </button>
+          </form>
+        </section>
       </main>
     </div>
   )
