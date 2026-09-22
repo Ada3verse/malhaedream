@@ -1,5 +1,5 @@
 const imageTemplates = {
-  'ChatGPT (gpt-image-1)': {
+  'ChatGPT (GPT Image 1.5 · Duct-tape)': {
     prefix: '',
     suffix: ', high quality, detailed, professional',
     styleMap: {
@@ -17,8 +17,8 @@ const imageTemplates = {
       차분한: 'calm, peaceful, serene',
     },
     format: (subject, styles, moods, extras) => {
-      const styleStr = styles.map((s) => imageTemplates['ChatGPT (gpt-image-1)'].styleMap[s] || s).join(', ')
-      const moodStr = moods.map((m) => imageTemplates['ChatGPT (gpt-image-1)'].moodMap[m] || m).join(', ')
+      const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
+      const moodStr = moods.map((m) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].moodMap[m] || m).join(', ')
       const en = `${subject}, ${styleStr}, ${moodStr}${extras ? ', ' + extras : ''}, high quality, detailed`
       const ko = `${subject} / 스타일: ${styles.join(', ')} / 분위기: ${moods.join(', ')}`
       return { en, ko }
@@ -32,10 +32,10 @@ const imageTemplates = {
       }
     },
   },
-  'Gemini (imagen4)': {
+  'Gemini (Imagen 4 · nano banana)': {
     format: (subject, styles, moods, extras) => {
-      const styleStr = styles.map((s) => imageTemplates['ChatGPT (gpt-image-1)'].styleMap[s] || s).join(', ')
-      const moodStr = moods.map((m) => imageTemplates['ChatGPT (gpt-image-1)'].moodMap[m] || m).join(', ')
+      const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
+      const moodStr = moods.map((m) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].moodMap[m] || m).join(', ')
       const en = `${subject}, ${styleStr}, ${moodStr}${extras ? ', ' + extras : ''}, vibrant colors, high resolution`
       const ko = `${subject} / 스타일: ${styles.join(', ')} / 분위기: ${moods.join(', ')}`
       return { en, ko }

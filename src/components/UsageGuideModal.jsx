@@ -91,7 +91,7 @@ export default function UsageGuideModal({ onClose }) {
         <Section title="💡 이미지 생성 팁">
           <ul className="flex flex-col gap-1">
             <li>
-              · ChatGPT(Duct-tape), Gemini(nano banana2) 사용 시 → 영문 프롬프트를
+              · ChatGPT(GPT Image 1.5 · Duct-tape), Gemini(Imagen 4 · nano banana) 사용 시 → 영문 프롬프트를
               복사해서 사용하세요
             </li>
             <li>· Claude 사용 시 → claude는 이미지 생성이 어려워요.</li>

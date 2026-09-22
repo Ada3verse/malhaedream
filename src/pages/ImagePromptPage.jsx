@@ -8,9 +8,9 @@ import { generateImagePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 
 const TOOL_OPTIONS = [
-  { value: 'chatgpt', label: 'ChatGPT (gpt-image-1)' },
+  { value: 'chatgpt', label: 'ChatGPT (GPT Image 1.5 · Duct-tape)' },
   { value: 'claude', label: 'Claude' },
-  { value: 'gemini', label: 'Gemini (imagen4)' },
+  { value: 'gemini', label: 'Gemini (Imagen 4 · nano banana)' },
 ]
 
 const CLAUDE_LABEL = TOOL_OPTIONS.find((option) => option.value === 'claude')?.label
