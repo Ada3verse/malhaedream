@@ -7,6 +7,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -64,4 +65,16 @@ export async function deletePrompt(id, { nickname, deviceId }) {
   }
 
   await deleteDoc(docRef)
+}
+
+export async function getAllPrompts() {
+  const snapshot = await getDocs(collection(db, PROMPTS_COLLECTION))
+
+  return snapshot.docs
+    .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+    .sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0))
+}
+
+export async function unsharePrompt(id) {
+  await updateDoc(doc(db, PROMPTS_COLLECTION, id), { isShared: false })
 }
