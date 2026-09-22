@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../components/Toast'
 import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
@@ -58,6 +59,7 @@ const JSON_PLACEHOLDER = `아래 형식으로 JSON을 붙여넣으세요. 단일
 export default function AdminPage() {
   const navigate = useNavigate()
   const user = useAuthGuard('admin')
+  const showToast = useToast()
 
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -151,13 +153,13 @@ export default function AdminPage() {
   const handleResetPin = async (targetUser) => {
     const hashedPin = await hashPin('0000')
     await updateDoc(doc(db, 'users', targetUser.id), { pin: hashedPin })
-    alert('PIN이 0000으로 초기화되었습니다.')
+    showToast('PIN이 0000으로 초기화되었습니다.', 'success')
     loadUsers()
   }
 
   const handleUnlock = async (targetUser) => {
     await updateDoc(doc(db, 'users', targetUser.id), { loginFailCount: 0 })
-    alert('로그인 잠금이 해제되었습니다.')
+    showToast('로그인 잠금이 해제되었습니다.', 'success')
     loadUsers()
   }
 

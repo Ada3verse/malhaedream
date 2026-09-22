@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useToast } from '../components/Toast'
 import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { hashPin } from '../utils/hash'
@@ -36,6 +37,7 @@ function formatDate(timestamp) {
 
 export default function MyPage() {
   const user = useAuthGuard()
+  const showToast = useToast()
   const [prompts, setPrompts] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
@@ -78,7 +80,7 @@ export default function MyPage() {
       })
       loadPrompts()
     } catch {
-      alert('삭제 권한이 없습니다.')
+      showToast('삭제 중 오류가 발생했습니다.', 'error')
     }
   }
 
@@ -153,9 +155,17 @@ export default function MyPage() {
         {loading ? (
           <p className="py-12 text-center text-slate-400">불러오는 중...</p>
         ) : prompts.length === 0 ? (
-          <p className="py-12 text-center text-slate-400">
-            저장된 프롬프트가 없습니다.
-          </p>
+          <div className="flex flex-col items-center gap-4 py-12">
+            <p className="text-center text-slate-400">
+              저장된 프롬프트가 없습니다. 프롬프트를 생성하고 저장해보세요!
+            </p>
+            <Link
+              to="/home"
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+            >
+              홈으로 가기
+            </Link>
+          </div>
         ) : (
           <ul className="flex flex-col gap-3">
             {prompts.map((item) => (

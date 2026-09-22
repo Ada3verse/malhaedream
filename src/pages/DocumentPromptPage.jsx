@@ -4,6 +4,7 @@ import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
+import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
@@ -13,6 +14,7 @@ const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
 
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
+  const showToast = useToast()
   const [templates, setTemplates] = useState([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
   const [docTypeName, setDocTypeName] = useState('')
@@ -22,6 +24,7 @@ export default function DocumentPromptPage() {
   const [result, setResult] = useState(null)
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
+  const [generating, setGenerating] = useState(false)
 
   useEffect(() => {
     getTemplates('document')
@@ -39,6 +42,8 @@ export default function DocumentPromptPage() {
   const selectedTemplate = templates.find((template) => template.name === docTypeName)
 
   const handleGenerate = () => {
+    if (generating) return
+
     setGenerateError('')
 
     if (!selectedTemplate) {
@@ -48,9 +53,19 @@ export default function DocumentPromptPage() {
       return
     }
 
-    const generated = generatePromptFromTemplate(selectedTemplate, content, tones, formats)
-    setResult(generated)
-    setIsRefined(false)
+    if (!tones.length && !formats.length) {
+      showToast('말투 또는 출력 형식을 하나 이상 선택해주세요.', 'warning')
+      return
+    }
+
+    setGenerating(true)
+    try {
+      const generated = generatePromptFromTemplate(selectedTemplate, content, tones, formats)
+      setResult(generated)
+      setIsRefined(false)
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const handleRefine = (quickFixes, customRequest) => {
@@ -63,7 +78,7 @@ export default function DocumentPromptPage() {
 
   const handleSave = async () => {
     if (!result) {
-      alert('먼저 프롬프트를 생성해주세요.')
+      showToast('먼저 프롬프트를 생성해주세요.', 'warning')
       return
     }
 
@@ -75,9 +90,9 @@ export default function DocumentPromptPage() {
         content: result.ko,
         templateName: selectedTemplate?.name,
       })
-      alert('저장되었습니다!')
+      showToast('저장되었습니다!', 'success')
     } catch {
-      alert('저장 중 오류가 발생했습니다.')
+      showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
     }
   }
 
@@ -120,6 +135,9 @@ export default function DocumentPromptPage() {
               placeholder="예: 2학기 학부모 공개수업 안내"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
             />
+            {!content.trim() && (
+              <p className="mt-1 text-xs text-slate-400">핵심 내용을 입력해주세요.</p>
+            )}
           </section>
 
           <section>
@@ -135,9 +153,10 @@ export default function DocumentPromptPage() {
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+            disabled={!content.trim() || generating}
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
-            프롬프트 생성
+            {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
 
           {generateError && (

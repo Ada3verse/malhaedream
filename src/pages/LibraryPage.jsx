@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal'
+import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
 import { getSharedPrompts } from '../utils/prompts'
@@ -32,6 +33,7 @@ function formatDate(timestamp) {
 export default function LibraryPage() {
   const navigate = useNavigate()
   const user = useAuthGuard()
+  const showToast = useToast()
   const [prompts, setPrompts] = useState([])
   const [templates, setTemplates] = useState([])
   const [loading, setLoading] = useState(true)
@@ -66,6 +68,7 @@ export default function LibraryPage() {
       setTimeout(() => setCopiedId(null), 1500)
     } catch {
       setCopiedId(null)
+      showToast('복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
     }
   }
 
@@ -128,7 +131,7 @@ export default function LibraryPage() {
             <p className="py-12 text-center text-slate-400">불러오는 중...</p>
           ) : filteredPrompts.length === 0 ? (
             <p className="py-12 text-center text-slate-400">
-              공유된 프롬프트가 없습니다.
+              아직 공유된 프롬프트가 없습니다. 첫 번째로 공유해보세요!
             </p>
           ) : (
             <ul className="flex flex-col gap-3">

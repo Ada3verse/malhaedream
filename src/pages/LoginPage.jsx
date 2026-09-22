@@ -29,26 +29,36 @@ export default function LoginPage() {
     setPin(e.target.value.replace(/\D/g, '').slice(0, 4))
   }
 
+  const handleNicknameChange = (e) => {
+    setNickname(e.target.value.replace(/[^가-힣a-zA-Z0-9]/g, '').slice(0, 10))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
+    const trimmedNickname = nickname.trim()
+
     try {
       const usersRef = collection(db, 'users')
       const snapshot = await getDocs(
-        query(usersRef, where('nickname', '==', nickname)),
+        query(usersRef, where('nickname', '==', trimmedNickname)),
       )
       const hashedPin = await hashPin(pin)
 
       if (snapshot.empty) {
         await addDoc(usersRef, {
-          nickname,
+          nickname: trimmedNickname,
           pin: hashedPin,
           role: 'teacher',
           loginFailCount: 0,
         })
-        setStoredUser({ nickname, role: 'teacher', deviceId: getOrCreateDeviceId() })
+        setStoredUser({
+          nickname: trimmedNickname,
+          role: 'teacher',
+          deviceId: getOrCreateDeviceId(),
+        })
         navigate('/home')
         return
       }
@@ -119,8 +129,8 @@ export default function LoginPage() {
               id="nickname"
               type="text"
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="닉네임을 입력하세요"
+              onChange={handleNicknameChange}
+              placeholder="닉네임을 입력하세요 (한글/영문/숫자, 최대 10자)"
               autoComplete="username"
               required
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
@@ -179,7 +189,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !agreed}
+            disabled={loading || !agreed || pin.length !== 4}
             className="mt-2 w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? '로그인 중...' : '로그인'}

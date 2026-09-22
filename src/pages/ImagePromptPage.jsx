@@ -4,6 +4,7 @@ import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
+import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
@@ -33,6 +34,7 @@ const REFINE_OPTIONS = [
 
 export default function ImagePromptPage() {
   const user = useAuthGuard()
+  const showToast = useToast()
   const [tool, setTool] = useState('')
   const [topic, setTopic] = useState('')
   const [styles, setStyles] = useState([])
@@ -40,6 +42,7 @@ export default function ImagePromptPage() {
   const [result, setResult] = useState(null)
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
+  const [generating, setGenerating] = useState(false)
   const [imageTemplateName, setImageTemplateName] = useState(DEFAULT_IMAGE_TEMPLATE_NAME)
 
   useEffect(() => {
@@ -53,6 +56,8 @@ export default function ImagePromptPage() {
   const isEnglishTool = Boolean(tool) && tool !== CLAUDE_LABEL
 
   const handleGenerate = () => {
+    if (generating) return
+
     setGenerateError('')
 
     if (!tool) {
@@ -62,17 +67,27 @@ export default function ImagePromptPage() {
       return
     }
 
-    const generated = generateImagePrompt(tool, topic, styles, moods)
-
-    if (!generated) {
-      setResult(null)
-      setIsRefined(false)
-      setGenerateError('선택한 도구에 대한 템플릿을 찾을 수 없습니다.')
+    if (!styles.length && !moods.length) {
+      showToast('스타일 또는 분위기 키워드를 하나 이상 선택해주세요.', 'warning')
       return
     }
 
-    setResult(generated)
-    setIsRefined(false)
+    setGenerating(true)
+    try {
+      const generated = generateImagePrompt(tool, topic, styles, moods)
+
+      if (!generated) {
+        setResult(null)
+        setIsRefined(false)
+        setGenerateError('선택한 도구에 대한 템플릿을 찾을 수 없습니다.')
+        return
+      }
+
+      setResult(generated)
+      setIsRefined(false)
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const handleRefine = (quickFixes, customRequest) => {
@@ -89,7 +104,7 @@ export default function ImagePromptPage() {
 
   const handleSave = async () => {
     if (!result) {
-      alert('먼저 프롬프트를 생성해주세요.')
+      showToast('먼저 프롬프트를 생성해주세요.', 'warning')
       return
     }
 
@@ -103,9 +118,9 @@ export default function ImagePromptPage() {
         content,
         templateName: imageTemplateName,
       })
-      alert('저장되었습니다!')
+      showToast('저장되었습니다!', 'success')
     } catch {
-      alert('저장 중 오류가 발생했습니다.')
+      showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
     }
   }
 
@@ -142,6 +157,9 @@ export default function ImagePromptPage() {
               placeholder="예: 봄 소풍을 떠나는 초등학생들의 모습"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
             />
+            {!topic.trim() && (
+              <p className="mt-1 text-xs text-slate-400">주제를 입력해주세요.</p>
+            )}
           </section>
 
           <section>
@@ -157,9 +175,10 @@ export default function ImagePromptPage() {
           <button
             type="button"
             onClick={handleGenerate}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+            disabled={!topic.trim() || generating}
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
-            프롬프트 생성
+            {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
 
           {generateError && (
