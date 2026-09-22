@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import OptionCards from '../components/OptionCards'
+import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { generateImagePrompt } from '../utils/templateEngine'
+import { generateImagePrompt, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 
 const TOOL_OPTIONS = [
@@ -17,6 +18,16 @@ const CLAUDE_LABEL = TOOL_OPTIONS.find((option) => option.value === 'claude')?.l
 
 const STYLE_OPTIONS = ['사실적인', '일러스트', '수채화', '픽셀아트', '미니멀']
 const MOOD_OPTIONS = ['밝고 따뜻한', '차갑고 세련된', '몽환적인', '역동적인', '차분한']
+const REFINE_OPTIONS = [
+  '더 밝게',
+  '더 어둡게',
+  '인물 추가',
+  '배경 강조',
+  '색감 더 풍부하게',
+  '단순하게',
+  '더 사실적으로',
+  '더 추상적으로',
+]
 
 export default function ImagePromptPage() {
   const user = useAuthGuard()
@@ -25,6 +36,7 @@ export default function ImagePromptPage() {
   const [styles, setStyles] = useState([])
   const [moods, setMoods] = useState([])
   const [result, setResult] = useState(null)
+  const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
 
   if (!user) return null
@@ -36,6 +48,7 @@ export default function ImagePromptPage() {
 
     if (!tool) {
       setResult(null)
+      setIsRefined(false)
       setGenerateError('사용할 도구를 먼저 선택해주세요.')
       return
     }
@@ -44,11 +57,25 @@ export default function ImagePromptPage() {
 
     if (!generated) {
       setResult(null)
+      setIsRefined(false)
       setGenerateError('선택한 도구에 대한 템플릿을 찾을 수 없습니다.')
       return
     }
 
     setResult(generated)
+    setIsRefined(false)
+  }
+
+  const handleRefine = (quickFixes, customRequest) => {
+    if (!result) return
+
+    const originalPromptText = result.en
+      ? `${result.en}\n\n[한국어 해석]\n${result.ko}`
+      : result.ko
+    const refinedText = refinePrompt(originalPromptText, quickFixes, customRequest)
+
+    setResult({ en: null, ko: refinedText })
+    setIsRefined(true)
   }
 
   const handleSave = async () => {
@@ -131,7 +158,11 @@ export default function ImagePromptPage() {
             </p>
           )}
 
-          <PromptResultBox result={result} onSave={handleSave} />
+          <PromptResultBox result={result} onSave={handleSave} refined={isRefined} />
+
+          {result && (
+            <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
+          )}
 
           {isEnglishTool && (
             <p className="text-center text-xs text-sky-700">

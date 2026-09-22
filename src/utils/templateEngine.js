@@ -78,3 +78,12 @@ export function generateDocumentPrompt(docType, content, tones, formats) {
   const template = documentTemplates[docType] || documentTemplates['기타']
   return { ko: template.format(content, tones, formats), en: null }
 }
+
+export function refinePrompt(originalPrompt, quickFixes, customRequest) {
+  const items = [
+    ...quickFixes,
+    ...(customRequest && customRequest.trim() ? [customRequest.trim()] : []),
+  ]
+  const additions = items.map((item) => `- ${item}`).join('\n')
+  return `${originalPrompt}\n\n추가 조건:\n${additions}`
+}

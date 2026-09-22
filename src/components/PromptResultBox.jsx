@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function PromptResultBox({ result, onSave }) {
+export default function PromptResultBox({ result, onSave, refined = false }) {
   const [copied, setCopied] = useState(false)
 
   const en = result?.en
@@ -22,7 +22,9 @@ export default function PromptResultBox({ result, onSave }) {
   return (
     <div className="rounded-2xl border-2 border-sky-200 bg-white p-5 shadow-md shadow-slate-200/60">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-navy-700">생성된 프롬프트</h2>
+        <h2 className="text-sm font-semibold text-navy-700">
+          {refined ? '🔄 보완된 프롬프트' : '생성된 프롬프트'}
+        </h2>
         <div className="flex gap-2">
           <button
             type="button"

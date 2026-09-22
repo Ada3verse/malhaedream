@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import OptionCards from '../components/OptionCards'
+import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { generateDocumentPrompt } from '../utils/templateEngine'
+import { generateDocumentPrompt, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 
 const DOC_TYPE_OPTIONS = [
@@ -16,6 +17,16 @@ const DOC_TYPE_OPTIONS = [
 
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
 const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
+const REFINE_OPTIONS = [
+  '더 구체적으로',
+  '더 간결하게',
+  '격식체로',
+  '친근하게',
+  '예시 추가',
+  '표 추가',
+  '항목 추가',
+  '분량 늘려서',
+]
 
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
@@ -24,6 +35,7 @@ export default function DocumentPromptPage() {
   const [tones, setTones] = useState([])
   const [formats, setFormats] = useState([])
   const [result, setResult] = useState(null)
+  const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
 
   if (!user) return null
@@ -33,12 +45,22 @@ export default function DocumentPromptPage() {
 
     if (!docType) {
       setResult(null)
+      setIsRefined(false)
       setGenerateError('문서 유형을 먼저 선택해주세요.')
       return
     }
 
     const generated = generateDocumentPrompt(docType, content, tones, formats)
     setResult(generated)
+    setIsRefined(false)
+  }
+
+  const handleRefine = (quickFixes, customRequest) => {
+    if (!result) return
+
+    const refinedText = refinePrompt(result.ko, quickFixes, customRequest)
+    setResult({ en: null, ko: refinedText })
+    setIsRefined(true)
   }
 
   const handleSave = async () => {
@@ -119,7 +141,11 @@ export default function DocumentPromptPage() {
             </p>
           )}
 
-          <PromptResultBox result={result} onSave={handleSave} />
+          <PromptResultBox result={result} onSave={handleSave} refined={isRefined} />
+
+          {result && (
+            <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
+          )}
         </div>
       </main>
     </div>
