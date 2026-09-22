@@ -1,46 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { CIRCLED_NUMBERS, GUIDE_STEPS } from '../constants/guide'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
+import { getAllTemplates } from '../utils/templates'
 import UsageGuideModal from '../components/UsageGuideModal'
 
 const GUIDE_SEEN_KEY = 'malhaedream_guide_seen'
 
-const templates = [
-  {
-    title: '이미지 생성 프롬프트',
-    description: '수업에 활용할 이미지를 만드는 프롬프트를 생성해요.',
-    path: '/prompt/image',
-    active: true,
-  },
-  {
-    title: '문서 작성 프롬프트',
-    description: '가정통신문, 안내문 등 문서 작성을 도와줘요.',
-    path: '/prompt/document',
-    active: true,
-  },
-  {
-    title: '수업 자료 제작 프롬프트',
-    description: '학습지, 활동지 제작을 도와줘요.',
-    path: '/prompt/lesson-material',
-    active: false,
-  },
-  {
-    title: '평가 문항 제작 프롬프트',
-    description: '형성평가, 수행평가 문항을 만들어줘요.',
-    path: '/prompt/assessment',
-    active: false,
-  },
-]
-
 export default function HomePage() {
   const navigate = useNavigate()
   const user = useAuthGuard()
+  const [templates, setTemplates] = useState([])
   const [showBanner, setShowBanner] = useState(
     () => !localStorage.getItem(GUIDE_SEEN_KEY),
   )
   const [showGuideModal, setShowGuideModal] = useState(false)
+
+  useEffect(() => {
+    getAllTemplates().then(setTemplates)
+  }, [])
 
   const handleLogout = () => {
     clearStoredUser()
@@ -115,20 +94,20 @@ export default function HomePage() {
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {templates.map((template) =>
-            template.active ? (
+            template.isActive ? (
               <Link
-                key={template.title}
-                to={template.path}
+                key={template.id}
+                to={`/prompt/${template.type}`}
                 className="flex h-full flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80"
               >
                 <h2 className="text-lg font-semibold text-navy-800">
-                  {template.title}
+                  {template.name}
                 </h2>
                 <p className="text-sm text-slate-500">{template.description}</p>
               </Link>
             ) : (
               <div
-                key={template.title}
+                key={template.id}
                 aria-disabled="true"
                 className="relative flex h-full cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5"
               >
@@ -136,7 +115,7 @@ export default function HomePage() {
                   준비중
                 </span>
                 <h2 className="text-lg font-semibold text-slate-500">
-                  {template.title}
+                  {template.name}
                 </h2>
                 <p className="text-sm text-slate-400">{template.description}</p>
               </div>

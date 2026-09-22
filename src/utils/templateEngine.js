@@ -1,3 +1,6 @@
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { db } from '../firebase'
+
 const imageTemplates = {
   'ChatGPT (GPT Image 1.5 · Duct-tape)': {
     prefix: '',
@@ -43,40 +46,37 @@ const imageTemplates = {
   },
 }
 
-const documentTemplates = {
-  가정통신문: {
-    format: (content, tones, formats) => {
-      const toneStr = tones.join(', ')
-      const formatStr = formats.join(', ')
-      return `당신은 중학교 교사입니다. 아래 조건에 맞는 가정통신문을 작성해주세요.\n\n핵심 내용: ${content}\n말투: ${toneStr}\n출력 형식: ${formatStr}\n\n조건:\n- 학부모가 읽기 쉽게 작성\n- 학교 공문서 형식 준수\n- 제목, 본문, 문의처 포함`
-    },
-  },
-  사업계획서: {
-    format: (content, tones, formats) => {
-      return `당신은 학교 업무 전문가입니다. 아래 조건에 맞는 사업계획서를 작성해주세요.\n\n사업 내용: ${content}\n말투: ${tones.join(', ')}\n출력 형식: ${formats.join(', ')}\n\n조건:\n- 목적, 대상, 일정, 예산(항목만), 기대효과 포함\n- 학교 공문서 형식 준수`
-    },
-  },
-  행사보고서: {
-    format: (content, tones, formats) => {
-      return `당신은 학교 업무 전문가입니다. 아래 조건에 맞는 행사보고서를 작성해주세요.\n\n행사 내용: ${content}\n말투: ${tones.join(', ')}\n출력 형식: ${formats.join(', ')}\n\n조건:\n- 행사명, 일시, 장소, 참가인원, 주요내용, 성과 포함\n- 객관적이고 명확하게 작성`
-    },
-  },
-  기타: {
-    format: (content, tones, formats) => {
-      return `당신은 학교 업무 전문가입니다. 아래 조건에 맞는 문서를 작성해주세요.\n\n내용: ${content}\n말투: ${tones.join(', ')}\n출력 형식: ${formats.join(', ')}`
-    },
-  },
-}
-
 export function generateImagePrompt(tool, subject, styles, moods, extras) {
   const template = imageTemplates[tool]
   if (!template) return null
   return template.format(subject, styles, moods, extras)
 }
 
-export function generateDocumentPrompt(docType, content, tones, formats) {
-  const template = documentTemplates[docType] || documentTemplates['기타']
-  return { ko: template.format(content, tones, formats), en: null }
+export async function getTemplates(type) {
+  const snapshot = await getDocs(
+    query(
+      collection(db, 'templates'),
+      where('type', '==', type),
+      where('isActive', '==', true),
+    ),
+  )
+
+  return snapshot.docs
+    .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+}
+
+export function generatePromptFromTemplate(template, content, tones, formats) {
+  const conditionsStr = (template.conditions ?? []).map((item) => `- ${item}`).join('\n')
+
+  const ko = (template.promptTemplate ?? '')
+    .replaceAll('{{name}}', template.name ?? '')
+    .replaceAll('{{content}}', content ?? '')
+    .replaceAll('{{tones}}', tones.join(', '))
+    .replaceAll('{{formats}}', formats.join(', '))
+    .replaceAll('{{conditions}}', conditionsStr)
+
+  return { ko, en: null }
 }
 
 export function refinePrompt(originalPrompt, quickFixes, customRequest) {

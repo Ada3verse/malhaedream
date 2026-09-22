@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "seed:users": "node --env-file=.env.local src/scripts/seedUsers.js",
+    "seed:templates": "node --env-file=.env.local src/scripts/seedTemplates.js",
     "migrate:pins": "node --env-file=.env.local src/scripts/migratePin.js"
   },
   "dependencies": {

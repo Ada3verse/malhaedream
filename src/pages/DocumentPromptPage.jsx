@@ -1,36 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { generateDocumentPrompt, refinePrompt } from '../utils/templateEngine'
+import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
-
-const DOC_TYPE_OPTIONS = [
-  { value: 'business-plan', label: '사업계획서' },
-  { value: 'event-report', label: '행사보고서' },
-  { value: 'notice', label: '가정통신문' },
-  { value: 'custom', label: '기타(직접입력)', custom: true },
-]
 
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
 const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
-const REFINE_OPTIONS = [
-  '더 구체적으로',
-  '더 간결하게',
-  '격식체로',
-  '친근하게',
-  '예시 추가',
-  '표 추가',
-  '항목 추가',
-  '분량 늘려서',
-]
 
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
-  const [docType, setDocType] = useState('')
+  const [templates, setTemplates] = useState([])
+  const [loadingTemplates, setLoadingTemplates] = useState(true)
+  const [docTypeName, setDocTypeName] = useState('')
   const [content, setContent] = useState('')
   const [tones, setTones] = useState([])
   const [formats, setFormats] = useState([])
@@ -38,19 +23,32 @@ export default function DocumentPromptPage() {
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
 
+  useEffect(() => {
+    getTemplates('document')
+      .then(setTemplates)
+      .finally(() => setLoadingTemplates(false))
+  }, [])
+
   if (!user) return null
+
+  const docTypeOptions = templates.map((template) => ({
+    value: template.id,
+    label: template.name,
+  }))
+
+  const selectedTemplate = templates.find((template) => template.name === docTypeName)
 
   const handleGenerate = () => {
     setGenerateError('')
 
-    if (!docType) {
+    if (!selectedTemplate) {
       setResult(null)
       setIsRefined(false)
       setGenerateError('문서 유형을 먼저 선택해주세요.')
       return
     }
 
-    const generated = generateDocumentPrompt(docType, content, tones, formats)
+    const generated = generatePromptFromTemplate(selectedTemplate, content, tones, formats)
     setResult(generated)
     setIsRefined(false)
   }
@@ -101,7 +99,13 @@ export default function DocumentPromptPage() {
         <div className="mt-6 flex flex-col gap-6">
           <section>
             <h2 className="mb-2 text-sm font-medium text-navy-700">문서 유형</h2>
-            <OptionCards options={DOC_TYPE_OPTIONS} onChange={setDocType} />
+            {loadingTemplates ? (
+              <p className="text-sm text-slate-400">불러오는 중...</p>
+            ) : docTypeOptions.length === 0 ? (
+              <p className="text-sm text-slate-400">등록된 문서 템플릿이 없습니다.</p>
+            ) : (
+              <OptionCards options={docTypeOptions} onChange={setDocTypeName} />
+            )}
           </section>
 
           <section>
@@ -144,7 +148,10 @@ export default function DocumentPromptPage() {
           <PromptResultBox result={result} onSave={handleSave} refined={isRefined} />
 
           {result && (
-            <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
+            <PromptRefineBox
+              options={selectedTemplate?.quickFixes ?? []}
+              onRefine={handleRefine}
+            />
           )}
         </div>
       </main>
