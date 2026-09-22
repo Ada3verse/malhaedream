@@ -22,6 +22,37 @@ const TYPE_BADGE_STYLES = {
   document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
+const CATEGORY_TABS = [
+  { id: 'all', label: '전체' },
+  { id: 'image', label: '🖼️ 이미지' },
+  { id: 'lesson', label: '📚 수업' },
+  { id: 'assessment', label: '📝 평가' },
+  { id: 'admin', label: '🏫 행정' },
+  { id: 'class', label: '👥 학급' },
+]
+
+const TEMPLATE_CATEGORY_MAP = {
+  '이미지 생성 프롬프트': 'image',
+  '수업 지도안': 'lesson',
+  '학습지': 'lesson',
+  '독서 활동지': 'lesson',
+  '진로 탐색 활동지': 'lesson',
+  '형성평가 문항': 'assessment',
+  '수행평가 문항': 'assessment',
+  '지필평가 문제': 'assessment',
+  '쪽지 시험': 'assessment',
+  '학생 피드백': 'assessment',
+  '가정통신문': 'admin',
+  '사업계획서': 'admin',
+  '행사보고서': 'admin',
+  '공문 초안': 'admin',
+  '회의록': 'admin',
+  '출장 보고서': 'admin',
+  '기타': 'admin',
+  '학급 규칙 안내문': 'class',
+  '상담 일지': 'class',
+}
+
 function formatDate(timestamp) {
   if (!timestamp?.toDate) return ''
   return timestamp.toDate().toLocaleString('ko-KR', {
@@ -41,6 +72,7 @@ export default function HomePage() {
   const [recentPrompts, setRecentPrompts] = useState([])
   const [copiedId, setCopiedId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [showBanner, setShowBanner] = useState(
     () => !localStorage.getItem(GUIDE_SEEN_KEY),
   )
@@ -97,16 +129,23 @@ export default function HomePage() {
 
   const isAdmin = user.role === 'admin'
   const isSearching = Boolean(searchQuery.trim())
+  const isAllCategory = selectedCategory === 'all'
+
+  const categoryFilteredTemplates = isAllCategory
+    ? templates
+    : templates.filter(
+        (template) => TEMPLATE_CATEGORY_MAP[template.name] === selectedCategory,
+      )
 
   const filteredTemplates = isSearching
-    ? templates.filter((template) => {
+    ? categoryFilteredTemplates.filter((template) => {
         const keyword = searchQuery.trim().toLowerCase()
         return (
           template.name?.toLowerCase().includes(keyword) ||
           template.description?.toLowerCase().includes(keyword)
         )
       })
-    : templates
+    : categoryFilteredTemplates
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -197,16 +236,37 @@ export default function HomePage() {
           )}
         </div>
 
-        {isSearching && filteredTemplates.length === 0 && (
+        <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-2 pb-1">
+            {CATEGORY_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedCategory(tab.id)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
+                  selectedCategory === tab.id
+                    ? 'bg-violet-600 text-white'
+                    : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filteredTemplates.length === 0 && (isSearching || !isAllCategory) && (
           <p className="mt-8 text-center text-slate-400 dark:text-slate-500">
-            검색 결과가 없습니다. 다른 키워드로 검색해보세요.
+            {isSearching
+              ? '검색 결과가 없습니다. 다른 키워드로 검색해보세요.'
+              : '해당 카테고리에 템플릿이 없습니다.'}
           </p>
         )}
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {filteredTemplates.map((template, index) => (
             <div key={template.id} className="flex items-stretch gap-2">
-              {isAdmin && !isSearching && (
+              {isAdmin && !isSearching && isAllCategory && (
                 <div className="flex flex-col justify-center gap-1">
                   <button
                     type="button"
