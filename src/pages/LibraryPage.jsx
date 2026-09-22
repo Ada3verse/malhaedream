@@ -19,8 +19,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-blue-100 text-blue-700',
-  document: 'bg-green-100 text-green-700',
+  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 const PREVIEW_LENGTH = 100
@@ -135,7 +135,7 @@ export default function LibraryPage() {
 
         {topPrompts.length > 0 && (
           <section className="mt-5">
-            <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+            <h2 className="border-l-4 border-violet-600 pl-3 text-lg font-semibold text-navy-800 dark:text-white">
               🔥 인기 프롬프트 TOP 5
             </h2>
             <ul className="mt-3 flex flex-col gap-2">
@@ -172,7 +172,7 @@ export default function LibraryPage() {
                   <button
                     type="button"
                     onClick={() => setViewingItem(item)}
-                    className="shrink-0 rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                    className="shrink-0 rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
                   >
                     보기
                   </button>
@@ -191,8 +191,8 @@ export default function LibraryPage() {
               onClick={() => setActiveFilter(option)}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 activeFilter === option
-                  ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {option}
@@ -209,8 +209,8 @@ export default function LibraryPage() {
                 onClick={() => setActiveTagFilter(tag)}
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                   activeTagFilter === tag
-                    ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
+                    : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {tag}
@@ -281,14 +281,14 @@ export default function LibraryPage() {
                     <button
                       type="button"
                       onClick={() => setViewingItem(item)}
-                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
                     >
                       전체 보기
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCopy(item)}
-                      className="rounded-lg bg-navy-600 px-3 py-1 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>
@@ -313,7 +313,7 @@ export default function LibraryPage() {
             <button
               type="button"
               onClick={() => handleCopy(viewingItem)}
-              className="rounded-lg bg-navy-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+              className="rounded-lg border border-violet-300 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
             >
               {copiedId === viewingItem.id ? '복사됨!' : '복사'}
             </button>

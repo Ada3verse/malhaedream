@@ -191,7 +191,7 @@ export default function ImagePromptPage() {
             type="button"
             onClick={handleGenerate}
             disabled={!topic.trim() || generating}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
           >
             {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
@@ -239,7 +239,7 @@ export default function ImagePromptPage() {
               <button
                 type="button"
                 onClick={() => performSave(selectedTags)}
-                className="flex-1 rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 저장
               </button>

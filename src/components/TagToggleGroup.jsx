@@ -42,8 +42,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
             onClick={() => toggleOption(option)}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               active
-                ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
+                ? 'border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
+                : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-violet-500/50 dark:hover:bg-slate-700'
             }`}
           >
             {option}
@@ -57,8 +57,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           onClick={toggleCustom}
           className={`rounded-full border px-3 py-1.5 text-sm transition ${
             customActive
-              ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
-              : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
+              ? 'border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
+              : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-violet-500/50 dark:hover:bg-slate-700'
           }`}
         >
           직접입력

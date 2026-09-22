@@ -40,7 +40,7 @@ export default function PromptRefineBox({ options, onRefine }) {
       <button
         type="button"
         onClick={handleRefine}
-        className="mt-3 w-full rounded-lg border-2 border-navy-600 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-500/10"
+        className="mt-3 w-full rounded-lg border-2 border-violet-600 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-500/10"
       >
         프롬프트 보완
       </button>

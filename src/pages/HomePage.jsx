@@ -18,8 +18,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-blue-100 text-blue-700',
-  document: 'bg-green-100 text-green-700',
+  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 function formatDate(timestamp) {
@@ -110,7 +110,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+      <header
+        className="flex items-center justify-between border-b-2 border-violet-500 px-4 py-3 shadow-md sm:px-6"
+        style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a9e 100%)' }}
+      >
         <span className="text-lg font-bold text-white">말해드림</span>
         <div className="flex items-center gap-3">
           <span className="text-sm text-navy-100">{user.nickname}님</span>
@@ -229,8 +232,9 @@ export default function HomePage() {
               {template.isActive ? (
                 <Link
                   to={`/prompt/${template.type}`}
-                  className="flex h-full flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-800 dark:shadow-none dark:hover:border-blue-500/50"
+                  className="relative flex h-full flex-1 flex-col gap-1.5 overflow-hidden rounded-2xl border border-slate-200 border-l-4 border-l-violet-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(124,58,237,0.15)] dark:border-slate-700 dark:border-l-violet-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(124,58,237,0.25)]"
                 >
+                  <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-navy-600 to-violet-500" />
                   <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
                     {template.name}
                   </h2>
@@ -257,12 +261,12 @@ export default function HomePage() {
         {recentPrompts.length > 0 && (
           <section className="mt-8">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+              <h2 className="border-l-4 border-violet-600 pl-3 text-lg font-semibold text-navy-800 dark:text-white">
                 최근에 만든 프롬프트
               </h2>
               <Link
                 to="/mypage"
-                className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="text-sm text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
               >
                 전체 보기 →
               </Link>
@@ -297,7 +301,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => handleCopyRecent(item)}
-                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>

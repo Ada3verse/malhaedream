@@ -4,7 +4,7 @@ const ToastContext = createContext(null)
 
 const TOAST_STYLES = {
   success: 'bg-emerald-600',
-  warning: 'bg-amber-500',
+  warning: 'bg-amber-600',
   error: 'bg-red-600',
 }
 

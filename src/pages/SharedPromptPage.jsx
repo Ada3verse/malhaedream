@@ -11,8 +11,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-blue-100 text-blue-700',
-  document: 'bg-green-100 text-green-700',
+  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 function formatDate(timestamp) {
@@ -58,7 +58,10 @@ export default function SharedPromptPage() {
         <div className="flex w-full items-center justify-end">
           <DarkModeToggle className="!border-slate-300 !text-slate-500 hover:!bg-slate-100 dark:!border-white/30 dark:!text-slate-300 dark:hover:!bg-white/10" />
         </div>
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-600 text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500">
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500"
+          style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
+        >
           💬
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-navy-700 dark:text-white">
@@ -69,7 +72,7 @@ export default function SharedPromptPage() {
         </p>
         <Link
           to="/"
-          className="mt-2 rounded-lg border border-navy-200 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
+          className="mt-2 rounded-lg border border-violet-300 px-4 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
         >
           서비스 바로가기
         </Link>
@@ -84,7 +87,7 @@ export default function SharedPromptPage() {
           </p>
         ) : (
           <>
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+            <div className="rounded-2xl border-2 border-violet-600 bg-[#faf5ff] p-5 shadow-md shadow-violet-200/60 dark:border-violet-500/40 dark:bg-slate-800">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -111,7 +114,7 @@ export default function SharedPromptPage() {
                 </div>
               )}
 
-              <div className="mt-3 whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+              <div className="mt-3 whitespace-pre-wrap rounded-lg border border-violet-100 bg-white/70 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
                 {prompt.content}
               </div>
 
@@ -122,7 +125,8 @@ export default function SharedPromptPage() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="mt-4 w-full rounded-lg bg-navy-600 py-3 text-base font-semibold text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
+                style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
+                className="mt-4 w-full rounded-lg py-3 text-base font-semibold text-white shadow-md shadow-navy-600/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 {copied ? '복사됨!' : '프롬프트 복사'}
               </button>
@@ -138,7 +142,8 @@ export default function SharedPromptPage() {
               </p>
               <Link
                 to="/"
-                className="rounded-lg bg-navy-600 px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
+                style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
+                className="rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 말해드림 시작하기
               </Link>

@@ -104,12 +104,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #7c3aed 100%)' }}
+    >
       <div className="absolute right-4 top-4">
-        <DarkModeToggle className="!border-slate-300 !text-slate-500 hover:!bg-slate-100 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
+        <DarkModeToggle className="!border-white/40 !text-white hover:!bg-white/10" />
       </div>
 
-      <div className="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/70 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
+      <div className="w-full max-w-sm rounded-3xl border border-white/20 bg-white p-6 shadow-2xl shadow-navy-900/30 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
         <div className="flex flex-col items-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-600 text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500">
             💬
@@ -195,7 +198,8 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !agreed || pin.length !== 4}
-            className="mt-2 w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
+            style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
+            className="mt-2 w-full rounded-lg py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:brightness-110 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
