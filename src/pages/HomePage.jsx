@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import DarkModeToggle from '../components/DarkModeToggle'
 import { useToast } from '../components/Toast'
 import { CIRCLED_NUMBERS, GUIDE_STEPS } from '../constants/guide'
 import { useAuthGuard } from '../hooks/useAuthGuard'
@@ -108,7 +109,7 @@ export default function HomePage() {
     : templates
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
         <span className="text-lg font-bold text-white">말해드림</span>
         <div className="flex items-center gap-3">
@@ -139,26 +140,27 @@ export default function HomePage() {
           >
             로그아웃
           </button>
+          <DarkModeToggle />
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         {showBanner && (
-          <div className="mb-5 rounded-2xl border border-navy-200 bg-navy-50 p-5">
+          <div className="mb-5 rounded-2xl border border-navy-200 bg-navy-50 p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-base font-semibold text-navy-800">
+              <h2 className="text-base font-semibold text-navy-800 dark:text-white">
                 💡 말해드림 사용법
               </h2>
               <button
                 type="button"
                 onClick={handleDismissBanner}
                 aria-label="안내 닫기"
-                className="rounded-lg px-2 py-1 text-sm text-navy-500 transition hover:bg-navy-100"
+                className="rounded-lg px-2 py-1 text-sm text-navy-500 transition hover:bg-navy-100 dark:text-slate-400 dark:hover:bg-slate-700"
               >
                 ✕
               </button>
             </div>
-            <ol className="mt-3 flex flex-col gap-1.5 text-sm text-navy-700">
+            <ol className="mt-3 flex flex-col gap-1.5 text-sm text-navy-700 dark:text-slate-300">
               {GUIDE_STEPS.map((step, index) => (
                 <li key={step}>
                   {CIRCLED_NUMBERS[index]} {step}
@@ -168,7 +170,7 @@ export default function HomePage() {
           </div>
         )}
 
-        <h1 className="text-2xl font-bold text-navy-800">
+        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
           어떤 프롬프트가 필요하신가요?
         </h1>
 
@@ -178,7 +180,7 @@ export default function HomePage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="어떤 프롬프트가 필요하세요? (예: 가정통신문, 이미지)"
-            className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-10 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+            className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-10 text-sm text-slate-900 transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
           />
           {isSearching && (
             <button
@@ -193,7 +195,7 @@ export default function HomePage() {
         </div>
 
         {isSearching && filteredTemplates.length === 0 && (
-          <p className="mt-8 text-center text-slate-400">
+          <p className="mt-8 text-center text-slate-400 dark:text-slate-500">
             검색 결과가 없습니다. 다른 키워드로 검색해보세요.
           </p>
         )}
@@ -208,7 +210,7 @@ export default function HomePage() {
                     onClick={() => handleMoveTemplate(index, 'up')}
                     disabled={index === 0}
                     aria-label="위로 이동"
-                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   >
                     ↑
                   </button>
@@ -217,7 +219,7 @@ export default function HomePage() {
                     onClick={() => handleMoveTemplate(index, 'down')}
                     disabled={index === templates.length - 1}
                     aria-label="아래로 이동"
-                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   >
                     ↓
                   </button>
@@ -227,25 +229,25 @@ export default function HomePage() {
               {template.isActive ? (
                 <Link
                   to={`/prompt/${template.type}`}
-                  className="flex h-full flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80"
+                  className="flex h-full flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:border-navy-200 hover:shadow-xl hover:shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-800 dark:shadow-none dark:hover:border-blue-500/50"
                 >
-                  <h2 className="text-lg font-semibold text-navy-800">
+                  <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
                     {template.name}
                   </h2>
-                  <p className="text-sm text-slate-500">{template.description}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{template.description}</p>
                 </Link>
               ) : (
                 <div
                   aria-disabled="true"
-                  className="relative flex h-full flex-1 cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5"
+                  className="relative flex h-full flex-1 cursor-not-allowed flex-col gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 p-5 dark:border-slate-700 dark:bg-slate-800/60"
                 >
-                  <span className="absolute right-4 top-4 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-500">
+                  <span className="absolute right-4 top-4 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400">
                     준비중
                   </span>
-                  <h2 className="text-lg font-semibold text-slate-500">
+                  <h2 className="text-lg font-semibold text-slate-500 dark:text-slate-400">
                     {template.name}
                   </h2>
-                  <p className="text-sm text-slate-400">{template.description}</p>
+                  <p className="text-sm text-slate-400 dark:text-slate-500">{template.description}</p>
                 </div>
               )}
             </div>
@@ -255,12 +257,12 @@ export default function HomePage() {
         {recentPrompts.length > 0 && (
           <section className="mt-8">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-semibold text-navy-800">
+              <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
                 최근에 만든 프롬프트
               </h2>
               <Link
                 to="/mypage"
-                className="text-sm text-navy-600 transition hover:text-navy-700"
+                className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 전체 보기 →
               </Link>
@@ -270,7 +272,7 @@ export default function HomePage() {
               {recentPrompts.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60"
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
@@ -285,7 +287,7 @@ export default function HomePage() {
                     </span>
                   </div>
 
-                  <p className="mt-2 text-sm text-slate-700">
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
                     {item.content.length > 60
                       ? `${item.content.slice(0, 60)}...`
                       : item.content}
@@ -295,7 +297,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => handleCopyRecent(item)}
-                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>

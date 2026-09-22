@@ -21,11 +21,11 @@ const AI_LINKS = [
 
 export default function AiShortcutLinks() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-center text-sm font-semibold text-navy-700">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
+      <p className="text-center text-sm font-semibold text-navy-700 dark:text-slate-200">
         이 프롬프트를 붙여넣어 보세요
       </p>
-      <p className="mt-1 text-center text-xs text-slate-500">
+      <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
         💡 복사 버튼을 먼저 누른 후 아래 버튼으로 이동하세요!
       </p>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AiShortcutLinks from '../components/AiShortcutLinks'
+import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
 import PromptRefineBox from '../components/PromptRefineBox'
@@ -138,29 +139,30 @@ export default function ImagePromptPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
-      <header className="bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+    <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
+      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
         <Link
           to="/home"
           className="text-sm text-white/90 transition hover:text-white"
         >
           ← 돌아가기
         </Link>
+        <DarkModeToggle />
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800">
+        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
           🖼️ 이미지 생성 프롬프트
         </h1>
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700">사용할 도구</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">사용할 도구</h2>
             <OptionCards options={TOOL_OPTIONS} onChange={setTool} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700">
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
               어떤 이미지를 만들고 싶으신가요?
             </h2>
             <textarea
@@ -168,7 +170,7 @@ export default function ImagePromptPage() {
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
               placeholder="예: 봄 소풍을 떠나는 초등학생들의 모습"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
             />
             {!topic.trim() && (
               <p className="mt-1 text-xs text-slate-400">주제를 입력해주세요.</p>
@@ -176,12 +178,12 @@ export default function ImagePromptPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700">스타일 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">스타일 키워드</h2>
             <TagToggleGroup options={STYLE_OPTIONS} allowCustom onChange={setStyles} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700">분위기 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">분위기 키워드</h2>
             <TagToggleGroup options={MOOD_OPTIONS} allowCustom onChange={setMoods} />
           </section>
 
@@ -189,13 +191,13 @@ export default function ImagePromptPage() {
             type="button"
             onClick={handleGenerate}
             disabled={!topic.trim() || generating}
-            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
 
           {generateError && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-300">
               {generateError}
             </p>
           )}
@@ -214,7 +216,7 @@ export default function ImagePromptPage() {
           {result && <AiShortcutLinks />}
 
           {isEnglishTool && (
-            <p className="text-center text-xs text-sky-700">
+            <p className="text-center text-xs text-sky-700 dark:text-sky-400">
               💡 영문 프롬프트를 복사해서 사용하세요.
             </p>
           )}
@@ -230,21 +232,21 @@ export default function ImagePromptPage() {
               <button
                 type="button"
                 onClick={() => performSave([])}
-                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 건너뛰기
               </button>
               <button
                 type="button"
                 onClick={() => performSave(selectedTags)}
-                className="flex-1 rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700"
+                className="flex-1 rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
                 저장
               </button>
             </div>
           }
         >
-          <p className="mb-3 text-sm text-slate-600">
+          <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">
             이 프롬프트에 해당하는 과목을 선택해주세요 (복수 선택 가능)
           </p>
           <TagToggleGroup options={SUBJECT_TAGS} onChange={setSelectedTags} />

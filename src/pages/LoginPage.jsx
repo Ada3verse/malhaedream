@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DarkModeToggle from '../components/DarkModeToggle'
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal'
 import { db } from '../firebase'
 import { getOrCreateDeviceId, setStoredUser } from '../utils/auth'
@@ -103,16 +104,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/70 sm:p-8">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
+      <div className="absolute right-4 top-4">
+        <DarkModeToggle className="!border-slate-300 !text-slate-500 hover:!bg-slate-100 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
+      </div>
+
+      <div className="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/70 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
         <div className="flex flex-col items-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-600 text-2xl shadow-lg shadow-navy-600/30">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-600 text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500">
             💬
           </div>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy-700">
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-navy-700 dark:text-white">
             말해드림
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-slate-400 dark:text-slate-400">
             AI에게 대신 말해드립니다. 복사만 하세요.
           </p>
         </div>
@@ -121,7 +126,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="nickname"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
             >
               닉네임
             </label>
@@ -133,14 +138,14 @@ export default function LoginPage() {
               placeholder="닉네임을 입력하세요 (한글/영문/숫자, 최대 10자)"
               autoComplete="username"
               required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
             />
           </div>
 
           <div>
             <label
               htmlFor="pin"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
             >
               PIN
             </label>
@@ -155,14 +160,14 @@ export default function LoginPage() {
               placeholder="숫자 4자리"
               autoComplete="off"
               required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-base transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               처음 사용하시나요? 닉네임과 PIN을 입력하면 자동으로 가입됩니다.
             </p>
           </div>
 
-          <label className="flex items-start gap-2 text-sm text-slate-600">
+          <label className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
             <input
               type="checkbox"
               checked={agreed}
@@ -174,7 +179,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPolicy(true)}
-                className="text-navy-600 underline underline-offset-2 hover:text-navy-700"
+                className="text-navy-600 underline underline-offset-2 hover:text-navy-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 [내용 보기]
               </button>
@@ -182,7 +187,7 @@ export default function LoginPage() {
           </label>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-300">
               {error}
             </p>
           )}
@@ -190,7 +195,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !agreed || pin.length !== 4}
-            className="mt-2 w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 w-full rounded-lg bg-navy-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>

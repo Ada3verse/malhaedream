@@ -7,6 +7,7 @@ import ImagePromptPage from './pages/ImagePromptPage'
 import LibraryPage from './pages/LibraryPage'
 import LoginPage from './pages/LoginPage'
 import MyPage from './pages/MyPage'
+import SharedPromptPage from './pages/SharedPromptPage'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/prompt/document" element={<DocumentPromptPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/library" element={<LibraryPage />} />
+          <Route path="/shared/:promptId" element={<SharedPromptPage />} />
           <Route
             path="*"
             element={

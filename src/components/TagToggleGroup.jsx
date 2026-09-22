@@ -42,8 +42,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
             onClick={() => toggleOption(option)}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               active
-                ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
             }`}
           >
             {option}
@@ -57,8 +57,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           onClick={toggleCustom}
           className={`rounded-full border px-3 py-1.5 text-sm transition ${
             customActive
-              ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20'
-              : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+              ? 'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
           }`}
         >
           직접입력
@@ -71,7 +71,7 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           placeholder="키워드 직접 입력"
-          className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 sm:w-auto"
+          className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white sm:w-auto"
         />
       )}
     </div>

@@ -97,3 +97,9 @@ export async function getAllPrompts() {
 export async function unsharePrompt(id) {
   await updateDoc(doc(db, PROMPTS_COLLECTION, id), { isShared: false })
 }
+
+export async function getPromptById(id) {
+  const snapshot = await getDoc(doc(db, PROMPTS_COLLECTION, id))
+  if (!snapshot.exists()) return null
+  return { id: snapshot.id, ...snapshot.data() }
+}

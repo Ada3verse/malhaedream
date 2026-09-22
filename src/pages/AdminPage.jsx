@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DarkModeToggle from '../components/DarkModeToggle'
 import { useToast } from '../components/Toast'
 import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
@@ -396,44 +397,47 @@ export default function AdminPage() {
   const hasMoreShared = visibleSharedCount < sharedPrompts.length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
         <span className="text-lg font-bold text-white">말해드림 관리자</span>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
-        >
-          로그아웃
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+          >
+            로그아웃
+          </button>
+          <DarkModeToggle />
+        </div>
       </header>
 
       <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8 sm:px-6">
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">통계</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">통계</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <div className="rounded-xl bg-sky-50 p-4">
-              <p className="text-xs text-sky-700">전체 가입자 수</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800">
+            <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
+              <p className="text-xs text-sky-700 dark:text-sky-300">전체 가입자 수</p>
+              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
                 {users.length}
               </p>
             </div>
-            <div className="rounded-xl bg-sky-50 p-4">
-              <p className="text-xs text-sky-700">전체 저장된 프롬프트 수</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800">
+            <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
+              <p className="text-xs text-sky-700 dark:text-sky-300">전체 저장된 프롬프트 수</p>
+              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
                 {loadingPrompts ? '-' : prompts.length}
               </p>
             </div>
-            <div className="rounded-xl bg-sky-50 p-4">
-              <p className="text-xs text-sky-700">최근 7일간 생성된 프롬프트</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800">
+            <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
+              <p className="text-xs text-sky-700 dark:text-sky-300">최근 7일간 생성된 프롬프트</p>
+              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
                 {loadingPrompts ? '-' : recentPromptsCount}
               </p>
             </div>
           </div>
 
-          <div className="mt-6 border-t border-slate-100 pt-5">
-            <h3 className="text-sm font-semibold text-navy-800">
+          <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
+            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
               템플릿별 사용 횟수
             </h3>
             {loadingPrompts ? (
@@ -449,18 +453,18 @@ export default function AdminPage() {
                     key={item.name}
                     className="flex items-center gap-3 text-sm"
                   >
-                    <span className="w-28 shrink-0 truncate text-slate-700">
+                    <span className="w-28 shrink-0 truncate text-slate-700 dark:text-slate-300">
                       {item.name}
                     </span>
-                    <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
                       <div
-                        className="h-full rounded-full bg-navy-600"
+                        className="h-full rounded-full bg-navy-600 dark:bg-blue-500"
                         style={{
                           width: `${(item.count / maxTemplateUsage) * 100}%`,
                         }}
                       />
                     </div>
-                    <span className="w-10 shrink-0 text-right font-medium text-navy-800">
+                    <span className="w-10 shrink-0 text-right font-medium text-navy-800 dark:text-white">
                       {item.count}
                     </span>
                   </div>
@@ -470,8 +474,8 @@ export default function AdminPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">교사 계정 추가</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">교사 계정 추가</h2>
           <form
             onSubmit={handleAddUser}
             className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
@@ -479,7 +483,7 @@ export default function AdminPage() {
             <div className="flex-1">
               <label
                 htmlFor="new-nickname"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 닉네임
               </label>
@@ -488,13 +492,13 @@ export default function AdminPage() {
                 type="text"
                 value={newNickname}
                 onChange={(e) => setNewNickname(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <div className="sm:w-32">
               <label
                 htmlFor="new-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 PIN
               </label>
@@ -507,21 +511,21 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <button
               type="submit"
-              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               추가
             </button>
           </form>
-          {addError && <p className="mt-2 text-sm text-red-600">{addError}</p>}
+          {addError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{addError}</p>}
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">관리자 PIN 변경</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">관리자 PIN 변경</h2>
           <form
             onSubmit={handleChangeAdminPin}
             className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
@@ -529,7 +533,7 @@ export default function AdminPage() {
             <div className="sm:w-32">
               <label
                 htmlFor="new-admin-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 새 PIN
               </label>
@@ -542,13 +546,13 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setNewAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <div className="sm:w-32">
               <label
                 htmlFor="confirm-admin-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 새 PIN 확인
               </label>
@@ -561,31 +565,31 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setConfirmAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <button
               type="submit"
               disabled={changingAdminPin}
-              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               {changingAdminPin ? '변경 중...' : '변경'}
             </button>
           </form>
           {adminPinError && (
-            <p className="mt-2 text-sm text-red-600">{adminPinError}</p>
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">{adminPinError}</p>
           )}
           {adminPinSuccess && (
-            <p className="mt-2 text-sm text-emerald-600">{adminPinSuccess}</p>
+            <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400">{adminPinSuccess}</p>
           )}
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">교사 계정 목록</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">교사 계정 목록</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[480px] text-left text-sm">
               <thead>
-                <tr className="bg-navy-50 text-navy-700">
+                <tr className="bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200">
                   <th className="rounded-l-lg py-2.5 pl-3 pr-4 font-medium">
                     닉네임
                   </th>
@@ -615,18 +619,22 @@ export default function AdminPage() {
                   users.map((item, index) => (
                     <tr
                       key={item.id}
-                      className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}
+                      className={
+                        index % 2 === 0
+                          ? 'bg-white dark:bg-slate-800'
+                          : 'bg-slate-50 dark:bg-slate-800/60'
+                      }
                     >
-                      <td className="py-2.5 pl-3 pr-4 text-slate-900">
+                      <td className="py-2.5 pl-3 pr-4 text-slate-900 dark:text-white">
                         {item.nickname}
                       </td>
-                      <td className="py-2.5 pr-4 text-slate-600">{item.role}</td>
+                      <td className="py-2.5 pr-4 text-slate-600 dark:text-slate-300">{item.role}</td>
                       <td className="py-2.5 pr-4">
                         <span
                           className={
                             (item.loginFailCount ?? 0) > 5
-                              ? 'font-semibold text-red-600'
-                              : 'text-slate-600'
+                              ? 'font-semibold text-red-600 dark:text-red-400'
+                              : 'text-slate-600 dark:text-slate-300'
                           }
                         >
                           {item.loginFailCount ?? 0}
@@ -669,8 +677,8 @@ export default function AdminPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">템플릿 관리</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">템플릿 관리</h2>
 
           <div className="mt-4 flex flex-col gap-3">
             {loadingTemplates ? (
@@ -681,17 +689,17 @@ export default function AdminPage() {
               templates.map((template) => (
                 <div
                   key={template.id}
-                  className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex items-start gap-2">
-                    <span className="mt-0.5 shrink-0 rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700">
+                    <span className="mt-0.5 shrink-0 rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700 dark:bg-slate-700 dark:text-slate-200">
                       {TEMPLATE_TYPE_LABELS[template.type] ?? template.type}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-white">
                         {template.name}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         {template.description}
                       </p>
                     </div>
@@ -702,8 +710,8 @@ export default function AdminPage() {
                       onClick={() => handleToggleTemplateActive(template)}
                       className={`rounded-lg border px-3 py-1 text-xs font-medium transition ${
                         template.isActive
-                          ? 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'
-                          : 'border-slate-300 text-slate-500 hover:bg-slate-50'
+                          ? 'border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
+                          : 'border-slate-300 text-slate-500 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400 dark:hover:bg-slate-700'
                       }`}
                     >
                       {template.isActive ? '활성' : '비활성'}
@@ -711,14 +719,14 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleEditTemplateClick(template)}
-                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                     >
                       수정
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteTemplate(template)}
-                      className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                      className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
                     >
                       삭제
                     </button>
@@ -728,8 +736,8 @@ export default function AdminPage() {
             )}
           </div>
 
-          <div className="mt-6 border-t border-slate-100 pt-5">
-            <h3 className="text-sm font-semibold text-navy-800">
+          <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
+            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
               {editingTemplateId ? '템플릿 수정' : '템플릿 추가'}
             </h3>
 
@@ -740,8 +748,8 @@ export default function AdminPage() {
                   onClick={() => setAddTab('form')}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                     addTab === 'form'
-                      ? 'border-navy-600 bg-navy-600 text-white'
-                      : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
+                      ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   폼으로 추가
@@ -751,8 +759,8 @@ export default function AdminPage() {
                   onClick={() => setAddTab('json')}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                     addTab === 'json'
-                      ? 'border-navy-600 bg-navy-600 text-white'
-                      : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
+                      ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   JSON으로 추가
@@ -789,7 +797,7 @@ export default function AdminPage() {
                     setTemplateForm((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="템플릿명 (예: 가정통신문)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <input
@@ -802,7 +810,7 @@ export default function AdminPage() {
                     }))
                   }
                   placeholder="설명 (예: 학부모에게 보내는 각종 안내문)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <div>
@@ -816,9 +824,9 @@ export default function AdminPage() {
                     }
                     rows={5}
                     placeholder="프롬프트 템플릿"
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                   />
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                     사용 가능한 변수: {'{{name}}'} {'{{content}}'} {'{{tones}}'}{' '}
                     {'{{formats}}'} {'{{conditions}}'}
                   </p>
@@ -834,7 +842,7 @@ export default function AdminPage() {
                   }
                   rows={3}
                   placeholder={'조건 (줄바꿈으로 구분)\n예: 학부모가 읽기 쉽게 작성'}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <input
@@ -847,17 +855,17 @@ export default function AdminPage() {
                     }))
                   }
                   placeholder="빠른 수정 버튼 목록 (쉼표로 구분, 예: 더 구체적으로, 더 간결하게)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 {templateError && (
-                  <p className="text-sm text-red-600">{templateError}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{templateError}</p>
                 )}
 
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+                    className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
                   >
                     {editingTemplateId ? '저장' : '추가'}
                   </button>
@@ -865,7 +873,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={handleCancelTemplateEdit}
-                      className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                      className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                       취소
                     </button>
@@ -883,14 +891,14 @@ export default function AdminPage() {
                   }}
                   rows={10}
                   placeholder={JSON_PLACEHOLDER}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={handleJsonPreview}
-                    className="rounded-lg border-2 border-navy-600 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50"
+                    className="rounded-lg border-2 border-navy-600 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-500/10"
                   >
                     JSON 파싱 미리보기
                   </button>
@@ -898,36 +906,36 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={handleJsonSave}
-                      className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+                      className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
                     >
                       Firestore에 저장
                     </button>
                   )}
                 </div>
 
-                {jsonError && <p className="text-sm text-red-600">{jsonError}</p>}
+                {jsonError && <p className="text-sm text-red-600 dark:text-red-400">{jsonError}</p>}
                 {jsonSaveMessage && (
-                  <p className="text-sm text-emerald-600">{jsonSaveMessage}</p>
+                  <p className="text-sm text-emerald-600 dark:text-emerald-400">{jsonSaveMessage}</p>
                 )}
 
                 {jsonPreview && (
                   <div className="flex flex-col gap-2">
-                    <p className="text-xs font-medium text-slate-500">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                       미리보기 ({jsonPreview.length}개)
                     </p>
                     {jsonPreview.map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-2 rounded-xl border border-slate-200 p-3"
+                        className="flex items-start gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700"
                       >
-                        <span className="mt-0.5 shrink-0 rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700">
+                        <span className="mt-0.5 shrink-0 rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700 dark:bg-slate-700 dark:text-slate-200">
                           {TEMPLATE_TYPE_LABELS[item.type] ?? item.type ?? '문서'}
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-slate-800">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-white">
                             {item.name || '(이름 없음)'}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
                             {item.description}
                           </p>
                         </div>
@@ -940,8 +948,8 @@ export default function AdminPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">공유 라이브러리 관리</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">공유 라이브러리 관리</h2>
 
           <div className="mt-4 flex flex-col gap-3">
             {loadingSharedPrompts ? (
@@ -953,21 +961,21 @@ export default function AdminPage() {
                 {visibleSharedPrompts.map((item) => (
                   <div
                     key={item.id}
-                    className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700">
+                        <span className="rounded-full bg-navy-50 px-2 py-0.5 text-xs font-medium text-navy-700 dark:bg-slate-700 dark:text-slate-200">
                           {TEMPLATE_TYPE_LABELS[item.type] ?? item.type}
                         </span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
                           {item.nickname}
                         </span>
                         <span className="text-xs text-slate-400">
                           {formatDate(item.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-sm text-slate-700">
+                      <p className="mt-1 truncate text-sm text-slate-700 dark:text-slate-300">
                         {item.content.length > 50
                           ? `${item.content.slice(0, 50)}...`
                           : item.content}
@@ -976,7 +984,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleUnsharePrompt(item)}
-                      className="shrink-0 rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                      className="shrink-0 rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
                     >
                       삭제
                     </button>
@@ -989,7 +997,7 @@ export default function AdminPage() {
                     onClick={() =>
                       setVisibleSharedCount((count) => count + SHARED_PAGE_SIZE)
                     }
-                    className="self-center rounded-lg border border-navy-200 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50"
+                    className="self-center rounded-lg border border-navy-200 px-4 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                   >
                     더 보기
                   </button>

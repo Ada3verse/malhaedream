@@ -37,8 +37,8 @@ export default function OptionCards({ options, onChange }) {
               onClick={() => handleSelect(option.value)}
               className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                 active
-                  ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50'
+                  ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
               }`}
             >
               {option.label}
@@ -52,7 +52,7 @@ export default function OptionCards({ options, onChange }) {
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           placeholder="직접 입력하세요"
-          className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+          className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
         />
       )}
     </div>

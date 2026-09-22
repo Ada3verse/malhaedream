@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
@@ -102,7 +103,7 @@ export default function LibraryPage() {
     )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
       <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
         <Link to="/home" className="text-lg font-bold text-white">
           말해드림
@@ -122,25 +123,26 @@ export default function LibraryPage() {
           >
             로그아웃
           </button>
+          <DarkModeToggle />
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800">📚 공유 라이브러리</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">📚 공유 라이브러리</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           선생님들이 공유한 프롬프트를 확인하고 바로 복사해보세요.
         </p>
 
         {topPrompts.length > 0 && (
           <section className="mt-5">
-            <h2 className="text-lg font-semibold text-navy-800">
+            <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
               🔥 인기 프롬프트 TOP 5
             </h2>
             <ul className="mt-3 flex flex-col gap-2">
               {topPrompts.map((item, index) => (
                 <li
                   key={item.id}
-                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60"
+                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800"
                 >
                   <div
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
@@ -161,7 +163,7 @@ export default function LibraryPage() {
                         📋 {item.copyCount}회 복사
                       </span>
                     </div>
-                    <p className="mt-1 truncate text-sm text-slate-700">
+                    <p className="mt-1 truncate text-sm text-slate-700 dark:text-slate-300">
                       {item.content.length > PREVIEW_LENGTH
                         ? `${item.content.slice(0, PREVIEW_LENGTH)}...`
                         : item.content}
@@ -170,14 +172,14 @@ export default function LibraryPage() {
                   <button
                     type="button"
                     onClick={() => setViewingItem(item)}
-                    className="shrink-0 rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                    className="shrink-0 rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                   >
                     보기
                   </button>
                 </li>
               ))}
             </ul>
-            <hr className="mt-6 border-slate-200" />
+            <hr className="mt-6 border-slate-200 dark:border-slate-700" />
           </section>
         )}
 
@@ -189,8 +191,8 @@ export default function LibraryPage() {
               onClick={() => setActiveFilter(option)}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 activeFilter === option
-                  ? 'border-navy-600 bg-navy-600 text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                  ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {option}
@@ -207,8 +209,8 @@ export default function LibraryPage() {
                 onClick={() => setActiveTagFilter(tag)}
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                   activeTagFilter === tag
-                    ? 'border-navy-600 bg-navy-600 text-white'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                    ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {tag}
@@ -229,7 +231,7 @@ export default function LibraryPage() {
               {filteredPrompts.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
+                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg dark:border-slate-700 dark:bg-slate-800"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -256,7 +258,7 @@ export default function LibraryPage() {
                       {item.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                          className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500 dark:bg-slate-700 dark:text-slate-400"
                         >
                           {tag}
                         </span>
@@ -264,7 +266,7 @@ export default function LibraryPage() {
                     </div>
                   )}
 
-                  <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
+                  <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
                     {item.content.length > PREVIEW_LENGTH
                       ? `${item.content.slice(0, PREVIEW_LENGTH)}...`
                       : item.content}
@@ -279,14 +281,14 @@ export default function LibraryPage() {
                     <button
                       type="button"
                       onClick={() => setViewingItem(item)}
-                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                      className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                     >
                       전체 보기
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCopy(item)}
-                      className="rounded-lg bg-navy-600 px-3 py-1 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700"
+                      className="rounded-lg bg-navy-600 px-3 py-1 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>
@@ -311,7 +313,7 @@ export default function LibraryPage() {
             <button
               type="button"
               onClick={() => handleCopy(viewingItem)}
-              className="rounded-lg bg-navy-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700"
+              className="rounded-lg bg-navy-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-navy-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               {copiedId === viewingItem.id ? '복사됨!' : '복사'}
             </button>
@@ -322,7 +324,7 @@ export default function LibraryPage() {
               {viewingItem.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500 dark:bg-slate-700 dark:text-slate-400"
                 >
                   {tag}
                 </span>
@@ -335,7 +337,7 @@ export default function LibraryPage() {
             {(viewingItem.copyCount ?? 0) > 0 && ` · 📋 ${viewingItem.copyCount}회 복사`}
           </p>
 
-          <div className="mt-3 whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">
+          <div className="mt-3 whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
             {viewingItem.content}
           </div>
         </Modal>

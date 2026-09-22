@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import DarkModeToggle from '../components/DarkModeToggle'
 import { useToast } from '../components/Toast'
 import { db } from '../firebase'
 import { useAuthGuard } from '../hooks/useAuthGuard'
@@ -74,6 +75,19 @@ export default function MyPage() {
       setTimeout(() => setCopiedId(null), 1500)
     } catch {
       setCopiedId(null)
+    }
+  }
+
+  const handleShare = async (item) => {
+    const shareUrl = `https://malhaedream.vercel.app/shared/${item.id}`
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      showToast(
+        '공유 링크가 복사됐습니다! 카카오톡이나 메신저로 공유해보세요.',
+        'success',
+      )
+    } catch {
+      showToast('공유 링크 복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
     }
   }
 
@@ -178,15 +192,18 @@ export default function MyPage() {
     )
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
         <span className="text-lg font-bold text-white">내 프롬프트 보관함</span>
-        <Link
-          to="/home"
-          className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
-        >
-          돌아가기
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/home"
+            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+          >
+            돌아가기
+          </Link>
+          <DarkModeToggle />
+        </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
@@ -199,7 +216,7 @@ export default function MyPage() {
             </p>
             <Link
               to="/home"
-              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg"
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               홈으로 가기
             </Link>
@@ -217,8 +234,8 @@ export default function MyPage() {
                   onClick={() => setActiveTab(tab.value)}
                   className={`rounded-lg border px-4 py-1.5 text-sm font-medium transition ${
                     activeTab === tab.value
-                      ? 'border-navy-600 bg-navy-600 text-white'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                      ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   {tab.label}
@@ -235,8 +252,8 @@ export default function MyPage() {
                     onClick={() => setActiveTagFilter(tag)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                       activeTagFilter === tag
-                        ? 'border-navy-600 bg-navy-600 text-white'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50'
+                        ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     {tag}
@@ -254,7 +271,7 @@ export default function MyPage() {
                 {displayedPrompts.map((item) => (
                   <li
                     key={item.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg"
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:shadow-lg dark:border-slate-700 dark:bg-slate-800"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -267,7 +284,7 @@ export default function MyPage() {
                           {item.isFavorite ? (
                             <span className="text-amber-400">⭐</span>
                           ) : (
-                            <span className="text-slate-300">☆</span>
+                            <span className="text-slate-300 dark:text-slate-600">☆</span>
                           )}
                         </button>
                         <span
@@ -288,7 +305,7 @@ export default function MyPage() {
                         {item.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500"
+                            className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500 dark:bg-slate-700 dark:text-slate-400"
                           >
                             {tag}
                           </span>
@@ -296,24 +313,31 @@ export default function MyPage() {
                       </div>
                     )}
 
-                    <p className="mt-3 text-sm text-slate-700">
+                    <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">
                       {item.content.length > 50
                         ? `${item.content.slice(0, 50)}...`
                         : item.content}
                     </p>
 
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       <button
                         type="button"
                         onClick={() => handleCopy(item)}
-                        className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50"
+                        className="rounded-lg border border-navy-200 px-3 py-1 text-xs font-medium text-navy-700 transition hover:bg-navy-50 dark:border-blue-500/40 dark:text-blue-400 dark:hover:bg-blue-500/10"
                       >
                         {copiedId === item.id ? '복사됨!' : '복사'}
                       </button>
                       <button
                         type="button"
+                        onClick={() => handleShare(item)}
+                        className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                      >
+                        🔗 공유
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleDelete(item)}
-                        className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                        className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
                       >
                         삭제
                       </button>
@@ -325,13 +349,13 @@ export default function MyPage() {
           </>
         )}
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60">
-          <h2 className="text-base font-semibold text-navy-800">내 PIN 변경</h2>
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-base font-semibold text-navy-800 dark:text-white">내 PIN 변경</h2>
           <form onSubmit={handleChangePin} className="mt-4 flex flex-col gap-3">
             <div>
               <label
                 htmlFor="current-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 현재 PIN
               </label>
@@ -344,14 +368,14 @@ export default function MyPage() {
                 onChange={(e) =>
                   setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
             <div>
               <label
                 htmlFor="new-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 새 PIN
               </label>
@@ -364,14 +388,14 @@ export default function MyPage() {
                 onChange={(e) =>
                   setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
             <div>
               <label
                 htmlFor="confirm-pin"
-                className="block text-sm font-medium text-slate-700"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 새 PIN 확인
               </label>
@@ -384,19 +408,19 @@ export default function MyPage() {
                 onChange={(e) =>
                   setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
-            {pinError && <p className="text-sm text-red-600">{pinError}</p>}
+            {pinError && <p className="text-sm text-red-600 dark:text-red-400">{pinError}</p>}
             {pinSuccess && (
-              <p className="text-sm text-emerald-600">{pinSuccess}</p>
+              <p className="text-sm text-emerald-600 dark:text-emerald-400">{pinSuccess}</p>
             )}
 
             <button
               type="submit"
               disabled={changingPin}
-              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-start"
+              className="rounded-lg bg-navy-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:bg-navy-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600 sm:w-auto sm:self-start"
             >
               {changingPin ? '변경 중...' : 'PIN 변경'}
             </button>
