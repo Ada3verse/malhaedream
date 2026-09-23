@@ -186,7 +186,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {showBanner && (
           <div className="mb-5 rounded-2xl border border-navy-200 bg-navy-50 p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-start justify-between gap-3">
@@ -263,7 +263,7 @@ export default function HomePage() {
           </p>
         )}
 
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredTemplates.map((template, index) => (
             <div key={template.id} className="flex items-stretch gap-2">
               {isAdmin && !isSearching && isAllCategory && (
