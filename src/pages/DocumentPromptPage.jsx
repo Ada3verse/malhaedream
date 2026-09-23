@@ -99,6 +99,31 @@ function extractGuideTagLabel(tag) {
   return tag.split(' 예:')[0].trim()
 }
 
+const COMPLETENESS_LEVELS = [
+  { message: '내용을 입력해주세요', colorClass: 'text-red-500 dark:text-red-400' },
+  { message: '조금 더 구체적으로 입력해보세요', colorClass: 'text-orange-500 dark:text-orange-400' },
+  { message: '괜찮아요! 더 추가하면 더 좋아져요', colorClass: 'text-yellow-500 dark:text-yellow-400' },
+  { message: '좋아요! 거의 완성됐어요', colorClass: 'text-lime-500 dark:text-lime-400' },
+  { message: '완벽해요! 최적의 프롬프트가 생성됩니다', colorClass: 'text-green-600 dark:text-green-400' },
+]
+
+function getCompletenessScore(content, tones, formats) {
+  const trimmedLength = content.trim().length
+  let score = 0
+
+  if (trimmedLength >= 1) score += 1
+  if (trimmedLength >= 20) score += 1
+  if (trimmedLength >= 50) score += 1
+  if (tones.length > 0) score += 1
+  if (formats.length > 0) score += 1
+
+  return score
+}
+
+function getCompletenessLevel(score) {
+  return COMPLETENESS_LEVELS[Math.max(score - 1, 0)]
+}
+
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -134,6 +159,8 @@ export default function DocumentPromptPage() {
   const contentPlaceholder =
     CONTENT_PLACEHOLDER_MAP[docTypeName] ?? DEFAULT_CONTENT_PLACEHOLDER
   const guideConfig = GUIDE_TAGS_MAP[docTypeName]
+  const completenessScore = getCompletenessScore(content, tones, formats)
+  const completenessLevel = getCompletenessLevel(completenessScore)
 
   const handleInsertGuideTag = (tag) => {
     const label = extractGuideTagLabel(tag)
@@ -249,9 +276,18 @@ export default function DocumentPromptPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
-              어떤 내용의 문서인가요?
-            </h2>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+              <h2 className="text-sm font-medium text-navy-700 dark:text-slate-300">
+                어떤 내용의 문서인가요?
+              </h2>
+              <div className={`flex items-center gap-1.5 text-sm ${completenessLevel.colorClass}`}>
+                <span className="tracking-widest" aria-hidden="true">
+                  {'●'.repeat(completenessScore)}
+                  {'○'.repeat(5 - completenessScore)}
+                </span>
+                <span className="text-xs">{completenessLevel.message}</span>
+              </div>
+            </div>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
