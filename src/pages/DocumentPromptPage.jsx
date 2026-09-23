@@ -168,6 +168,27 @@ function getCompletenessLevel(score) {
   return COMPLETENESS_LEVELS[Math.max(score - 1, 0)]
 }
 
+function hasRequiredGuideInfo(docTypeName, content) {
+  const trimmed = content.trim()
+
+  if (LESSON_ASSESSMENT_TEMPLATE_NAMES.includes(docTypeName)) {
+    return (
+      includesAnyKeyword(trimmed, GRADE_KEYWORDS) &&
+      includesAnyKeyword(trimmed, SUBJECT_KEYWORDS)
+    )
+  }
+
+  if (ADMIN_TEMPLATE_NAMES.includes(docTypeName)) {
+    return includesAnyKeyword(trimmed, DATE_KEYWORDS)
+  }
+
+  if (CLASS_TEMPLATE_NAMES.includes(docTypeName)) {
+    return includesAnyKeyword(trimmed, CLASS_INFO_KEYWORDS)
+  }
+
+  return false
+}
+
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -205,6 +226,10 @@ export default function DocumentPromptPage() {
   const guideConfig = GUIDE_TAGS_MAP[docTypeName]
   const completenessScore = getCompletenessScore(docTypeName, content, tones, formats)
   const completenessLevel = getCompletenessLevel(completenessScore)
+  const shouldShowGuideWarning =
+    Boolean(guideConfig) &&
+    completenessScore < 4 &&
+    !hasRequiredGuideInfo(docTypeName, content)
 
   const handleInsertGuideTag = (tag) => {
     const label = extractGuideTagLabel(tag)
@@ -357,9 +382,11 @@ export default function DocumentPromptPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
-                  ⚠️ {guideConfig.warning}
-                </p>
+                {shouldShowGuideWarning && (
+                  <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
+                    ⚠️ {guideConfig.warning}
+                  </p>
+                )}
               </>
             )}
           </section>
