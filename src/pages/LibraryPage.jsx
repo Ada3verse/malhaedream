@@ -104,26 +104,26 @@ export default function LibraryPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
-        <Link to="/home" className="text-lg font-bold text-white">
+      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <Link to="/home" className="text-lg font-bold text-navy-600 dark:text-white">
           말해드림
         </Link>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-navy-100">{user.nickname}님</span>
+          <span className="text-sm text-navy-600 dark:text-navy-100">{user.nickname}님</span>
           <Link
             to="/mypage"
-            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             내 보관함
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             로그아웃
           </button>
-          <DarkModeToggle />
+          <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
         </div>
       </header>
 

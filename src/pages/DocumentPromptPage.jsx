@@ -112,14 +112,14 @@ export default function DocumentPromptPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
+      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
         <Link
           to="/home"
-          className="text-sm text-white/90 transition hover:text-white"
+          className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-white/90 dark:hover:text-white"
         >
           ← 돌아가기
         </Link>
-        <DarkModeToggle />
+        <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">

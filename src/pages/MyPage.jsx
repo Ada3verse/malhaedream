@@ -193,16 +193,16 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <header className="flex items-center justify-between bg-navy-700 px-4 py-3 shadow-md sm:px-6">
-        <span className="text-lg font-bold text-white">내 프롬프트 보관함</span>
+      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <span className="text-lg font-bold text-navy-600 dark:text-white">내 프롬프트 보관함</span>
         <div className="flex items-center gap-2">
           <Link
             to="/home"
-            className="rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10"
+            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             돌아가기
           </Link>
-          <DarkModeToggle />
+          <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
         </div>
       </header>
 
