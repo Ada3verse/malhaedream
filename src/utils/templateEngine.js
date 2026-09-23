@@ -150,3 +150,25 @@ export function refinePrompt(originalPrompt, quickFixes, customRequest) {
   const additions = items.map((item) => `- ${item}`).join('\n')
   return `${originalPrompt}\n\n추가 조건:\n${additions}`
 }
+
+export function generateFollowUpPrompt(issues, customRequest) {
+  const issueMap = {
+    '너무 길어요': '분량을 절반 정도로 줄여줘.',
+    '너무 짧아요': '내용을 2배 정도 더 자세하게 늘려줘.',
+    '너무 어려워요': '더 쉬운 단어와 표현으로 바꿔줘. 중학생도 이해할 수 있게.',
+    '너무 쉬워요': '더 전문적이고 심화된 내용으로 수준을 높여줘.',
+    '형식이 달라요': '형식을 바꿔줘. ' + (customRequest || ''),
+    '내용이 빠진 것 같아요': '빠진 내용을 보완해서 더 완성도 있게 작성해줘.',
+    '톤이 맞지 않아요': '말투와 톤을 조정해줘. ' + (customRequest || ''),
+    '더 구체적으로 써줬으면 해요': '더 구체적인 예시와 세부 내용을 추가해줘.',
+    '예시가 필요해요': '실제 예시를 2~3개 추가해줘.',
+    '표로 정리해줬으면 해요': '주요 내용을 표 형태로 정리해줘.',
+  }
+
+  const issueParts = issues.map((i) => issueMap[i] || i).filter(Boolean)
+  const allParts = [...issueParts, customRequest].filter(Boolean)
+
+  if (allParts.length === 0) return null
+
+  return `위 내용을 아래 조건에 맞게 수정해줘:\n${allParts.map((p, i) => `${i + 1}. ${p}`).join('\n')}`
+}

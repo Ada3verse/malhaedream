@@ -5,6 +5,7 @@ import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
 import PromptExplanationPanel from '../components/PromptExplanationPanel'
+import PromptFollowUpBox from '../components/PromptFollowUpBox'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptRefineGuideBox from '../components/PromptRefineGuideBox'
 import PromptResultBox from '../components/PromptResultBox'
@@ -437,6 +438,8 @@ export default function DocumentPromptPage() {
               onRefine={handleRefine}
             />
           )}
+
+          {result && <PromptFollowUpBox />}
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
         </div>
