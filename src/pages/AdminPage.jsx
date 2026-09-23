@@ -413,7 +413,7 @@ export default function AdminPage() {
           >
             로그아웃
           </button>
-          <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
+          <DarkModeToggle />
         </div>
       </header>
 

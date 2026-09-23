@@ -119,7 +119,7 @@ export default function DocumentPromptPage() {
         >
           ← 돌아가기
         </Link>
-        <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
+        <DarkModeToggle />
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">

@@ -179,7 +179,7 @@ export default function HomePage() {
           >
             로그아웃
           </button>
-          <DarkModeToggle className="!border-navy-600 !text-navy-600 hover:!bg-navy-50 dark:!border-white/30 dark:!text-white dark:hover:!bg-white/10" />
+          <DarkModeToggle />
         </div>
       </header>
 
@@ -243,7 +243,7 @@ export default function HomePage() {
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
                   selectedCategory === tab.id
                     ? 'bg-violet-600 text-white'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
+                    : 'border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
                 }`}
               >
                 {tab.label}
