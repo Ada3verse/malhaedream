@@ -13,5 +13,9 @@ service cloud.firestore {
     match /templates/{templateId} {
       allow read, write: if true;
     }
+
+    match /school_events/{eventId} {
+      allow read, write: if true;
+    }
   }
 }

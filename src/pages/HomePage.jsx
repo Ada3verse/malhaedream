@@ -6,8 +6,11 @@ import { CIRCLED_NUMBERS, GUIDE_STEPS } from '../constants/guide'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { clearStoredUser } from '../utils/auth'
 import { getPromptsByNickname } from '../utils/prompts'
+import { getCurrentEvents, getUpcomingEvents } from '../utils/schoolEvents'
 import { getAllTemplates, updateTemplate } from '../utils/templates'
 import UsageGuideModal from '../components/UsageGuideModal'
+
+const IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
 
 const GUIDE_SEEN_KEY = 'malhaedream_guide_seen'
 const RECENT_PROMPTS_LIMIT = 3
@@ -94,6 +97,8 @@ export default function HomePage() {
   const showToast = useToast()
   const [templates, setTemplates] = useState([])
   const [recentPrompts, setRecentPrompts] = useState([])
+  const [currentEvents, setCurrentEvents] = useState([])
+  const [upcomingEvents, setUpcomingEvents] = useState([])
   const [copiedId, setCopiedId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -107,6 +112,11 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
+    getCurrentEvents().then(setCurrentEvents)
+    getUpcomingEvents().then(setUpcomingEvents)
+  }, [])
+
+  useEffect(() => {
     if (!user) return
     getPromptsByNickname(user.nickname, user.deviceId).then((list) =>
       setRecentPrompts(list.slice(0, RECENT_PROMPTS_LIMIT)),
@@ -116,6 +126,11 @@ export default function HomePage() {
   const handleLogout = () => {
     clearStoredUser()
     navigate('/', { replace: true })
+  }
+
+  const handleGoToRecommendedTemplate = (templateName) => {
+    const path = templateName === IMAGE_TEMPLATE_NAME ? '/prompt/image' : '/prompt/document'
+    navigate(path, { state: { templateName } })
   }
 
   const handleCopyRecent = async (item) => {
@@ -236,6 +251,57 @@ export default function HomePage() {
         <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
           어떤 프롬프트가 필요하신가요?
         </h1>
+
+        {(currentEvents.length > 0 || upcomingEvents.length > 0) && (
+          <section className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950">
+            <h2 className="text-base font-semibold text-navy-800 dark:text-white">
+              📅 이번 주 추천
+            </h2>
+            <div className="mt-3 flex flex-col gap-3">
+              {[
+                ...currentEvents.map((event) => ({ ...event, isCurrent: true })),
+                ...upcomingEvents.map((event) => ({ ...event, isCurrent: false })),
+              ].map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-xl border border-amber-200 bg-white p-4 dark:border-amber-800/60 dark:bg-slate-800"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    {event.isCurrent ? (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-600 dark:bg-red-500/20 dark:text-red-400">
+                        🔴 진행 중
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+                        D-{event.daysUntilStart}
+                      </span>
+                    )}
+                    <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
+                      {event.title}
+                    </h3>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {event.description}
+                  </p>
+                  {(event.templates ?? []).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {event.templates.map((templateName) => (
+                        <button
+                          key={templateName}
+                          type="button"
+                          onClick={() => handleGoToRecommendedTemplate(templateName)}
+                          className="rounded-full border border-violet-300 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-100 dark:border-violet-500/40 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
+                        >
+                          {templateName}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="relative mt-4">
           <input

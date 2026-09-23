@@ -18,6 +18,11 @@ import { clearStoredUser } from '../utils/auth'
 import { hashPin } from '../utils/hash'
 import { getAllPrompts, getSharedPrompts, unsharePrompt } from '../utils/prompts'
 import {
+  addSchoolEvent,
+  deleteSchoolEvent,
+  getAllSchoolEvents,
+} from '../utils/schoolEvents'
+import {
   addTemplate,
   deleteTemplate,
   getAllTemplates,
@@ -55,6 +60,16 @@ const EMPTY_TEMPLATE_FORM = {
   promptTemplate: '',
   conditions: '',
   quickFixes: '',
+}
+
+const EMPTY_SCHOOL_EVENT_FORM = {
+  title: '',
+  startDate: '',
+  endDate: '',
+  reminderDays: '7',
+  templates: '',
+  description: '',
+  semester: 1,
 }
 
 const JSON_PLACEHOLDER = `아래 형식으로 JSON을 붙여넣으세요. 단일 객체 또는 배열 모두 가능합니다.
@@ -113,6 +128,11 @@ export default function AdminPage() {
   const [loadingSharedPrompts, setLoadingSharedPrompts] = useState(true)
   const [visibleSharedCount, setVisibleSharedCount] = useState(SHARED_PAGE_SIZE)
 
+  const [schoolEvents, setSchoolEvents] = useState([])
+  const [loadingSchoolEvents, setLoadingSchoolEvents] = useState(true)
+  const [schoolEventForm, setSchoolEventForm] = useState(EMPTY_SCHOOL_EVENT_FORM)
+  const [schoolEventError, setSchoolEventError] = useState('')
+
   const loadUsers = useCallback(async () => {
     setLoading(true)
     const snapshot = await getDocs(collection(db, 'users'))
@@ -140,13 +160,20 @@ export default function AdminPage() {
     setLoadingSharedPrompts(false)
   }, [])
 
+  const loadSchoolEvents = useCallback(async () => {
+    setLoadingSchoolEvents(true)
+    setSchoolEvents(await getAllSchoolEvents())
+    setLoadingSchoolEvents(false)
+  }, [])
+
   useEffect(() => {
     if (!user) return
     loadUsers()
     loadTemplates()
     loadPrompts()
     loadSharedPrompts()
-  }, [user, loadUsers, loadTemplates, loadPrompts, loadSharedPrompts])
+    loadSchoolEvents()
+  }, [user, loadUsers, loadTemplates, loadPrompts, loadSharedPrompts, loadSchoolEvents])
 
   const handleLogout = () => {
     clearStoredUser()
@@ -377,6 +404,38 @@ export default function AdminPage() {
     await unsharePrompt(item.id)
     setSharedPrompts((prev) => prev.filter((p) => p.id !== item.id))
     showToast('라이브러리에서 삭제되었습니다.', 'success')
+  }
+
+  const handleSchoolEventSubmit = async (e) => {
+    e.preventDefault()
+    setSchoolEventError('')
+
+    if (!schoolEventForm.title.trim() || !schoolEventForm.startDate) {
+      setSchoolEventError('행사명과 시작일은 필수입니다.')
+      return
+    }
+
+    await addSchoolEvent({
+      title: schoolEventForm.title.trim(),
+      startDate: schoolEventForm.startDate,
+      endDate: schoolEventForm.endDate || schoolEventForm.startDate,
+      reminderDays: Number(schoolEventForm.reminderDays) || 0,
+      templates: schoolEventForm.templates
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean),
+      description: schoolEventForm.description.trim(),
+      semester: schoolEventForm.semester,
+    })
+
+    setSchoolEventForm(EMPTY_SCHOOL_EVENT_FORM)
+    loadSchoolEvents()
+  }
+
+  const handleDeleteSchoolEvent = async (event) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return
+    await deleteSchoolEvent(event.id)
+    loadSchoolEvents()
   }
 
   if (!user) return null
@@ -1021,6 +1080,172 @@ export default function AdminPage() {
                 )}
               </>
             )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">학사일정 관리</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            매년 학사일정이 바뀌면 여기서 새로 추가하고, 지난 일정은 삭제해주세요.
+          </p>
+
+          <div className="mt-4 flex flex-col gap-3">
+            {loadingSchoolEvents ? (
+              <p className="text-sm text-slate-400">불러오는 중...</p>
+            ) : schoolEvents.length === 0 ? (
+              <p className="text-sm text-slate-400">등록된 학사일정이 없습니다.</p>
+            ) : (
+              schoolEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+                        {event.semester === 2 ? '2학기' : '1학기'}
+                      </span>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                        {event.title}
+                      </p>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      {event.startDate}
+                      {event.endDate && event.endDate !== event.startDate ? ` ~ ${event.endDate}` : ''}
+                      {' · D-'}
+                      {event.reminderDays ?? 0}
+                      {(event.templates ?? []).length > 0 && ` · ${event.templates.join(', ')}`}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSchoolEvent(event)}
+                    className="shrink-0 self-start rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10 sm:self-auto"
+                  >
+                    삭제
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
+            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">학사일정 추가</h3>
+
+            <form onSubmit={handleSchoolEventSubmit} className="mt-4 flex flex-col gap-3">
+              <div className="flex flex-wrap gap-2">
+                {[1, 2].map((semester) => (
+                  <button
+                    key={semester}
+                    type="button"
+                    onClick={() => setSchoolEventForm((prev) => ({ ...prev, semester }))}
+                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                      schoolEventForm.semester === semester
+                        ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
+                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {semester}학기
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="text"
+                value={schoolEventForm.title}
+                onChange={(e) =>
+                  setSchoolEventForm((prev) => ({ ...prev, title: e.target.value }))
+                }
+                placeholder="행사명 (예: 중간고사)"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              />
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex-1">
+                  <label
+                    htmlFor="school-event-start"
+                    className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                  >
+                    시작일
+                  </label>
+                  <input
+                    id="school-event-start"
+                    type="date"
+                    value={schoolEventForm.startDate}
+                    onChange={(e) =>
+                      setSchoolEventForm((prev) => ({ ...prev, startDate: e.target.value }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label
+                    htmlFor="school-event-end"
+                    className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                  >
+                    종료일
+                  </label>
+                  <input
+                    id="school-event-end"
+                    type="date"
+                    value={schoolEventForm.endDate}
+                    onChange={(e) =>
+                      setSchoolEventForm((prev) => ({ ...prev, endDate: e.target.value }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  />
+                </div>
+                <div className="sm:w-32">
+                  <label
+                    htmlFor="school-event-reminder"
+                    className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                  >
+                    알림일수
+                  </label>
+                  <input
+                    id="school-event-reminder"
+                    type="number"
+                    min="0"
+                    value={schoolEventForm.reminderDays}
+                    onChange={(e) =>
+                      setSchoolEventForm((prev) => ({ ...prev, reminderDays: e.target.value }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <input
+                type="text"
+                value={schoolEventForm.templates}
+                onChange={(e) =>
+                  setSchoolEventForm((prev) => ({ ...prev, templates: e.target.value }))
+                }
+                placeholder="추천 템플릿 (쉼표로 구분, 예: 지필평가 문제, 형성평가 문항)"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              />
+
+              <textarea
+                value={schoolEventForm.description}
+                onChange={(e) =>
+                  setSchoolEventForm((prev) => ({ ...prev, description: e.target.value }))
+                }
+                rows={2}
+                placeholder="설명 (예: 중간고사 2주 전이에요. 시험 문제를 미리 준비해보세요.)"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              />
+
+              {schoolEventError && (
+                <p className="text-sm text-red-600 dark:text-red-400">{schoolEventError}</p>
+              )}
+
+              <button
+                type="submit"
+                className="self-start rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              >
+                추가
+              </button>
+            </form>
           </div>
         </section>
       </main>
