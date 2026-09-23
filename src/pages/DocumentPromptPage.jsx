@@ -40,6 +40,65 @@ const CONTENT_PLACEHOLDER_MAP = {
   '기타': '예: 원하는 문서 내용을 자유롭게 입력하세요',
 }
 
+const LESSON_ASSESSMENT_TEMPLATE_NAMES = [
+  '수업 지도안',
+  '학습지',
+  '독서 활동지',
+  '진로 탐색 활동지',
+  '지필평가 문제',
+  '형성평가 문항',
+  '수행평가 문항',
+  '쪽지 시험',
+  '학생 피드백',
+]
+
+const LESSON_ASSESSMENT_GUIDE = {
+  tags: ['학교급 예: 중학교', '학년 예: 2학년', '과목 예: 과학', '단원 예: 광합성', '수업활동 예: 모둠토론'],
+  warning: '학년과 과목을 입력하면 훨씬 정확한 프롬프트가 생성됩니다.',
+}
+
+const GUIDE_TAGS_MAP = {
+  ...Object.fromEntries(
+    LESSON_ASSESSMENT_TEMPLATE_NAMES.map((name) => [name, LESSON_ASSESSMENT_GUIDE]),
+  ),
+  '가정통신문': {
+    tags: ['행사명 예: 학부모 공개수업', '날짜 예: 10월 15일', '대상 예: 전교생 학부모', '준비물 예: 없음'],
+    warning: '행사명과 날짜를 입력하면 더 구체적인 안내문이 생성됩니다.',
+  },
+  '사업계획서': {
+    tags: ['사업명 예: 독서교육 활성화', '목적 예: 독서 습관 형성', '대상 예: 전교생', '기간 예: 1학기'],
+    warning: '사업명과 목적을 입력하면 더 구체적인 계획서가 생성됩니다.',
+  },
+  '행사보고서': {
+    tags: ['행사명 예: 진로의 날', '일시 예: 5월 15일', '참가인원 예: 350명', '주요내용 예: 직업체험'],
+    warning: '행사명과 일시를 입력하면 더 구체적인 보고서가 생성됩니다.',
+  },
+  '공문 초안': {
+    tags: ['수신처 예: 교육청', '목적 예: 협조 요청', '주요내용 예: 스포츠클럽 운영'],
+    warning: '수신처와 목적을 입력하면 더 정확한 공문이 생성됩니다.',
+  },
+  '회의록': {
+    tags: ['회의명 예: 9월 교직원 회의', '주요안건 예: 2학기 수행평가 계획', '참석자 예: 전교직원'],
+    warning: '회의명과 주요 안건을 입력하면 더 구체적인 회의록이 생성됩니다.',
+  },
+  '출장 보고서': {
+    tags: ['연수명 예: AI 활용 수업 연수', '기관 예: 서울시교육연수원', '날짜 예: 9월 20일', '시간 예: 6시간'],
+    warning: '연수명과 기관을 입력하면 더 구체적인 보고서가 생성됩니다.',
+  },
+  '학급 규칙 안내문': {
+    tags: ['학년·반 예: 2학년 3반', '주요규칙 예: 스마트폰·청소·발언'],
+    warning: '학년·반과 주요 규칙 항목을 입력하면 더 맞춤화된 안내문이 생성됩니다.',
+  },
+  '상담 일지': {
+    tags: ['상담유형 예: 학생상담', '주요내용 예: 친구관계 어려움', '상담장소 예: 상담실'],
+    warning: '상담 유형과 주요 내용을 입력하면 더 구체적인 일지가 생성됩니다.',
+  },
+}
+
+function extractGuideTagLabel(tag) {
+  return tag.split(' 예:')[0].trim()
+}
+
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -73,6 +132,15 @@ export default function DocumentPromptPage() {
   const selectedTemplate = templates.find((template) => template.name === docTypeName)
   const contentPlaceholder =
     CONTENT_PLACEHOLDER_MAP[docTypeName] ?? DEFAULT_CONTENT_PLACEHOLDER
+  const guideConfig = GUIDE_TAGS_MAP[docTypeName]
+
+  const handleInsertGuideTag = (tag) => {
+    const label = extractGuideTagLabel(tag)
+    setContent((prev) => {
+      const needsSpace = prev.length > 0 && !prev.endsWith(' ') && !prev.endsWith('\n')
+      return `${prev}${needsSpace ? ' ' : ''}${label}: `
+    })
+  }
 
   const handleGenerate = () => {
     if (generating) return
@@ -84,6 +152,13 @@ export default function DocumentPromptPage() {
       setIsRefined(false)
       setGenerateError('문서 유형을 먼저 선택해주세요.')
       return
+    }
+
+    if (content.trim().length < 10) {
+      showToast(
+        '내용이 너무 짧아요. 더 구체적으로 입력할수록 좋은 프롬프트가 생성됩니다.',
+        'warning',
+      )
     }
 
     if (!tones.length && !formats.length) {
@@ -182,9 +257,26 @@ export default function DocumentPromptPage() {
             {!content.trim() && (
               <p className="mt-1 text-xs text-slate-400">핵심 내용을 입력해주세요.</p>
             )}
-            <p className="mt-1 text-xs text-slate-400">
-              💡 학교급·학년·과목·단원을 함께 입력하면 더 정확한 프롬프트가 생성됩니다.
-            </p>
+
+            {guideConfig && (
+              <>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {guideConfig.tags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => handleInsertGuideTag(tag)}
+                      className="rounded-full border border-slate-300 bg-slate-100 px-2 py-1 text-[11px] text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                    >
+                      [{tag}]
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
+                  ⚠️ {guideConfig.warning}
+                </p>
+              </>
+            )}
           </section>
 
           <section>
