@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import AiShortcutLinks from '../components/AiShortcutLinks'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
@@ -39,6 +39,7 @@ const REFINE_OPTIONS = [
 export default function ImagePromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
+  const location = useLocation()
   const [tool, setTool] = useState('')
   const [topic, setTopic] = useState('')
   const [styles, setStyles] = useState([])
@@ -47,7 +48,9 @@ export default function ImagePromptPage() {
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
   const [generating, setGenerating] = useState(false)
-  const [imageTemplateName, setImageTemplateName] = useState(DEFAULT_IMAGE_TEMPLATE_NAME)
+  const [imageTemplateName, setImageTemplateName] = useState(
+    location.state?.templateName ?? DEFAULT_IMAGE_TEMPLATE_NAME,
+  )
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [isCopied, setIsCopied] = useState(false)

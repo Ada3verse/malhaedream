@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import AiShortcutLinks from '../components/AiShortcutLinks'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
@@ -102,9 +102,10 @@ function extractGuideTagLabel(tag) {
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
+  const location = useLocation()
   const [templates, setTemplates] = useState([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
-  const [docTypeName, setDocTypeName] = useState('')
+  const [docTypeName, setDocTypeName] = useState(location.state?.templateName ?? '')
   const [content, setContent] = useState('')
   const [tones, setTones] = useState([])
   const [formats, setFormats] = useState([])
@@ -239,7 +240,11 @@ export default function DocumentPromptPage() {
             ) : docTypeOptions.length === 0 ? (
               <p className="text-sm text-slate-400">등록된 문서 템플릿이 없습니다.</p>
             ) : (
-              <OptionCards options={docTypeOptions} onChange={setDocTypeName} />
+              <OptionCards
+                options={docTypeOptions}
+                value={selectedTemplate?.id}
+                onChange={setDocTypeName}
+              />
             )}
           </section>
 

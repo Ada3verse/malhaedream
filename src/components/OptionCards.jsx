@@ -1,13 +1,15 @@
 import { useState } from 'react'
 
-export default function OptionCards({ options, onChange }) {
-  const [selectedValue, setSelectedValue] = useState(null)
+export default function OptionCards({ options, onChange, value }) {
+  const [internalValue, setInternalValue] = useState(null)
   const [customText, setCustomText] = useState('')
 
+  const isControlled = value !== undefined
+  const selectedValue = isControlled ? value : internalValue
   const selectedOption = options.find((option) => option.value === selectedValue)
 
-  const emit = (value, text) => {
-    const option = options.find((item) => item.value === value)
+  const emit = (val, text) => {
+    const option = options.find((item) => item.value === val)
     if (!option) {
       onChange('')
       return
@@ -15,9 +17,9 @@ export default function OptionCards({ options, onChange }) {
     onChange(option.custom ? text.trim() : option.label)
   }
 
-  const handleSelect = (value) => {
-    setSelectedValue(value)
-    emit(value, customText)
+  const handleSelect = (val) => {
+    if (!isControlled) setInternalValue(val)
+    emit(val, customText)
   }
 
   const handleCustomTextChange = (value) => {

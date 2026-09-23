@@ -313,6 +313,7 @@ export default function HomePage() {
               {template.isActive ? (
                 <Link
                   to={`/prompt/${template.type}`}
+                  state={{ templateName: template.name }}
                   className="relative flex h-full min-h-[9.5rem] flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 border-l-4 border-l-violet-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(124,58,237,0.15)] dark:border-slate-700 dark:border-l-violet-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(124,58,237,0.25)]"
                 >
                   <span className="text-3xl">
