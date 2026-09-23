@@ -4,6 +4,7 @@ import AiShortcutLinks from '../components/AiShortcutLinks'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
+import PromptExplanationPanel from '../components/PromptExplanationPanel'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
@@ -12,6 +13,7 @@ import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
+import { stripMarkers } from '../utils/promptMarkers'
 
 const DEFAULT_IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
 
@@ -125,7 +127,9 @@ export default function ImagePromptPage() {
   }
 
   const performSave = async (tags) => {
-    const content = result.en ? `${result.en}\n\n[한국어 해석]\n${result.ko}` : result.ko
+    const content = result.en
+      ? `${stripMarkers(result.en)}\n\n[한국어 해석]\n${stripMarkers(result.ko)}`
+      : stripMarkers(result.ko)
 
     try {
       await savePrompt({
@@ -215,6 +219,8 @@ export default function ImagePromptPage() {
             onEdit={setResult}
             onCopy={() => setIsCopied(true)}
           />
+
+          {result && <PromptExplanationPanel type="image" />}
 
           {result && (
             <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300">

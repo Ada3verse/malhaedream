@@ -4,6 +4,7 @@ import AiShortcutLinks from '../components/AiShortcutLinks'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
+import PromptExplanationPanel from '../components/PromptExplanationPanel'
 import PromptRefineBox from '../components/PromptRefineBox'
 import PromptResultBox from '../components/PromptResultBox'
 import TagToggleGroup from '../components/TagToggleGroup'
@@ -12,6 +13,7 @@ import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
+import { stripMarkers } from '../utils/promptMarkers'
 
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
 const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
@@ -299,7 +301,7 @@ export default function DocumentPromptPage() {
         nickname: user.nickname,
         deviceId: user.deviceId,
         type: 'document',
-        content: result.ko,
+        content: stripMarkers(result.ko),
         templateName: selectedTemplate?.name,
         tags,
       })
@@ -423,6 +425,8 @@ export default function DocumentPromptPage() {
             onEdit={setResult}
             onCopy={() => setIsCopied(true)}
           />
+
+          {result && <PromptExplanationPanel type="document" />}
 
           {result && (
             <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300">
