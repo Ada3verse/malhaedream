@@ -1,3 +1,5 @@
+import { usePersistedToggle } from '../hooks/usePersistedToggle'
+
 const DOCUMENT_ITEMS = [
   {
     emoji: '🟣',
@@ -71,37 +73,51 @@ const TIP_TEXT = {
     '"주제 + 스타일 + 분위기 + 품질" 순서로 써보세요.\n이 구조만 기억하면 어떤 이미지 생성 AI에서도 좋은 결과를 얻을 수 있어요!',
 }
 
+const STORAGE_KEY = 'malhaedream_explanation_open'
+
 export default function PromptExplanationPanel({ type = 'document' }) {
+  const [isOpen, toggleOpen] = usePersistedToggle(STORAGE_KEY, false)
   const items = type === 'image' ? IMAGE_ITEMS : DOCUMENT_ITEMS
   const tip = TIP_TEXT[type] ?? TIP_TEXT.document
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-gray-700 dark:bg-gray-800">
-      <p className="font-semibold text-slate-700 dark:text-slate-200">
-        📖 이 프롬프트가 이렇게 구성된 이유
-      </p>
+      <button
+        type="button"
+        onClick={toggleOpen}
+        className="flex w-full cursor-pointer items-center justify-between gap-2 text-left"
+      >
+        <span className="font-semibold text-slate-700 dark:text-slate-200">
+          📖 이 프롬프트가 이렇게 구성된 이유
+        </span>
+        <span className="text-slate-400 dark:text-slate-500">{isOpen ? '▲' : '▼'}</span>
+      </button>
 
-      <div className="mt-3 flex flex-col gap-2.5">
-        {items.map((item, index) => (
-          <div key={`${item.label}-${index}`} className="flex gap-2">
-            <span className="shrink-0">{item.emoji}</span>
-            <div>
-              <p className="font-medium text-slate-700 dark:text-slate-200">
-                {item.label}{' '}
-                <span className="font-normal text-slate-500 dark:text-slate-400">
-                  {item.desc}
-                </span>
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">→ {item.effect}</p>
-            </div>
+      {isOpen && (
+        <>
+          <div className="mt-3 flex flex-col gap-2.5">
+            {items.map((item, index) => (
+              <div key={`${item.label}-${index}`} className="flex gap-2">
+                <span className="shrink-0">{item.emoji}</span>
+                <div>
+                  <p className="font-medium text-slate-700 dark:text-slate-200">
+                    {item.label}{' '}
+                    <span className="font-normal text-slate-500 dark:text-slate-400">
+                      {item.desc}
+                    </span>
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">→ {item.effect}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="mt-3 border-t border-gray-200 pt-3 text-xs text-slate-600 dark:border-gray-700 dark:text-slate-300">
-        <p className="font-medium">💡 직접 써볼 때는?</p>
-        <p className="mt-1 whitespace-pre-line">{tip}</p>
-      </div>
+          <div className="mt-3 border-t border-gray-200 pt-3 text-xs text-slate-600 dark:border-gray-700 dark:text-slate-300">
+            <p className="font-medium">💡 직접 써볼 때는?</p>
+            <p className="mt-1 whitespace-pre-line">{tip}</p>
+          </div>
+        </>
+      )}
     </div>
   )
 }
