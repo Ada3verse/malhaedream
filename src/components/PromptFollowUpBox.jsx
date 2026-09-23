@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { usePersistedToggle } from '../hooks/usePersistedToggle'
 import { generateFollowUpPrompt } from '../utils/templateEngine'
 
-const ISSUE_CATEGORIES = [
+const DOCUMENT_ISSUE_CATEGORIES = [
   {
     title: '📏 분량·형식',
     issues: ['더 짧게', '더 길게', '표로 정리', '개조식으로', '줄글로', '항목 수 줄이기', '항목 수 늘리기'],
@@ -34,10 +34,70 @@ const ISSUE_CATEGORIES = [
   },
 ]
 
+const IMAGE_ISSUE_CATEGORIES = [
+  {
+    title: '🎨 스타일 조정',
+    issues: [
+      '더 사실적으로',
+      '더 일러스트처럼',
+      '더 단순하게',
+      '더 화려하게',
+      '수채화 느낌으로',
+      '픽셀아트 스타일로',
+      '미니멀하게',
+    ],
+  },
+  {
+    title: '🌈 색감·분위기',
+    issues: [
+      '더 밝고 따뜻하게',
+      '더 차갑고 세련되게',
+      '더 몽환적으로',
+      '더 역동적으로',
+      '더 차분하게',
+      '색감 더 풍부하게',
+      '흑백으로',
+    ],
+  },
+  {
+    title: '👥 구성·배치',
+    issues: [
+      '인물 추가',
+      '인물 제거',
+      '배경 더 강조',
+      '배경 단순하게',
+      '클로즈업으로',
+      '전체 풍경으로',
+      '좌우 여백 추가',
+    ],
+  },
+  {
+    title: '✨ 품질·디테일',
+    issues: ['더 세밀하게', '더 고해상도 느낌으로', '텍스처 추가', '빛과 그림자 강조', '디테일 줄이고 깔끔하게'],
+  },
+  {
+    title: '🏫 교육 활용 특화',
+    issues: [
+      '학생들이 보기 편하게',
+      '수업 자료에 어울리게',
+      '프레젠테이션용으로',
+      '인쇄했을 때 잘 보이게',
+      '저작권 걱정 없는 스타일로',
+    ],
+  },
+]
+
+const CUSTOM_PLACEHOLDER = {
+  document: '그 외 원하는 점을 직접 입력하세요 (예: 3학년 수준에 맞게 더 어렵게, 실험 활동을 포함해서, 10분 안에 할 수 있는 분량으로)',
+  image: '그 외 원하는 점을 직접 입력하세요 (예: 배경에 칠판을 추가해줘, 계절감을 가을로 바꿔줘)',
+}
+
 const STORAGE_KEY = 'malhaedream_followup_open'
 
-export default function PromptFollowUpBox() {
+export default function PromptFollowUpBox({ type = 'document' }) {
   const [isOpen, toggleOpen] = usePersistedToggle(STORAGE_KEY, false)
+  const categories = type === 'image' ? IMAGE_ISSUE_CATEGORIES : DOCUMENT_ISSUE_CATEGORIES
+  const customPlaceholder = CUSTOM_PLACEHOLDER[type] ?? CUSTOM_PLACEHOLDER.document
   const [selectedIssues, setSelectedIssues] = useState([])
   const [customRequest, setCustomRequest] = useState('')
   const [result, setResult] = useState('')
@@ -97,7 +157,7 @@ export default function PromptFollowUpBox() {
           </p>
 
           <div className="flex flex-col gap-3">
-            {ISSUE_CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <div key={category.title}>
                 <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
                   {category.title}
@@ -126,7 +186,7 @@ export default function PromptFollowUpBox() {
             value={customRequest}
             onChange={(e) => setCustomRequest(e.target.value)}
             rows={2}
-            placeholder="그 외 원하는 점을 직접 입력하세요 (예: 3학년 수준에 맞게 더 어렵게, 실험 활동을 포함해서, 10분 안에 할 수 있는 분량으로)"
+            placeholder={customPlaceholder}
             className="w-full rounded-lg border border-orange-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400/20 dark:border-orange-800 dark:bg-orange-900/40 dark:text-white"
           />
 

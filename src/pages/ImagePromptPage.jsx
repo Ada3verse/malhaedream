@@ -230,7 +230,7 @@ export default function ImagePromptPage() {
             <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
           )}
 
-          {result && <PromptFollowUpBox />}
+          {result && <PromptFollowUpBox type="image" />}
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
 

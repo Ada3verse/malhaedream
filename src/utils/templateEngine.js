@@ -195,6 +195,47 @@ export function generateFollowUpPrompt(issues, customRequest) {
     '학년별로 버전 나눠줘': '같은 내용을 1학년용, 2학년용, 3학년용으로 각각 나눠서 작성해줘.',
     '교사 입장에서 다시 써줘': '학생이 아닌 교사가 활용하는 관점에서 다시 작성해줘.',
     '학생 활동 중심으로': '교사 설명 중심이 아니라 학생이 직접 참여하는 활동 중심으로 바꿔줘.',
+
+    // 🎨 스타일 조정
+    '더 사실적으로': 'photorealistic style, ultra detailed, real photo quality로 변경해줘.',
+    '더 일러스트처럼': 'illustration style, artistic, hand-drawn feeling으로 변경해줘.',
+    '더 단순하게': '더 단순하고 깔끔한 구성으로 변경해줘. 불필요한 요소 제거.',
+    '더 화려하게': '더 화려하고 풍부한 디테일로 변경해줘.',
+    '수채화 느낌으로': 'watercolor painting style, soft colors, artistic으로 변경해줘.',
+    '픽셀아트 스타일로': 'pixel art style, 8-bit, retro game aesthetic으로 변경해줘.',
+    '미니멀하게': 'minimalist design, clean, simple, lots of white space로 변경해줘.',
+
+    // 🌈 색감·분위기
+    '더 밝고 따뜻하게': 'bright lighting, warm colors, cheerful atmosphere, golden hour로 변경해줘.',
+    '더 차갑고 세련되게': 'cool tones, sleek, modern, blue-grey palette로 변경해줘.',
+    '더 몽환적으로': 'dreamy atmosphere, soft focus, fantasy elements, ethereal light로 변경해줘.',
+    '더 역동적으로': 'dynamic composition, action, motion blur, energetic로 변경해줘.',
+    '더 차분하게': 'calm, peaceful, serene, muted colors, gentle lighting으로 변경해줘.',
+    '색감 더 풍부하게': 'vibrant colors, high saturation, colorful, rich palette로 변경해줘.',
+    '흑백으로': 'black and white, monochrome, grayscale로 변경해줘.',
+
+    // 👥 구성·배치
+    '인물 추가': '프롬프트에 인물(사람)을 추가해줘. 자연스럽게 구성에 녹여줘.',
+    '인물 제거': '인물 없이 배경이나 사물 중심으로 변경해줘.',
+    '배경 더 강조': '배경을 더 상세하고 풍부하게 묘사하도록 변경해줘.',
+    '배경 단순하게': '배경을 단순하게 처리하고 주요 대상에 집중하도록 변경해줘.',
+    '클로즈업으로': 'close-up shot, macro photography style로 변경해줘.',
+    '전체 풍경으로': 'wide angle, panoramic view, establishing shot으로 변경해줘.',
+    '좌우 여백 추가': '프롬프트에 여백을 강조하는 표현 추가. negative space, minimalist composition.',
+
+    // ✨ 품질·디테일
+    '더 세밀하게': 'highly detailed, intricate details, fine textures로 변경해줘.',
+    '더 고해상도 느낌으로': '8K, ultra high resolution, sharp focus, professional quality로 변경해줘.',
+    '텍스처 추가': 'rich textures, tactile feeling, material details를 강조하도록 변경해줘.',
+    '빛과 그림자 강조': 'dramatic lighting, chiaroscuro, strong shadows and highlights로 변경해줘.',
+    '디테일 줄이고 깔끔하게': 'simple, clean design, minimal details, flat design으로 변경해줘.',
+
+    // 🏫 교육 활용 특화 (이미지)
+    '학생들이 보기 편하게': 'clear, easy to understand visual, educational illustration style로 변경해줘.',
+    '수업 자료에 어울리게': 'clean educational illustration, textbook style, appropriate for classroom로 변경해줘.',
+    '프레젠테이션용으로': 'presentation-ready, clean background, professional look로 변경해줘.',
+    '인쇄했을 때 잘 보이게': 'high contrast, clear outlines, print-ready quality로 변경해줘.',
+    '저작권 걱정 없는 스타일로': 'original artistic style, no brand references, generic illustration로 변경해줘.',
   }
 
   const issueParts = issues.map((i) => issueMap[i] || i).filter(Boolean)

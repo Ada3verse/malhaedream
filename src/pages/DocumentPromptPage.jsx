@@ -439,7 +439,7 @@ export default function DocumentPromptPage() {
             />
           )}
 
-          {result && <PromptFollowUpBox />}
+          {result && <PromptFollowUpBox type="document" />}
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
         </div>
