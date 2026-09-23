@@ -107,16 +107,60 @@ const COMPLETENESS_LEVELS = [
   { message: '완벽해요! 최적의 프롬프트가 생성됩니다', colorClass: 'text-green-600 dark:text-green-400' },
 ]
 
-function getCompletenessScore(content, tones, formats) {
-  const trimmedLength = content.trim().length
+const ADMIN_TEMPLATE_NAMES = ['가정통신문', '사업계획서', '행사보고서', '공문 초안', '회의록', '출장 보고서']
+const CLASS_TEMPLATE_NAMES = ['학급 규칙 안내문', '상담 일지']
+
+const GRADE_KEYWORDS = ['1학년', '2학년', '3학년', '1년', '2년', '3년']
+const SUBJECT_KEYWORDS = [
+  '국어', '수학', '영어', '과학', '사회', '역사', '도덕', '미술',
+  '음악', '체육', '기술가정', '중국어', '진로', '보건',
+]
+const DATE_KEYWORDS = ['월', '일', '날짜', '기간']
+const CLASS_INFO_KEYWORDS = ['1학년', '2학년', '3학년', '반']
+
+function includesAnyKeyword(content, keywords) {
+  return keywords.some((keyword) => content.includes(keyword))
+}
+
+function getCompletenessScore(docTypeName, content, tones, formats) {
+  const trimmed = content.trim()
+  const hasTone = tones.length > 0
+  const hasFormat = formats.length > 0
   let score = 0
 
-  if (trimmedLength >= 1) score += 1
-  if (trimmedLength >= 20) score += 1
-  if (trimmedLength >= 50) score += 1
-  if (tones.length > 0) score += 1
-  if (formats.length > 0) score += 1
+  if (LESSON_ASSESSMENT_TEMPLATE_NAMES.includes(docTypeName)) {
+    const hasGrade = includesAnyKeyword(trimmed, GRADE_KEYWORDS)
+    const hasSubject = includesAnyKeyword(trimmed, SUBJECT_KEYWORDS)
+    if (hasGrade) score += 1
+    if (hasSubject) score += 1
+    if (trimmed.length >= 20 && (hasGrade || hasSubject)) score += 1
+    if (hasTone) score += 1
+    if (hasFormat) score += 1
+    return score
+  }
 
+  if (ADMIN_TEMPLATE_NAMES.includes(docTypeName)) {
+    if (trimmed.length >= 10) score += 1
+    if (trimmed.length >= 30) score += 1
+    if (includesAnyKeyword(trimmed, DATE_KEYWORDS)) score += 1
+    if (hasTone) score += 1
+    if (hasFormat) score += 1
+    return score
+  }
+
+  if (CLASS_TEMPLATE_NAMES.includes(docTypeName)) {
+    if (trimmed.length >= 10) score += 1
+    if (trimmed.length >= 30) score += 1
+    if (includesAnyKeyword(trimmed, CLASS_INFO_KEYWORDS)) score += 1
+    if (hasTone) score += 1
+    if (hasFormat) score += 1
+    return score
+  }
+
+  if (trimmed.length >= 10) score += 2
+  if (trimmed.length >= 50) score += 1
+  if (hasTone) score += 1
+  if (hasFormat) score += 1
   return score
 }
 
@@ -159,7 +203,7 @@ export default function DocumentPromptPage() {
   const contentPlaceholder =
     CONTENT_PLACEHOLDER_MAP[docTypeName] ?? DEFAULT_CONTENT_PLACEHOLDER
   const guideConfig = GUIDE_TAGS_MAP[docTypeName]
-  const completenessScore = getCompletenessScore(content, tones, formats)
+  const completenessScore = getCompletenessScore(docTypeName, content, tones, formats)
   const completenessLevel = getCompletenessLevel(completenessScore)
 
   const handleInsertGuideTag = (tag) => {
