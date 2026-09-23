@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function PromptResultBox({ result, onSave, refined = false, onEdit }) {
+export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy }) {
   const [copied, setCopied] = useState(false)
 
   const en = result?.en
@@ -13,6 +13,7 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
     try {
       await navigator.clipboard.writeText(copyTarget)
       setCopied(true)
+      onCopy?.()
       setTimeout(() => setCopied(false), 1500)
     } catch {
       setCopied(false)

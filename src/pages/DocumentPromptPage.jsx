@@ -55,6 +55,7 @@ export default function DocumentPromptPage() {
   const [generating, setGenerating] = useState(false)
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     getTemplates('document')
@@ -95,6 +96,7 @@ export default function DocumentPromptPage() {
       const generated = generatePromptFromTemplate(selectedTemplate, content, tones, formats)
       setResult(generated)
       setIsRefined(false)
+      setIsCopied(false)
     } finally {
       setGenerating(false)
     }
@@ -106,6 +108,7 @@ export default function DocumentPromptPage() {
     const refinedText = refinePrompt(result.ko, quickFixes, customRequest)
     setResult({ en: null, ko: refinedText })
     setIsRefined(true)
+    setIsCopied(false)
   }
 
   const handleSaveClick = () => {
@@ -214,6 +217,7 @@ export default function DocumentPromptPage() {
             onSave={handleSaveClick}
             refined={isRefined}
             onEdit={setResult}
+            onCopy={() => setIsCopied(true)}
           />
 
           {result && (
@@ -223,7 +227,7 @@ export default function DocumentPromptPage() {
             />
           )}
 
-          {result && <AiShortcutLinks />}
+          {result && <AiShortcutLinks isCopied={isCopied} />}
         </div>
       </main>
 

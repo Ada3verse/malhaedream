@@ -133,7 +133,7 @@ export default function SharedPromptPage() {
             </div>
 
             <div className="mt-4">
-              <AiShortcutLinks />
+              <AiShortcutLinks isCopied={copied} />
             </div>
 
             <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-navy-100 bg-navy-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800">

@@ -50,6 +50,7 @@ export default function ImagePromptPage() {
   const [imageTemplateName, setImageTemplateName] = useState(DEFAULT_IMAGE_TEMPLATE_NAME)
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     getTemplates('image').then((templates) => {
@@ -91,6 +92,7 @@ export default function ImagePromptPage() {
 
       setResult(generated)
       setIsRefined(false)
+      setIsCopied(false)
     } finally {
       setGenerating(false)
     }
@@ -106,6 +108,7 @@ export default function ImagePromptPage() {
 
     setResult({ en: null, ko: refinedText })
     setIsRefined(true)
+    setIsCopied(false)
   }
 
   const handleSaveClick = () => {
@@ -207,13 +210,14 @@ export default function ImagePromptPage() {
             onSave={handleSaveClick}
             refined={isRefined}
             onEdit={setResult}
+            onCopy={() => setIsCopied(true)}
           />
 
           {result && (
             <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
           )}
 
-          {result && <AiShortcutLinks />}
+          {result && <AiShortcutLinks isCopied={isCopied} />}
 
           {isEnglishTool && (
             <p className="text-center text-xs text-sky-700 dark:text-sky-400">
