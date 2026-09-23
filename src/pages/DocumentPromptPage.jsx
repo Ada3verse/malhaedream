@@ -16,6 +16,30 @@ import { savePrompt } from '../utils/prompts'
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
 const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
 
+const DEFAULT_CONTENT_PLACEHOLDER =
+  '어떤 내용의 문서인가요? 구체적으로 입력할수록 좋은 프롬프트가 생성됩니다.'
+
+const CONTENT_PLACEHOLDER_MAP = {
+  '가정통신문': '예: 10월 15일(수) 2학기 학부모 공개수업, 1~2교시, 참관 신청 필요',
+  '사업계획서': '예: 2026학년도 독서교육 활성화 사업, 전교생 대상, 1학기 운영',
+  '행사보고서': '예: 5월 15일 진로의 날 행사, 전교생 350명 참가, 직업체험 부스 10개 운영',
+  '수업 지도안': '예: 중학교 2학년 과학, 광합성 단원, 모둠 실험 활동 포함, 45분 수업',
+  '형성평가 문항': '예: 중학교 1학년 수학, 정수와 유리수 단원, 객관식 5문항+서술형 2문항',
+  '수행평가 문항': '예: 중학교 3학년 국어, 논설문 쓰기, 5단계 채점 기준표 포함',
+  '학습지': '예: 중학교 2학년 영어, 현재완료 시제, 빈칸 채우기+서술형 혼합',
+  '지필평가 문제': '예: 중학교 2학년 역사, 조선 전기 단원, 객관식 15문항+서술형 5문항, 중간고사',
+  '쪽지 시험': '예: 중학교 1학년 과학, 세포의 구조, 5문항, 수업 마무리용',
+  '상담 일지': '예: 학교 부적응 학생 상담, 친구관계 어려움 호소, 담임-학생 면담',
+  '공문 초안': '예: 2026학년도 학교스포츠클럽 운영 협조 요청, 교육청 수신',
+  '회의록': '예: 2026년 9월 교직원 회의, 2학기 학사 일정 및 수행평가 계획 논의',
+  '출장 보고서': '예: AI 활용 수업 역량강화 직무연수, 서울시교육연수원, 1일 6시간',
+  '학생 피드백': '예: 중학교 2학년 과학 실험 보고서, 모둠 활동 참여도 우수, 보완점 제시',
+  '독서 활동지': '예: 중학교 1학년 국어, 어린왕자(생텍쥐페리), 주제 탐구 및 토론 활동',
+  '진로 탐색 활동지': '예: 중학교 2학년 진로, 직업 가치관 탐색, 자기이해 활동 포함',
+  '학급 규칙 안내문': '예: 중학교 2학년 3반, 학기 초 학급 규칙, 스마트폰 사용·청소·발언 규칙 포함',
+  '기타': '예: 원하는 문서 내용을 자유롭게 입력하세요',
+}
+
 export default function DocumentPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -46,6 +70,8 @@ export default function DocumentPromptPage() {
   }))
 
   const selectedTemplate = templates.find((template) => template.name === docTypeName)
+  const contentPlaceholder =
+    CONTENT_PLACEHOLDER_MAP[docTypeName] ?? DEFAULT_CONTENT_PLACEHOLDER
 
   const handleGenerate = () => {
     if (generating) return
@@ -147,12 +173,15 @@ export default function DocumentPromptPage() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={3}
-              placeholder="예: 2학기 학부모 공개수업 안내"
+              placeholder={contentPlaceholder}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
             />
             {!content.trim() && (
               <p className="mt-1 text-xs text-slate-400">핵심 내용을 입력해주세요.</p>
             )}
+            <p className="mt-1 text-xs text-slate-400">
+              💡 학교급·학년·과목·단원을 함께 입력하면 더 정확한 프롬프트가 생성됩니다.
+            </p>
           </section>
 
           <section>
