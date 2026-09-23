@@ -13,6 +13,7 @@ import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
+import { getCompletenessLevel } from '../utils/completeness'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
@@ -27,8 +28,55 @@ const TOOL_OPTIONS = [
 
 const CLAUDE_LABEL = TOOL_OPTIONS.find((option) => option.value === 'claude')?.label
 
-const STYLE_OPTIONS = ['사실적인', '일러스트', '수채화', '픽셀아트', '미니멀']
-const MOOD_OPTIONS = ['밝고 따뜻한', '차갑고 세련된', '몽환적인', '역동적인', '차분한']
+const TOOL_INFO_MAP = {
+  'ChatGPT (GPT Image 1.5 · Duct-tape)':
+    '💡 GPT Image 1.5는 사실적인 이미지와 복잡한 장면 표현에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. 유료 플랜 필요.',
+  Claude:
+    '💡 Claude는 한국어 프롬프트로도 잘 작동해요. 단, Claude의 이미지 생성은 제한적일 수 있어요. 무료로 사용 가능.',
+  'Gemini (Imagen 4 · nano banana)':
+    '💡 Imagen 4는 일러스트와 예술적 스타일에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. 유료 플랜 필요.',
+}
+
+const PURPOSE_OPTIONS = [
+  { value: 'lesson', label: '📚 수업 자료 삽화' },
+  { value: 'presentation', label: '📊 발표 배경 이미지' },
+  { value: 'worksheet', label: '📄 학습지 삽화' },
+  { value: 'activity', label: '🎨 창의 활동 예시' },
+  { value: 'announcement', label: '📢 게시물·안내판' },
+  { value: 'etc', label: '🖼️ 기타' },
+]
+
+const PURPOSE_PLACEHOLDER_MAP = {
+  '📚 수업 자료 삽화': '예: 광합성 과정을 설명하는 식물 세포 단면도, 밝고 교육적인 스타일',
+  '📊 발표 배경 이미지': '예: 미래 기술 도시 풍경, 파란색 계열, 미니멀하고 세련된 느낌',
+  '📄 학습지 삽화': '예: 수학 문제 옆에 들어갈 귀여운 캐릭터, 흑백 선화 스타일',
+  '🎨 창의 활동 예시': '예: 환경 보호 포스터에 어울리는 지구와 나무 일러스트',
+  '📢 게시물·안내판': '예: 독서의 달 행사 안내 배경, 책과 별이 있는 따뜻한 느낌',
+  '🖼️ 기타': '어떤 이미지를 만들고 싶으신가요? 구체적으로 설명할수록 좋아요',
+}
+
+const DEFAULT_TOPIC_PLACEHOLDER = '예: 봄 소풍을 떠나는 초등학생들의 모습'
+
+const STYLE_OPTIONS = [
+  '사실적인',
+  '일러스트',
+  '수채화',
+  '픽셀아트',
+  '미니멀',
+  '교과서 삽화풍',
+  '선화(흑백)',
+  '귀여운 캐릭터',
+]
+const MOOD_OPTIONS = [
+  '밝고 따뜻한',
+  '차갑고 세련된',
+  '몽환적인',
+  '역동적인',
+  '차분한',
+  '교육적인',
+  '집중하게 하는',
+  '호기심 자극하는',
+]
 const REFINE_OPTIONS = [
   '더 밝게',
   '더 어둡게',
@@ -40,10 +88,21 @@ const REFINE_OPTIONS = [
   '더 추상적으로',
 ]
 
+function getImageCompletenessScore(purpose, topic, styles, moods, tool) {
+  let score = 0
+  if (purpose) score += 1
+  if (topic.trim().length >= 10) score += 1
+  if (styles.length > 0) score += 1
+  if (moods.length > 0) score += 1
+  if (tool) score += 1
+  return score
+}
+
 export default function ImagePromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
   const location = useLocation()
+  const [purpose, setPurpose] = useState('')
   const [tool, setTool] = useState('')
   const [topic, setTopic] = useState('')
   const [styles, setStyles] = useState([])
@@ -68,6 +127,10 @@ export default function ImagePromptPage() {
   if (!user) return null
 
   const isEnglishTool = Boolean(tool) && tool !== CLAUDE_LABEL
+  const topicPlaceholder = PURPOSE_PLACEHOLDER_MAP[purpose] ?? DEFAULT_TOPIC_PLACEHOLDER
+  const toolInfo = TOOL_INFO_MAP[tool]
+  const completenessScore = getImageCompletenessScore(purpose, topic, styles, moods, tool)
+  const completenessLevel = getCompletenessLevel(completenessScore)
 
   const handleGenerate = () => {
     if (generating) return
@@ -169,19 +232,40 @@ export default function ImagePromptPage() {
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">사용할 도구</h2>
-            <OptionCards options={TOOL_OPTIONS} onChange={setTool} />
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
+              어떤 용도로 사용하실 건가요?
+            </h2>
+            <OptionCards options={PURPOSE_OPTIONS} onChange={setPurpose} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
-              어떤 이미지를 만들고 싶으신가요?
-            </h2>
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">사용할 도구</h2>
+            <OptionCards options={TOOL_OPTIONS} onChange={setTool} />
+            {toolInfo && (
+              <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                {toolInfo}
+              </p>
+            )}
+          </section>
+
+          <section>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+              <h2 className="text-sm font-medium text-navy-700 dark:text-slate-300">
+                어떤 이미지를 만들고 싶으신가요?
+              </h2>
+              <div className={`flex items-center gap-1.5 text-sm ${completenessLevel.colorClass}`}>
+                <span className="tracking-widest" aria-hidden="true">
+                  {'●'.repeat(completenessScore)}
+                  {'○'.repeat(5 - completenessScore)}
+                </span>
+                <span className="text-xs">{completenessLevel.message}</span>
+              </div>
+            </div>
             <textarea
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
-              placeholder="예: 봄 소풍을 떠나는 초등학생들의 모습"
+              placeholder={topicPlaceholder}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
             />
             {!topic.trim() && (

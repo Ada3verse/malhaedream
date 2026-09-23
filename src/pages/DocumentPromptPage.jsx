@@ -13,6 +13,7 @@ import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
+import { getCompletenessLevel } from '../utils/completeness'
 import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
@@ -103,14 +104,6 @@ function extractGuideTagLabel(tag) {
   return tag.split(' 예:')[0].trim()
 }
 
-const COMPLETENESS_LEVELS = [
-  { message: '내용을 입력해주세요', colorClass: 'text-red-500 dark:text-red-400' },
-  { message: '조금 더 구체적으로 입력해보세요', colorClass: 'text-orange-500 dark:text-orange-400' },
-  { message: '괜찮아요! 더 추가하면 더 좋아져요', colorClass: 'text-yellow-500 dark:text-yellow-400' },
-  { message: '좋아요! 거의 완성됐어요', colorClass: 'text-lime-500 dark:text-lime-400' },
-  { message: '완벽해요! 최적의 프롬프트가 생성됩니다', colorClass: 'text-green-600 dark:text-green-400' },
-]
-
 const ADMIN_TEMPLATE_NAMES = ['가정통신문', '사업계획서', '행사보고서', '공문 초안', '회의록', '출장 보고서']
 const CLASS_TEMPLATE_NAMES = ['학급 규칙 안내문', '상담 일지']
 
@@ -166,10 +159,6 @@ function getCompletenessScore(docTypeName, content, tones, formats) {
   if (hasTone) score += 1
   if (hasFormat) score += 1
   return score
-}
-
-function getCompletenessLevel(score) {
-  return COMPLETENESS_LEVELS[Math.max(score - 1, 0)]
 }
 
 function hasRequiredGuideInfo(docTypeName, content) {

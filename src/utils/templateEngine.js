@@ -11,6 +11,9 @@ const imageTemplates = {
       수채화: 'watercolor painting style, soft colors',
       픽셀아트: 'pixel art style, 8-bit',
       미니멀: 'minimalist, clean, simple',
+      '교과서 삽화풍': 'textbook illustration style, clean educational graphic',
+      '선화(흑백)': 'line art, black and white, simple outline drawing',
+      '귀여운 캐릭터': 'cute character design, kawaii style, friendly mascot',
     },
     moodMap: {
       '밝고 따뜻한': 'bright, warm lighting, cheerful atmosphere',
@@ -18,6 +21,9 @@ const imageTemplates = {
       몽환적인: 'dreamy, fantasy atmosphere, ethereal',
       역동적인: 'dynamic, energetic, action',
       차분한: 'calm, peaceful, serene',
+      교육적인: 'educational, informative, clear and instructive',
+      '집중하게 하는': 'focused, attention-grabbing, engaging',
+      '호기심 자극하는': 'curiosity-inspiring, intriguing, thought-provoking',
     },
     format: (subject, styles, moods, extras) => {
       const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
