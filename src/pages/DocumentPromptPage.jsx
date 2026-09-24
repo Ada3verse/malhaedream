@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import AiShortcutLinks from '../components/AiShortcutLinks'
 import DarkModeToggle from '../components/DarkModeToggle'
+import FileUploadGuideBox from '../components/FileUploadGuideBox'
 import Modal from '../components/Modal'
 import OptionCards from '../components/OptionCards'
 import PromptExplanationPanel from '../components/PromptExplanationPanel'
@@ -432,6 +433,8 @@ export default function DocumentPromptPage() {
           {result && <PromptFollowUpBox type="document" toolLabel="ChatGPT/Claude/Gemini" />}
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
+
+          {result && <FileUploadGuideBox type="document" />}
         </div>
       </main>
 
