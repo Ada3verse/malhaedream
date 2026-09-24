@@ -10,8 +10,7 @@
     "preview": "vite preview",
     "seed:users": "node --env-file=.env.local src/scripts/seedUsers.js",
     "seed:templates": "node --env-file=.env.local src/scripts/seedTemplates.js",
-    "seed:school-events": "node --env-file=.env.local src/scripts/seedSchoolEvents.js",
-    "migrate:pins": "node --env-file=.env.local src/scripts/migratePin.js"
+    "seed:school-events": "node --env-file=.env.local src/scripts/seedSchoolEvents.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
