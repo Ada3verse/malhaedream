@@ -146,16 +146,30 @@ export function generateIBUnitPlanPrompt({
   explorationSelected,
   statementKeyword,
   mypYear,
+  lessonActivity,
+  summativeDescription,
 }) {
+  const contextLines = [
+    `- 교과군: ${subject}`,
+    `- MYP 학년: ${mypYear}`,
+    `- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}`,
+    `- 관련 개념(Related Concepts): ${relatedConceptsInput}`,
+    `- 세계적 맥락(Global Context): ${globalContext}`,
+    `- 탐구(세부, Exploration): ${explorationSelected}`,
+    `- 탐구 진술문 키워드: ${statementKeyword}`,
+  ]
+
+  const joinedLessonActivity = joinIfArray(lessonActivity)
+  if (joinedLessonActivity) contextLines.push(`- 선호하는 수업 활동 유형: ${joinedLessonActivity}`)
+
+  const joinedSummativeDescription = joinIfArray(summativeDescription)
+  if (joinedSummativeDescription) {
+    contextLines.push(`- 선호하는 총괄 평가 유형: ${joinedSummativeDescription}`)
+  }
+
   const ko = `[[ROLE]]당신은 IB MYP(중등교육프로그램) 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 IB MYP 유닛 플랜(Unit Plan) 초안을 작성해주세요.[[/PURPOSE]]
 
-[[CONTEXT]]- 교과군: ${subject}
-- MYP 학년: ${mypYear}
-- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
-- 관련 개념(Related Concepts): ${relatedConceptsInput}
-- 세계적 맥락(Global Context): ${globalContext}
-- 탐구(세부, Exploration): ${explorationSelected}
-- 탐구 진술문 키워드: ${statementKeyword}[[/CONTEXT]]
+[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
 
 [[CONDITION]]- 탐구 진술문(Statement of Inquiry)을 먼저 한 문장으로 제시해주세요.
 - 사실적(Factual)/개념적(Conceptual)/논쟁적(Debatable) 탐구 질문을 각 1개 이상 제시해주세요.
@@ -212,12 +226,16 @@ export function generateIBStatementPrompt({
   return { ko }
 }
 
+function joinIfArray(value) {
+  return Array.isArray(value) ? value.join(', ') : value
+}
+
 export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescription }) {
   const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 총괄평가(Summative Assessment)를 GRASPS 모델을 기반으로 설계해주세요.[[/PURPOSE]]
 
 [[CONTEXT]]- 교과군: ${subject}
 - MYP 학년: ${mypYear}
-- 총괄평가 간략 설명: ${summativeDescription}[[/CONTEXT]]
+- 총괄평가 간략 설명: ${joinIfArray(summativeDescription)}[[/CONTEXT]]
 
 [[CONDITION]]- G(Goal, 목표): 학생이 달성해야 할 목표
 - R(Role, 역할): 과제 수행 중 학생이 맡는 역할
@@ -235,7 +253,7 @@ export function generateIBATLPrompt({ subject, atlSelected, lessonActivity }) {
 
 [[CONTEXT]]- 교과군: ${subject}
 - ATL 카테고리: ${atlSelected}
-- 수업 활동: ${lessonActivity}[[/CONTEXT]]
+- 수업 활동: ${joinIfArray(lessonActivity)}[[/CONTEXT]]
 
 [[CONDITION]]- 선택한 ATL 카테고리에 해당하는 구체적인 기능(skill) 서술 문장을 2~3개 만들어주세요.
 - "학생은 ~할 수 있다" 형태로, 수업 활동과 직접 연결되도록 작성해주세요.

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import PromptResultBox from '../components/PromptResultBox'
+import TagSelector from '../components/TagSelector'
 import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
@@ -35,7 +36,6 @@ const SECTION_TABS = [
 const SELECT_CLASS =
   'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white'
 const INPUT_CLASS = SELECT_CLASS
-const TEXTAREA_CLASS = `${SELECT_CLASS} resize-y`
 
 function Field({ label, hint, children }) {
   return (
@@ -187,6 +187,8 @@ export default function IBPromptPage() {
   const [globalContext, setGlobalContext] = useState('')
   const [explorationSelected, setExplorationSelected] = useState('')
   const [statementKeyword, setStatementKeyword] = useState('')
+  const [fullLessonActivitySelected, setFullLessonActivitySelected] = useState([])
+  const [fullSummativeSelected, setFullSummativeSelected] = useState([])
 
   // 섹션별 작성
   const [sectionSubject, setSectionSubject] = useState('')
@@ -198,9 +200,9 @@ export default function IBPromptPage() {
   const [sectionExploration, setSectionExploration] = useState('')
   const [sectionUnitKeyword, setSectionUnitKeyword] = useState('')
   const [sectionMypYear, setSectionMypYear] = useState('')
-  const [summativeDescription, setSummativeDescription] = useState('')
+  const [sectionSummativeSelected, setSectionSummativeSelected] = useState([])
   const [atlSelected, setAtlSelected] = useState('')
-  const [lessonActivity, setLessonActivity] = useState('')
+  const [sectionLessonActivitySelected, setSectionLessonActivitySelected] = useState([])
 
   const [result, setResult] = useState(null)
   const [generateError, setGenerateError] = useState('')
@@ -265,6 +267,8 @@ export default function IBPromptPage() {
       explorationSelected,
       statementKeyword: statementKeyword.trim() || '(입력 없음)',
       mypYear,
+      lessonActivity: fullLessonActivitySelected,
+      summativeDescription: fullSummativeSelected,
     })
 
     setResult(generated)
@@ -309,27 +313,27 @@ export default function IBPromptPage() {
         }),
       )
     } else if (activeSection === 'assessment') {
-      if (!sectionMypYear || !summativeDescription.trim()) {
-        setGenerateError('MYP 학년과 총괄 평가 간략 설명을 입력해주세요.')
+      if (!sectionMypYear || sectionSummativeSelected.length === 0) {
+        setGenerateError('MYP 학년을 선택하고 총괄 평가 유형을 하나 이상 선택해주세요.')
         return
       }
       setResult(
         generateIBAssessmentPrompt({
           subject: sectionSubject,
           mypYear: sectionMypYear,
-          summativeDescription: summativeDescription.trim(),
+          summativeDescription: sectionSummativeSelected,
         }),
       )
     } else if (activeSection === 'atl') {
-      if (!atlSelected || !lessonActivity.trim()) {
-        setGenerateError('ATL 카테고리와 수업 활동 설명을 입력해주세요.')
+      if (!atlSelected || sectionLessonActivitySelected.length === 0) {
+        setGenerateError('ATL 카테고리를 선택하고 수업 활동 유형을 하나 이상 선택해주세요.')
         return
       }
       setResult(
         generateIBATLPrompt({
           subject: sectionSubject,
           atlSelected,
-          lessonActivity: lessonActivity.trim(),
+          lessonActivity: sectionLessonActivitySelected,
         }),
       )
     }
@@ -450,6 +454,22 @@ export default function IBPromptPage() {
               />
             </Field>
 
+            <Field label="수업 활동 (선택)" hint="원하는 수업 활동 유형을 선택하면 더 구체적인 플랜이 만들어져요.">
+              <TagSelector
+                categories={ibData.lessonActivityCategories}
+                selected={fullLessonActivitySelected}
+                onChange={setFullLessonActivitySelected}
+              />
+            </Field>
+
+            <Field label="총괄 평가 (선택)" hint="원하는 총괄 평가 유형을 선택하면 더 구체적인 플랜이 만들어져요.">
+              <TagSelector
+                categories={ibData.assessmentCategories}
+                selected={fullSummativeSelected}
+                onChange={setFullSummativeSelected}
+              />
+            </Field>
+
             <button
               type="button"
               onClick={handleGenerateFull}
@@ -560,12 +580,10 @@ export default function IBPromptPage() {
                   <MypYearButtons value={sectionMypYear} onChange={setSectionMypYear} />
                 </Field>
                 <Field label="총괄 평가 간략 설명">
-                  <textarea
-                    value={summativeDescription}
-                    onChange={(e) => setSummativeDescription(e.target.value)}
-                    rows={3}
-                    placeholder="예: 지역 사회 환경 문제를 조사하고 해결 방안을 담은 캠페인 자료 제작"
-                    className={TEXTAREA_CLASS}
+                  <TagSelector
+                    categories={ibData.assessmentCategories}
+                    selected={sectionSummativeSelected}
+                    onChange={setSectionSummativeSelected}
                   />
                 </Field>
               </>
@@ -577,12 +595,10 @@ export default function IBPromptPage() {
                   <Select value={atlSelected} onChange={setAtlSelected} options={ibData.atlCategories} />
                 </Field>
                 <Field label="수업 활동 설명">
-                  <textarea
-                    value={lessonActivity}
-                    onChange={(e) => setLessonActivity(e.target.value)}
-                    rows={3}
-                    placeholder="예: 모둠별로 자료를 조사하고 토의하여 발표 자료를 제작하는 활동"
-                    className={TEXTAREA_CLASS}
+                  <TagSelector
+                    categories={ibData.lessonActivityCategories}
+                    selected={sectionLessonActivitySelected}
+                    onChange={setSectionLessonActivitySelected}
                   />
                 </Field>
               </>
