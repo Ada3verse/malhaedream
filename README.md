@@ -30,7 +30,24 @@
   - 학급: 학급 규칙 안내문·상담 일지
   - 각 템플릿은 역할 부여 + 맥락 + 요구사항 + 제약조건 + 예시 문체 + 입력 힌트 포함
 - **프롬프트 보완**: 빠른 수정 버튼 + 자유입력 조합, 결과 박스 직접 편집 가능
-- **AI 바로가기**: 프롬프트 생성 후 ChatGPT·Claude·Gemini 바로가기 버튼 제공, 복사 전 안내 문구로 사용 흐름 유도
+- **AI 바로가기**: 프롬프트 생성 후 ChatGPT·Claude·Gemini 바로가기 버튼 제공 (이미지는 ChatGPT·Gemini), 복사 전 안내 문구로 사용 흐름 유도
+
+### 프롬프트 구조 시각화
+- 생성된 프롬프트의 역할·목적·맥락·조건·제약 등 구성 요소를 색상으로 구분해서 표시 (이미지는 주제·스타일·분위기·품질 키워드 기준)
+- 결과 박스는 클릭하면 바로 편집 가능, 편집 시 순수 텍스트로 전환
+- "이 프롬프트가 이렇게 구성된 이유" 해설 패널 제공 (아코디언, 기본 접힘)
+
+### 후속 프롬프트 생성
+- 프롬프트 결과가 마음에 안 들 때, ChatGPT·Claude·Gemini 대화창에 이어 붙여넣을 수 있는 후속 프롬프트 생성
+- 더 짧게·더 길게·예시 추가·NEIS 형식에 맞게 등 카테고리별 선택 버튼 제공 (문서용 4개 카테고리, 이미지용 5개 카테고리로 각각 특화)
+- 직접 입력과 조합 가능, 복사 버튼 제공
+
+### 파일 업로드 안내
+- 프롬프트 생성 후, 수행평가 결과물·학생 활동지·참고 이미지 등 파일이 있을 때 ChatGPT·Claude(문서) 또는 ChatGPT·Gemini(이미지)에 직접 업로드하는 방법과 활용 예시 안내
+
+### 학사일정 기반 주간 추천
+- 동신중학교 2026학년도 학사일정을 기반으로, 다가오는 일정(D-day)과 진행 중인 일정에 맞는 추천 템플릿을 홈 화면 상단에 자동 표시
+- 추천 템플릿 버튼 클릭 시 해당 템플릿이 선택된 상태로 바로 이동
 
 ### UX 기능
 - **카테고리 탭**: 이미지·수업·평가·행정·학급 5개 탭으로 템플릿 분류
@@ -61,8 +78,9 @@
 
 ### 관리자 페이지
 - 교사 계정 목록 조회, PIN 초기화·잠금 해제·계정 삭제
-- 템플릿 추가·수정·삭제·활성화 토글·순서 변경
+- 템플릿 19개 기본 제공 (이미지 1개, 문서 18개: 수업·평가·행정·학급 카테고리), 폼 또는 JSON으로 추가·수정·삭제·활성화 토글·순서 변경
 - JSON 일괄 입력으로 템플릿 대량 추가
+- 학사일정 관리 (목록 조회, 추가, 삭제)
 - 사용 통계 (가입자 수, 전체 프롬프트 수, 최근 7일 생성 수, 템플릿별 사용 횟수 막대그래프)
 - 공유 라이브러리 관리 (부적절한 프롬프트 비공개 처리)
 - 관리자 PIN 변경 기능
@@ -104,27 +122,51 @@
 src/
 ├── components/
 │   ├── Toast.jsx
-│   ├── AiShortcutLinks.jsx
+│   ├── Modal.jsx
+│   ├── Layout.jsx
+│   ├── OptionCards.jsx
+│   ├── TagToggleGroup.jsx
+│   ├── DarkModeToggle.jsx
 │   ├── UsageGuideModal.jsx
-│   └── DarkModeToggle.jsx
+│   ├── PrivacyPolicyModal.jsx
+│   ├── AiShortcutLinks.jsx
+│   ├── PromptResultBox.jsx         # 결과 박스 (색상 시각화 + 직접 편집)
+│   ├── PromptExplanationPanel.jsx  # "이렇게 구성된 이유" 해설 패널
+│   ├── PromptRefineBox.jsx         # 빠른 수정 버튼 (프롬프트 보완)
+│   ├── PromptRefineGuideBox.jsx    # 보완 안내 아코디언
+│   ├── PromptFollowUpBox.jsx       # 후속 프롬프트 생성기
+│   └── FileUploadGuideBox.jsx      # 파일 업로드 안내
 ├── pages/
 │   ├── LoginPage.jsx
-│   ├── HomePage.jsx
+│   ├── HomePage.jsx                # 학사일정 추천 포함
 │   ├── ImagePromptPage.jsx
 │   ├── DocumentPromptPage.jsx
 │   ├── MyPage.jsx
 │   ├── LibraryPage.jsx
-│   ├── AdminPage.jsx
+│   ├── AdminPage.jsx               # 템플릿·학사일정·계정 관리
 │   └── SharedPromptPage.jsx
 ├── utils/
-│   ├── hash.js
-│   ├── prompts.js
-│   ├── templates.js
-│   └── templateEngine.js
+│   ├── auth.js              # 로그인 세션(localStorage) 관리
+│   ├── hash.js              # PIN 해싱
+│   ├── prompts.js           # 프롬프트 Firestore 연동
+│   ├── templates.js         # 템플릿 CRUD (관리자용)
+│   ├── templateEngine.js    # 프롬프트 생성 엔진 (마커 포함)
+│   ├── promptMarkers.js     # 마커 파싱/제거 유틸
+│   ├── completeness.js      # 완성도 지표 계산
+│   └── schoolEvents.js      # 학사일정 조회·추천 로직
 ├── hooks/
-│   └── useDarkMode.js
+│   ├── useAuthGuard.js
+│   ├── useDarkMode.js
+│   └── usePersistedToggle.js   # 아코디언 펼침 상태 localStorage 저장
 ├── constants/
+│   ├── guide.js
 │   └── tags.js
+├── scripts/                    # 관리자용 Firestore 시드 스크립트
+│   ├── seedUsers.js
+│   ├── seedTemplates.js
+│   ├── seedEducationTemplates.js
+│   ├── seedSchoolEvents.js
+│   └── deduplicateTemplates.js
 └── firebase.js
 ```
 
