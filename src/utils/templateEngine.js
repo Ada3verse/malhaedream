@@ -28,18 +28,16 @@ const imageTemplates = {
     format: (subject, styles, moods, extras) => {
       const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
       const moodStr = moods.map((m) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].moodMap[m] || m).join(', ')
-      const en = `Based on the following description: [[SUBJECT]]"${subject}"[[/SUBJECT]], [[STYLE]]${styleStr}[[/STYLE]], [[MOOD]]${moodStr}[[/MOOD]]${extras ? ', ' + extras : ''}, [[SUFFIX]]high quality, detailed[[/SUFFIX]]`
-      const ko = `[[SUBJECT]]${subject}[[/SUBJECT]] / [[STYLE]]스타일: ${styles.join(', ')}[[/STYLE]] / [[MOOD]]분위기: ${moods.join(', ')}[[/MOOD]]`
-      return { en, ko }
+      const combined = `[[SUBJECT]]${subject}[[/SUBJECT]], [[STYLE]]${styleStr}[[/STYLE]], [[MOOD]]${moodStr}[[/MOOD]]${extras ? ', ' + extras : ''}, [[SUFFIX]]high quality, detailed[[/SUFFIX]]`
+      return { en: null, ko: combined }
     },
   },
   'Gemini (Imagen 4 · nano banana)': {
     format: (subject, styles, moods, extras) => {
       const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
       const moodStr = moods.map((m) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].moodMap[m] || m).join(', ')
-      const en = `Based on the following description: [[SUBJECT]]"${subject}"[[/SUBJECT]], [[STYLE]]${styleStr}[[/STYLE]], [[MOOD]]${moodStr}[[/MOOD]]${extras ? ', ' + extras : ''}, [[SUFFIX]]vibrant colors, high resolution[[/SUFFIX]]`
-      const ko = `[[SUBJECT]]${subject}[[/SUBJECT]] / [[STYLE]]스타일: ${styles.join(', ')}[[/STYLE]] / [[MOOD]]분위기: ${moods.join(', ')}[[/MOOD]]`
-      return { en, ko }
+      const combined = `[[SUBJECT]]${subject}[[/SUBJECT]], [[STYLE]]${styleStr}[[/STYLE]], [[MOOD]]${moodStr}[[/MOOD]]${extras ? ', ' + extras : ''}, [[SUFFIX]]high quality, detailed[[/SUFFIX]]`
+      return { en: null, ko: combined }
     },
   },
 }

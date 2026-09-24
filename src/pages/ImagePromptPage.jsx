@@ -13,7 +13,6 @@ import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { getCompletenessLevel, getImageCompletenessScore } from '../utils/completeness'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
@@ -114,8 +113,6 @@ export default function ImagePromptPage() {
   const topicPlaceholder = PURPOSE_PLACEHOLDER_MAP[purpose] ?? DEFAULT_TOPIC_PLACEHOLDER
   const toolInfo = TOOL_INFO_MAP[tool]
   const selectedToolValue = TOOL_OPTIONS.find((option) => option.label === tool)?.value
-  const completenessScore = getImageCompletenessScore(purpose, topic, styles, moods)
-  const completenessLevel = getCompletenessLevel(completenessScore)
 
   const handleGenerate = () => {
     if (generating) return
@@ -156,10 +153,7 @@ export default function ImagePromptPage() {
   const handleRefine = (quickFixes, customRequest) => {
     if (!result) return
 
-    const originalPromptText = result.en
-      ? `${result.en}\n\n[한국어 해석]\n${result.ko}`
-      : result.ko
-    const refinedText = refinePrompt(originalPromptText, quickFixes, customRequest)
+    const refinedText = refinePrompt(result.ko, quickFixes, customRequest)
 
     setResult({ en: null, ko: refinedText })
     setIsRefined(true)
@@ -177,9 +171,7 @@ export default function ImagePromptPage() {
   }
 
   const performSave = async (tags) => {
-    const content = result.en
-      ? `${stripMarkers(result.en)}\n\n[한국어 해석]\n${stripMarkers(result.ko)}`
-      : stripMarkers(result.ko)
+    const content = stripMarkers(result.ko)
 
     try {
       await savePrompt({
@@ -234,18 +226,9 @@ export default function ImagePromptPage() {
           </section>
 
           <section>
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-              <h2 className="text-sm font-medium text-navy-700 dark:text-slate-300">
-                어떤 이미지를 만들고 싶으신가요?
-              </h2>
-              <div className={`flex items-center gap-1.5 text-sm ${completenessLevel.colorClass}`}>
-                <span className="tracking-widest" aria-hidden="true">
-                  {'●'.repeat(completenessScore)}
-                  {'○'.repeat(5 - completenessScore)}
-                </span>
-                <span className="text-xs">{completenessLevel.message}</span>
-              </div>
-            </div>
+            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
+              어떤 이미지를 만들고 싶으신가요?
+            </h2>
             <textarea
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
@@ -289,6 +272,8 @@ export default function ImagePromptPage() {
             refined={isRefined}
             onEdit={setResult}
             onCopy={() => setIsCopied(true)}
+            title="생성된 프롬프트 (ChatGPT / Gemini에 붙여넣기)"
+            hint="💡 한국어 주제와 영문 키워드를 조합한 프롬프트예요. 대부분의 AI 이미지 생성 도구에서 잘 작동합니다."
           />
 
           {result && <PromptExplanationPanel type="image" />}
@@ -301,13 +286,7 @@ export default function ImagePromptPage() {
 
           {result && <PromptFollowUpBox type="image" />}
 
-          {result && <AiShortcutLinks isCopied={isCopied} />}
-
-          {result && (
-            <p className="text-center text-xs text-sky-700 dark:text-sky-400">
-              💡 영문 프롬프트를 복사해서 사용하세요.
-            </p>
-          )}
+          {result && <AiShortcutLinks isCopied={isCopied} links={['ChatGPT', 'Gemini']} />}
         </div>
       </main>
 

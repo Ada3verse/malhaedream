@@ -9,12 +9,3 @@ export const COMPLETENESS_LEVELS = [
 export function getCompletenessLevel(score) {
   return COMPLETENESS_LEVELS[Math.max(score - 1, 0)]
 }
-
-export function getImageCompletenessScore(purpose, topic, styles, moods) {
-  let score = 0
-  if (topic.trim().length >= 1) score += 2
-  if (styles.length > 0) score += 1
-  if (moods.length > 0) score += 1
-  if (purpose) score += 1
-  return score
-}

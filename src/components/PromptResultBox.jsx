@@ -47,13 +47,12 @@ function PromptField({ value, onChange, placeholder, disabled, rows = 8, textCla
   )
 }
 
-export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy }) {
+export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy, title, hint }) {
   const [copied, setCopied] = useState(false)
 
-  const en = result?.en
   const ko = result?.ko
-  const hasResult = Boolean(en || ko)
-  const copyTarget = stripMarkers(en || ko || '')
+  const hasResult = Boolean(ko)
+  const copyTarget = stripMarkers(ko || '')
 
   const handleCopy = async () => {
     if (!copyTarget) return
@@ -67,14 +66,13 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
     }
   }
 
-  const handleChangeEn = (value) => onEdit?.({ ...result, en: value })
   const handleChangeKo = (value) => onEdit?.({ ...result, ko: value })
 
   return (
     <div className="rounded-2xl border-2 border-violet-600 bg-[#faf5ff] p-5 shadow-md shadow-violet-200/60 dark:border-violet-500/40 dark:bg-slate-800">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-navy-700 dark:text-slate-200">
-          {refined ? '🔄 보완된 프롬프트' : '생성된 프롬프트'}
+          {refined ? '🔄 보완된 프롬프트' : (title ?? '생성된 프롬프트')}
         </h2>
         <div className="flex gap-2">
           <button
@@ -101,45 +99,19 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
         </p>
       )}
 
-      {hasResult && en ? (
-        <div className="mt-3 flex flex-col gap-3">
-          <div>
-            <p className="mb-1 text-xs font-semibold text-violet-700 dark:text-violet-400">
-              📋 영문 프롬프트 (복사 권장)
-            </p>
-            <PromptField
-              value={en}
-              onChange={handleChangeEn}
-              rows={6}
-              textClassName="bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            />
-            <p className="mt-1 text-xs text-slate-400">
-              💡 주제 설명은 한국어로 입력하셔도 ChatGPT와 Gemini가 이해합니다.
-            </p>
-          </div>
-          <div>
-            <p className="mb-1 text-xs font-semibold text-violet-700 dark:text-violet-400">
-              🇰🇷 한국어 해석
-            </p>
-            <PromptField
-              value={ko}
-              onChange={handleChangeKo}
-              rows={6}
-              textClassName="bg-white/70 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300"
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="mt-3">
-          <PromptField
-            value={ko ?? ''}
-            onChange={handleChangeKo}
-            disabled={!hasResult}
-            rows={8}
-            placeholder="프롬프트를 생성하면 여기에 표시됩니다."
-            textClassName="bg-white/70 text-slate-700 disabled:text-slate-400 dark:bg-slate-900 dark:text-slate-200 dark:disabled:text-slate-500"
-          />
-        </div>
+      <div className="mt-3">
+        <PromptField
+          value={ko ?? ''}
+          onChange={handleChangeKo}
+          disabled={!hasResult}
+          rows={8}
+          placeholder="프롬프트를 생성하면 여기에 표시됩니다."
+          textClassName="bg-white/70 text-slate-700 disabled:text-slate-400 dark:bg-slate-900 dark:text-slate-200 dark:disabled:text-slate-500"
+        />
+      </div>
+
+      {hasResult && hint && (
+        <p className="mt-2 text-xs text-slate-400">{hint}</p>
       )}
     </div>
   )

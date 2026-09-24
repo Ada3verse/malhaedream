@@ -22,7 +22,10 @@ const AI_LINKS = [
   },
 ]
 
-export default function AiShortcutLinks({ isCopied = false }) {
+export default function AiShortcutLinks({ isCopied = false, links }) {
+  const visibleLinks = links ? AI_LINKS.filter((ai) => links.includes(ai.name)) : AI_LINKS
+  const gridClass = visibleLinks.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
+
   return (
     <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950">
       <p className="text-center text-base font-bold text-navy-800 dark:text-white">
@@ -38,8 +41,8 @@ export default function AiShortcutLinks({ isCopied = false }) {
         </p>
       )}
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {AI_LINKS.map((ai) => (
+      <div className={`mt-4 grid grid-cols-1 gap-3 ${gridClass}`}>
+        {visibleLinks.map((ai) => (
           <a
             key={ai.name}
             href={ai.url}
