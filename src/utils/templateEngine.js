@@ -191,49 +191,73 @@ export function generateIBUnitPlanPrompt({
   formativeAssessments,
   aiTool,
 }) {
-  const contextLines = [
+  const isEmptyValue = (value) => !value || value === '(입력 없음)'
+
+  const infoLines = [
     `- 교과군: ${subject}`,
     `- MYP 학년: ${mypYear}`,
-    `- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}`,
-    `- 관련 개념(Related Concepts): ${relatedConceptsInput}`,
-    `- 세계적 맥락(Global Context): ${globalContext}`,
-    `- 탐구(세부, Exploration): ${explorationSelected}`,
-    `- 탐구 진술문 키워드: ${statementKeyword}`,
+    `- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`,
   ]
 
+  if (!isEmptyValue(relatedConceptsInput)) infoLines.push(`- 관련 개념: ${relatedConceptsInput}`)
+
+  infoLines.push(`- 세계적 맥락: ${globalContext}`)
+
+  if (explorationSelected) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
+  if (!isEmptyValue(statementKeyword)) infoLines.push(`- 단원 키워드: ${statementKeyword}`)
+
   const joinedLessonActivity = joinIfArray(lessonActivity)
-  if (joinedLessonActivity) contextLines.push(`- 선호하는 수업 활동 유형: ${joinedLessonActivity}`)
-  if (lessonActivityDescription && lessonActivityDescription.trim()) {
-    contextLines.push(`- 수업 활동 보충 설명: ${lessonActivityDescription.trim()}`)
+  const trimmedLessonActivityDescription = lessonActivityDescription?.trim()
+  if (joinedLessonActivity || trimmedLessonActivityDescription) {
+    const lessonActivityText = [
+      joinedLessonActivity,
+      trimmedLessonActivityDescription ? `(보충: ${trimmedLessonActivityDescription})` : null,
+    ]
+      .filter(Boolean)
+      .join(' ')
+    infoLines.push(`- 희망 수업 활동: ${lessonActivityText}`)
   }
 
   const joinedSummativeDescription = joinIfArray(summativeDescription)
-  if (joinedSummativeDescription) {
-    contextLines.push(`- 선호하는 총괄 평가 유형: ${joinedSummativeDescription}`)
-  }
+  if (joinedSummativeDescription) infoLines.push(`- 희망 총괄 평가 방식: ${joinedSummativeDescription}`)
 
   const graspsLines = buildGraspsLines(grasps)
-  if (graspsLines.length) {
-    contextLines.push('- 총괄 평가 상세(GRASPS):', ...graspsLines)
-  }
+  if (graspsLines.length) infoLines.push('- GRASPS 참고사항:', ...graspsLines)
 
   const formativeLines = buildFormativeLines(formativeAssessments)
-  if (formativeLines.length) {
-    contextLines.push('- 형성평가 계획:', ...formativeLines)
-  }
+  if (formativeLines.length) infoLines.push('- 형성평가 계획:', ...formativeLines)
 
-  const ko = `[[ROLE]]당신은 IB MYP(중등교육프로그램) 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 IB MYP 유닛 플랜(Unit Plan) 초안을 작성해주세요.[[/PURPOSE]]
+  const ko = `다음 내용을 ${aiTool || 'ChatGPT'}에 붙여넣어 IB MYP 단원 설계 방향을 잡는 데 활용하세요.
 
-[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
+당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건을 바탕으로 이 단원의 설계 방향을 브레인스토밍해주세요.
+완성된 유닛 플랜이 아니라, 교사가 방향을 잡을 수 있도록 아이디어와 제안을 주는 것이 목적입니다.
 
-[[CONDITION]]- 탐구 진술문(Statement of Inquiry)을 먼저 한 문장으로 제시해주세요.
-- 사실적(Factual)/개념적(Conceptual)/논쟁적(Debatable) 탐구 질문을 각 1개 이상 제시해주세요.
-- 총괄평가(Summative Assessment) 개요를 GRASPS(목표-역할-대상-상황-결과물-기준) 요소를 포함해 제시해주세요.
-- 이 단원과 관련된 ATL(학습접근방법) 기능을 2~3개 제안하고 각각 수업에서 어떻게 드러나는지 설명해주세요.
-- 학습 경험 및 수업 활동의 흐름을 차시별로 간략히 제시해주세요.
-- MYP 학년 수준에 맞는 난이도와 분량으로 작성해주세요.[[/CONDITION]]`
+[단원 기본 정보]
+${infoLines.join('\n')}
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+[브리핑 요청사항]
+아래 항목별로 간결하고 명확하게 제안해주세요.
+
+1. 탐구 진술문(Statement of Inquiry) 후보 2개
+핵심 개념 + 관련 개념 + 세계적 맥락이 자연스럽게 연결되도록 각각 한 문장으로 작성해주세요.
+후보 A / 후보 B 형태로 제시해주세요.
+
+2. 총괄 평가 아이디어 2~3개
+각각 평가 유형 + 한 줄 설명으로 제시해주세요.
+희망 평가 방식이 있으면 그것을 우선 반영해주세요.
+
+3. 이 단원에 어울리는 ATL 기능 2개 추천
+ATL 카테고리명 + 이 단원에서 어떻게 드러나는지 한 줄 설명으로 제시해주세요.
+
+4. 단원 흐름 큰 그림
+도입 → 전개 → 마무리 각 단계를 2~3줄로 설명해주세요.
+차시 수는 명시하지 않아도 됩니다.
+
+5. 교사를 위한 한 마디
+이 단원 설계에서 특히 주의할 점 또는 핵심 포인트를 1~2줄로 작성해주세요.`
+
+  return { ko }
 }
 
 export function generateIBInquiryQuestionsPrompt({

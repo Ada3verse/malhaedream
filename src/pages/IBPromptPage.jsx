@@ -765,6 +765,11 @@ export default function IBPromptPage() {
 
         {mode === 'full' ? (
           <div className="mt-6 flex flex-col gap-6">
+            <p className="mb-4 text-sm text-gray-500 dark:text-slate-400">
+              교과군·개념·맥락을 입력하면 단원 설계 방향을 브레인스토밍해드려요. 각 섹션을 깊이 있게 작성하려면
+              섹션별 작성 탭을 활용하세요.
+            </p>
+
             <Field label="AI 툴 선택" hint="프롬프트를 어떤 AI 툴에 붙여넣을지 선택하세요.">
               <AiToolButtons value={aiTool} onChange={setAiTool} />
             </Field>
@@ -1076,6 +1081,12 @@ export default function IBPromptPage() {
         )}
 
         <div className="mt-6">
+          {mode === 'full' && result && (
+            <p className="mb-3 rounded bg-blue-50 px-3 py-2 text-sm text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
+              💡 이 결과는 설계 방향 제안이에요. 마음에 드는 아이디어를 골라 섹션별 작성 탭에서 각 부분을
+              완성해보세요.
+            </p>
+          )}
           <PromptResultBox
             result={result}
             onSave={handleSaveClick}
