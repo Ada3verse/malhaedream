@@ -49,6 +49,21 @@ function getUnitKeywordPlaceholder(subject) {
   return ibData.unitKeywordExamples[subject] ?? DEFAULT_UNIT_KEYWORD_PLACEHOLDER
 }
 
+const STATEMENT_KEYWORD_HINT = `탐구 진술문은 핵심 개념 + 관련 개념 + 세계적 맥락을 하나의 문장으로 연결한 거예요.
+잘 만든 탐구 진술문 예시:
+• 균형과 에너지의 관계는 생태계의 지속 가능성을 이해하는 데 어떻게 기여하는가?
+• 변화와 적응의 개념은 역사 속 혁명을 어떻게 설명하는가?
+여기에는 완성된 문장 대신, 핵심이 될 키워드나 탐구하고 싶은 내용을 자유롭게 적어주세요. AI가 탐구 진술문으로 완성해줄 거예요.`
+
+function buildConceptSummary({ keyConcept, relatedConceptsText, globalContext }) {
+  const leftParts = [keyConcept, relatedConceptsText].filter((value) => value && value.trim())
+  const leftSide = leftParts.join(' + ')
+
+  if (!leftSide && !globalContext) return ''
+  if (!leftSide) return globalContext
+  return globalContext ? `${leftSide} → ${globalContext}` : leftSide
+}
+
 const EMPTY_GRASPS = { goal: '', role: '', audience: '', situation: '', product: '', standards: '' }
 
 const GRASPS_FIELDS = [
@@ -116,6 +131,17 @@ function Field({ label, hint, children }) {
       {children}
       {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
     </section>
+  )
+}
+
+function ConceptSummaryBanner({ summary }) {
+  if (!summary) return null
+
+  return (
+    <p className="mb-2 flex items-start gap-1.5 rounded bg-blue-50 px-3 py-2 text-sm text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+      <span>📌</span>
+      <span>선택하신 개념: {summary}</span>
+    </p>
   )
 }
 
@@ -470,6 +496,7 @@ export default function IBPromptPage() {
   const [sectionGlobalContext, setSectionGlobalContext] = useState('')
   const [sectionExploration, setSectionExploration] = useState('')
   const [sectionUnitKeyword, setSectionUnitKeyword] = useState('')
+  const [sectionStatementKeyword, setSectionStatementKeyword] = useState('')
   const [sectionMypYear, setSectionMypYear] = useState('')
   const [sectionSummativeSelected, setSectionSummativeSelected] = useState([])
   const [sectionSummativeDescriptionText, setSectionSummativeDescriptionText] = useState('')
@@ -606,6 +633,7 @@ export default function IBPromptPage() {
             '(입력 없음)',
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
+          statementKeyword: sectionStatementKeyword.trim(),
           aiTool: sectionAiTool,
         }),
       )
@@ -684,6 +712,18 @@ export default function IBPromptPage() {
       setShowTagModal(false)
     }
   }
+
+  const fullConceptSummary = buildConceptSummary({
+    keyConcept,
+    relatedConceptsText: combineRelatedConcepts(relatedConceptsSelected, relatedConceptsCustom),
+    globalContext,
+  })
+
+  const sectionConceptSummary = buildConceptSummary({
+    keyConcept: sectionKeyConcept,
+    relatedConceptsText: combineRelatedConcepts(sectionRelatedConceptsSelected, sectionRelatedConceptsCustom),
+    globalContext: sectionGlobalContext,
+  })
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
@@ -764,7 +804,8 @@ export default function IBPromptPage() {
               />
             </Field>
 
-            <Field label="탐구 진술문 키워드" hint={UNIT_KEYWORD_HINT}>
+            <Field label="탐구 진술문 키워드">
+              <ConceptSummaryBanner summary={fullConceptSummary} />
               <input
                 type="text"
                 value={statementKeyword}
@@ -772,6 +813,9 @@ export default function IBPromptPage() {
                 placeholder={getUnitKeywordPlaceholder(subject)}
                 className={INPUT_CLASS}
               />
+              <p className="mt-1.5 whitespace-pre-line text-sm text-gray-500 dark:text-slate-400">
+                {STATEMENT_KEYWORD_HINT}
+              </p>
             </Field>
 
             <Field label="수업 활동 (선택)" hint="원하는 수업 활동 유형을 선택하면 더 구체적인 플랜이 만들어져요.">
@@ -925,6 +969,19 @@ export default function IBPromptPage() {
                     value={sectionExploration}
                     onChange={setSectionExploration}
                   />
+                </Field>
+                <Field label="탐구 진술문 키워드">
+                  <ConceptSummaryBanner summary={sectionConceptSummary} />
+                  <input
+                    type="text"
+                    value={sectionStatementKeyword}
+                    onChange={(e) => setSectionStatementKeyword(e.target.value)}
+                    placeholder={getUnitKeywordPlaceholder(sectionSubject)}
+                    className={INPUT_CLASS}
+                  />
+                  <p className="mt-1.5 whitespace-pre-line text-sm text-gray-500 dark:text-slate-400">
+                    {STATEMENT_KEYWORD_HINT}
+                  </p>
                 </Field>
               </>
             )}

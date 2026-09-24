@@ -266,15 +266,24 @@ export function generateIBStatementPrompt({
   relatedConceptsInput,
   globalContext,
   explorationSelected,
+  statementKeyword,
   aiTool,
 }) {
+  const contextLines = [
+    `- 교과군: ${subject}`,
+    `- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}`,
+    `- 관련 개념(Related Concepts): ${relatedConceptsInput}`,
+    `- 세계적 맥락(Global Context): ${globalContext}`,
+    `- 탐구(세부, Exploration): ${explorationSelected}`,
+  ]
+
+  if (statementKeyword && statementKeyword.trim()) {
+    contextLines.push(`- 단원 키워드: ${statementKeyword.trim()}`)
+  }
+
   const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건을 반영한 탐구 진술문(Statement of Inquiry) 초안을 2~3개 제안해주세요.[[/PURPOSE]]
 
-[[CONTEXT]]- 교과군: ${subject}
-- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
-- 관련 개념(Related Concepts): ${relatedConceptsInput}
-- 세계적 맥락(Global Context): ${globalContext}
-- 탐구(세부, Exploration): ${explorationSelected}[[/CONTEXT]]
+[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
 
 [[CONDITION]]- 핵심 개념과 관련 개념, 세계적 맥락이 하나의 문장 안에 자연스럽게 연결되도록 작성해주세요.
 - 학생 수준에서 이해할 수 있는 명확하고 간결한 문장으로 작성해주세요.
