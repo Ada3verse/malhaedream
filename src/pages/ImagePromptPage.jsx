@@ -22,19 +22,14 @@ const DEFAULT_IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
 
 const TOOL_OPTIONS = [
   { value: 'chatgpt', label: 'ChatGPT (GPT Image 1.5 · Duct-tape)' },
-  { value: 'claude', label: 'Claude' },
   { value: 'gemini', label: 'Gemini (Imagen 4 · nano banana)' },
 ]
 
-const CLAUDE_LABEL = TOOL_OPTIONS.find((option) => option.value === 'claude')?.label
-
 const TOOL_INFO_MAP = {
   'ChatGPT (GPT Image 1.5 · Duct-tape)':
-    '💡 GPT Image 1.5는 사실적인 이미지와 복잡한 장면 표현에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. 유료 플랜 필요.',
-  Claude:
-    '💡 Claude는 한국어 프롬프트로도 잘 작동해요. 단, Claude의 이미지 생성은 제한적일 수 있어요. 무료로 사용 가능.',
+    '💡 GPT Image 1.5는 사실적인 이미지와 복잡한 장면 표현에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. (유료 플랜에서 더 많이 사용 가능)',
   'Gemini (Imagen 4 · nano banana)':
-    '💡 Imagen 4는 일러스트와 예술적 스타일에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. 유료 플랜 필요.',
+    '💡 Imagen 4는 일러스트와 예술적 스타일에 강해요. 영문 프롬프트를 사용하면 더 좋은 결과를 얻을 수 있어요. (유료 플랜에서 더 많이 사용 가능)',
 }
 
 const PURPOSE_OPTIONS = [
@@ -93,7 +88,7 @@ export default function ImagePromptPage() {
   const showToast = useToast()
   const location = useLocation()
   const [purpose, setPurpose] = useState('')
-  const [tool, setTool] = useState('')
+  const [tool, setTool] = useState(TOOL_OPTIONS[0].label)
   const [topic, setTopic] = useState('')
   const [styles, setStyles] = useState([])
   const [moods, setMoods] = useState([])
@@ -116,10 +111,10 @@ export default function ImagePromptPage() {
 
   if (!user) return null
 
-  const isEnglishTool = Boolean(tool) && tool !== CLAUDE_LABEL
   const topicPlaceholder = PURPOSE_PLACEHOLDER_MAP[purpose] ?? DEFAULT_TOPIC_PLACEHOLDER
   const toolInfo = TOOL_INFO_MAP[tool]
-  const completenessScore = getImageCompletenessScore(purpose, topic, styles, moods, tool)
+  const selectedToolValue = TOOL_OPTIONS.find((option) => option.label === tool)?.value
+  const completenessScore = getImageCompletenessScore(purpose, topic, styles, moods)
   const completenessLevel = getCompletenessLevel(completenessScore)
 
   const handleGenerate = () => {
@@ -230,7 +225,7 @@ export default function ImagePromptPage() {
 
           <section>
             <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">사용할 도구</h2>
-            <OptionCards options={TOOL_OPTIONS} onChange={setTool} />
+            <OptionCards options={TOOL_OPTIONS} value={selectedToolValue} onChange={setTool} />
             {toolInfo && (
               <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                 {toolInfo}
@@ -308,7 +303,7 @@ export default function ImagePromptPage() {
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
 
-          {isEnglishTool && (
+          {result && (
             <p className="text-center text-xs text-sky-700 dark:text-sky-400">
               💡 영문 프롬프트를 복사해서 사용하세요.
             </p>

@@ -33,14 +33,6 @@ const imageTemplates = {
       return { en, ko }
     },
   },
-  Claude: {
-    format: (subject, styles, moods, extras) => {
-      return {
-        ko: `[[ROLE]]당신은 이미지 생성 전문가입니다.[[/ROLE]] 다음 조건에 맞는 이미지를 생성해주세요.\n\n[[SUBJECT]]주제: ${subject}[[/SUBJECT]]\n[[STYLE]]스타일: ${styles.join(', ')}[[/STYLE]]\n[[MOOD]]분위기: ${moods.join(', ')}[[/MOOD]]${extras ? '\n추가 조건: ' + extras : ''}\n\n위 조건을 모두 반영하여 구체적이고 생동감 있게 표현해주세요.`,
-        en: null,
-      }
-    },
-  },
   'Gemini (Imagen 4 · nano banana)': {
     format: (subject, styles, moods, extras) => {
       const styleStr = styles.map((s) => imageTemplates['ChatGPT (GPT Image 1.5 · Duct-tape)'].styleMap[s] || s).join(', ')
