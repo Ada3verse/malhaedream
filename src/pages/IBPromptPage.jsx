@@ -51,38 +51,57 @@ const GRASPS_FIELDS = [
     label: '목표 (Goal)',
     hint: '학생이 해결해야 할 문제나 도전은 무엇인가요?',
     placeholder: '예: 지역 하천 오염 문제의 해결책 제안',
+    detail:
+      "단순히 '보고서 쓰기'가 아니라 실제로 해결해야 할 문제나 도전을 써주세요. 예: 우리 학교 쓰레기 분리수거 실태를 조사하고 개선안을 제안한다 / 지역 소상공인의 마케팅을 도와줄 방법을 찾는다",
   },
   {
     key: 'role',
     label: '역할 (Role)',
     hint: '학생이 맡는 역할은 무엇인가요?',
     placeholder: '예: 환경 연구원, 디자이너, 기자',
+    detail:
+      '학생이 전문가처럼 역할을 맡아요. 교과와 연결되는 역할이면 더 좋아요. 예: 환경 연구원 / 역사학자 / 도시 설계사 / 사회운동가 / 앱 개발자',
   },
   {
     key: 'audience',
     label: '청중 (Audience)',
     hint: '결과물을 보여줄 대상은 누구인가요?',
     placeholder: '예: 지역 주민, 학교 운영위원회',
+    detail: '선생님이 아닌 실제 대상을 설정해요. 예: 학교 운영위원회 / 지역 주민 / 또래 학생 / 지방자치단체 / 소비자',
   },
   {
     key: 'situation',
     label: '상황 (Situation)',
     hint: '어떤 맥락에서 이 과제가 주어지나요?',
     placeholder: '예: 환경부로부터 보고서 제출 요청을 받은 상황',
+    detail:
+      '왜 이 과제가 필요한지 배경을 만들어줘요. 예: 환경부에서 청소년 의견을 요청했다 / 학교가 새 규정을 만들려고 학생 의견을 모은다',
   },
   {
     key: 'product',
     label: '결과물 (Product)',
     hint: '학생이 만들어야 할 최종 결과물은 무엇인가요?',
     placeholder: '예: 캠페인 포스터, 보고서, 발표 자료',
+    detail:
+      '구체적인 형태로 써주세요. 위에서 고른 평가 유형과 연결되면 더 좋아요. 예: A4 2장 보고서 / 3분 발표 + PPT / 포스터 1장 / 영상 2분 이내',
   },
   {
     key: 'standards',
     label: '성공 기준 (Standards)',
     hint: '어떤 기준으로 평가하나요?',
     placeholder: '예: IB 평가기준 A·B 반영, 근거 제시, 청중 고려',
+    detail:
+      '잘 만든 결과물은 어떤 모습인가요? IB 평가기준 A·B·C·D 중 어떤 걸 보는지 연결해주면 더 좋아요. 예: 기준 A - 개념 이해 반영 / 기준 C - 청중에 맞는 소통 방식 사용',
   },
 ]
+
+const FORMATIVE_TIMING_HINTS = {
+  '수업 초반': '이전 학습 확인, 사전 지식 파악에 활용해요',
+  '수업 중반': '개념 이해도 점검, 오개념 수정에 활용해요',
+  '수업 후반': '학습 목표 달성 여부 확인에 활용해요',
+  '단원 중간': '중간 점검 및 피드백 제공에 활용해요',
+  '단원 마무리': '총괄 평가 준비도 확인에 활용해요',
+}
 
 function emptyFormativeStage() {
   return { timing: '', types: [], description: '' }
@@ -258,6 +277,7 @@ function GraspsFields({ value, onChange }) {
             placeholder={field.placeholder}
             className={INPUT_CLASS}
           />
+          {field.detail && <p className="mt-1.5 text-xs text-gray-400">{field.detail}</p>}
         </div>
       ))}
     </div>
@@ -322,6 +342,9 @@ function FormativeAssessmentEditor({ stages, onChange }) {
                 )
               })}
             </div>
+            {stage.timing && FORMATIVE_TIMING_HINTS[stage.timing] && (
+              <p className="mt-1.5 text-xs text-gray-400">{FORMATIVE_TIMING_HINTS[stage.timing]}</p>
+            )}
           </div>
 
           <div className="mt-3">
