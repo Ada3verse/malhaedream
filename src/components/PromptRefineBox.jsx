@@ -1,10 +1,23 @@
 import { useState } from 'react'
 import TagToggleGroup from './TagToggleGroup'
 
-export default function PromptRefineBox({ options, onRefine }) {
+const IMAGE_REFINE_OPTIONS = [
+  '더 밝게',
+  '더 어둡게',
+  '인물 추가',
+  '배경 강조',
+  '색감 더 풍부하게',
+  '단순하게',
+  '더 사실적으로',
+  '더 추상적으로',
+]
+
+export default function PromptRefineBox({ type = 'document', options, onRefine }) {
   const [quickFixes, setQuickFixes] = useState([])
   const [customRequest, setCustomRequest] = useState('')
   const [error, setError] = useState('')
+
+  const resolvedOptions = type === 'image' ? IMAGE_REFINE_OPTIONS : (options ?? [])
 
   const handleRefine = () => {
     if (!quickFixes.length && !customRequest.trim()) {
@@ -20,7 +33,7 @@ export default function PromptRefineBox({ options, onRefine }) {
       <h3 className="text-sm font-semibold text-navy-700 dark:text-slate-200">🔧 프롬프트 보완</h3>
 
       <div className="mt-3">
-        <TagToggleGroup options={options} onChange={setQuickFixes} />
+        <TagToggleGroup options={resolvedOptions} onChange={setQuickFixes} />
       </div>
 
       <textarea

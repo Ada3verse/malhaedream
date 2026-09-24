@@ -94,7 +94,7 @@ const CUSTOM_PLACEHOLDER = {
 
 const STORAGE_KEY = 'malhaedream_followup_open'
 
-export default function PromptFollowUpBox({ type = 'document' }) {
+export default function PromptFollowUpBox({ type = 'document', toolLabel = 'ChatGPT/Claude/Gemini' }) {
   const [isOpen, toggleOpen] = usePersistedToggle(STORAGE_KEY, false)
   const categories = type === 'image' ? IMAGE_ISSUE_CATEGORIES : DOCUMENT_ISSUE_CATEGORIES
   const customPlaceholder = CUSTOM_PLACEHOLDER[type] ?? CUSTOM_PLACEHOLDER.document
@@ -143,7 +143,7 @@ export default function PromptFollowUpBox({ type = 'document' }) {
         className="flex w-full cursor-pointer items-center justify-between gap-2 text-left"
       >
         <span className="font-semibold text-orange-800 dark:text-orange-300">
-          🔄 ChatGPT/Claude에서 결과가 맘에 안 드셨나요?
+          🔄 {toolLabel}에서 결과가 맘에 안 드셨나요?
         </span>
         <span className="text-orange-500 dark:text-orange-400">{isOpen ? '▲' : '▼'}</span>
       </button>
@@ -151,7 +151,7 @@ export default function PromptFollowUpBox({ type = 'document' }) {
       {isOpen && (
         <div className="mt-3 flex flex-col gap-3">
           <p className="text-sm text-orange-700 dark:text-orange-300">
-            ChatGPT나 Claude에서 결과를 받았는데 맘에 안 드시나요?
+            {toolLabel}에서 결과를 받았는데 맘에 안 드시나요?
             <br />
             아래에서 문제점을 선택하거나 직접 입력하면 이어서 쓸 수 있는 후속 프롬프트를 만들어드려요.
           </p>
@@ -218,7 +218,7 @@ export default function PromptFollowUpBox({ type = 'document' }) {
                 {result}
               </p>
               <p className="mt-2 text-xs text-orange-600 dark:text-orange-400">
-                💡 ChatGPT나 Claude 대화창에 이어서 붙여넣으세요!
+                💡 {toolLabel} 대화창에 이어서 붙여넣으세요!
               </p>
             </div>
           )}

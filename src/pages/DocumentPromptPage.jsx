@@ -423,12 +423,13 @@ export default function DocumentPromptPage() {
 
           {result && (
             <PromptRefineBox
+              type="document"
               options={selectedTemplate?.quickFixes ?? []}
               onRefine={handleRefine}
             />
           )}
 
-          {result && <PromptFollowUpBox type="document" />}
+          {result && <PromptFollowUpBox type="document" toolLabel="ChatGPT/Claude/Gemini" />}
 
           {result && <AiShortcutLinks isCopied={isCopied} />}
         </div>

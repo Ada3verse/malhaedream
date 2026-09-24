@@ -71,17 +71,6 @@ const MOOD_OPTIONS = [
   '집중하게 하는',
   '호기심 자극하는',
 ]
-const REFINE_OPTIONS = [
-  '더 밝게',
-  '더 어둡게',
-  '인물 추가',
-  '배경 강조',
-  '색감 더 풍부하게',
-  '단순하게',
-  '더 사실적으로',
-  '더 추상적으로',
-]
-
 export default function ImagePromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -281,10 +270,10 @@ export default function ImagePromptPage() {
           {result && <PromptRefineGuideBox />}
 
           {result && (
-            <PromptRefineBox options={REFINE_OPTIONS} onRefine={handleRefine} />
+            <PromptRefineBox type="image" onRefine={handleRefine} />
           )}
 
-          {result && <PromptFollowUpBox type="image" />}
+          {result && <PromptFollowUpBox type="image" toolLabel="ChatGPT/Gemini" />}
 
           {result && <AiShortcutLinks isCopied={isCopied} links={['ChatGPT', 'Gemini']} />}
         </div>
