@@ -34,6 +34,7 @@ const CATEGORY_TABS = [
   { id: 'assessment', label: '📝 평가' },
   { id: 'admin', label: '🏫 행정' },
   { id: 'class', label: '👥 학급' },
+  { id: 'ib', label: '🎓 IB' },
 ]
 
 const TEMPLATE_CATEGORY_MAP = {
@@ -56,7 +57,11 @@ const TEMPLATE_CATEGORY_MAP = {
   '기타': 'admin',
   '학급 규칙 안내문': 'class',
   '상담 일지': 'class',
-  'IB MYP 유닛 플랜 프롬프트': 'lesson',
+}
+
+function getTemplateCategory(template) {
+  if (template.type === 'ib') return 'ib'
+  return TEMPLATE_CATEGORY_MAP[template.name]
 }
 
 const DEFAULT_TEMPLATE_ICON = '📝'
@@ -176,9 +181,7 @@ export default function HomePage() {
 
   const categoryFilteredTemplates = isAllCategory
     ? templates
-    : templates.filter(
-        (template) => TEMPLATE_CATEGORY_MAP[template.name] === selectedCategory,
-      )
+    : templates.filter((template) => getTemplateCategory(template) === selectedCategory)
 
   const filteredTemplates = isSearching
     ? categoryFilteredTemplates.filter((template) => {
@@ -345,6 +348,13 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
+        {selectedCategory === 'ib' && (
+          <div className="mt-4 rounded-2xl border border-navy-200 bg-navy-50 p-4 text-sm text-navy-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            🎓 IB MYP 단원 계획서(Unit Plan) 작성을 도와드려요. 교과군, 개념, 세계적 맥락을 선택하면
+            ChatGPT·Claude에 붙여넣을 프롬프트를 생성해드립니다.
+          </div>
+        )}
 
         {filteredTemplates.length === 0 && (isSearching || !isAllCategory) && (
           <p className="mt-8 text-center text-slate-400 dark:text-slate-500">
