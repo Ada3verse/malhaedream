@@ -263,6 +263,18 @@ export const assessmentCategories = [
   },
 ]
 
+export const formativeTimingOptions = ['수업 초반', '수업 중반', '수업 후반', '단원 중간', '단원 마무리']
+
+export const formativeTypeCategories = [
+  {
+    label: '평가 유형',
+    tags: [
+      '관찰', '구두 확인', '퀴즈', '작업 결과물 검토', '동료 피드백',
+      '자기 평가', '출구 티켓', '학습지', '개념 지도', '토론 참여',
+    ],
+  },
+]
+
 export const ibData = {
   subjects,
   keyConcepts,
@@ -272,4 +284,6 @@ export const ibData = {
   relatedConceptsBySubject,
   lessonActivityCategories,
   assessmentCategories,
+  formativeTimingOptions,
+  formativeTypeCategories,
 }

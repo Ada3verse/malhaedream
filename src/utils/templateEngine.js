@@ -143,6 +143,39 @@ export function getAiToolIntro(aiTool) {
   return `다음 내용을 ${tool}에 붙여넣어 IB MYP 유닛 플랜 작성에 활용하세요.\n\n`
 }
 
+const GRASPS_LABELS = {
+  goal: 'G(목표)',
+  role: 'R(역할)',
+  audience: 'A(청중)',
+  situation: 'S(상황)',
+  product: 'P(결과물)',
+  standards: 'S(기준)',
+}
+
+function buildGraspsLines(grasps) {
+  if (!grasps) return []
+  return Object.entries(GRASPS_LABELS)
+    .map(([key, label]) => {
+      const value = grasps[key]
+      return value && value.trim() ? `  · ${label}: ${value.trim()}` : null
+    })
+    .filter(Boolean)
+}
+
+function buildFormativeLines(formativeAssessments) {
+  if (!Array.isArray(formativeAssessments) || formativeAssessments.length === 0) return []
+  return formativeAssessments
+    .map((stage, index) => {
+      const parts = []
+      if (stage.timing) parts.push(`시점: ${stage.timing}`)
+      if (stage.types?.length) parts.push(`유형: ${stage.types.join(', ')}`)
+      if (stage.description && stage.description.trim()) parts.push(`설명: ${stage.description.trim()}`)
+      if (parts.length === 0) return null
+      return `  · ${index + 1}단계 - ${parts.join(' / ')}`
+    })
+    .filter(Boolean)
+}
+
 export function generateIBUnitPlanPrompt({
   subject,
   keyConceptsSelected,
@@ -152,7 +185,10 @@ export function generateIBUnitPlanPrompt({
   statementKeyword,
   mypYear,
   lessonActivity,
+  lessonActivityDescription,
   summativeDescription,
+  grasps,
+  formativeAssessments,
   aiTool,
 }) {
   const contextLines = [
@@ -167,10 +203,23 @@ export function generateIBUnitPlanPrompt({
 
   const joinedLessonActivity = joinIfArray(lessonActivity)
   if (joinedLessonActivity) contextLines.push(`- 선호하는 수업 활동 유형: ${joinedLessonActivity}`)
+  if (lessonActivityDescription && lessonActivityDescription.trim()) {
+    contextLines.push(`- 수업 활동 보충 설명: ${lessonActivityDescription.trim()}`)
+  }
 
   const joinedSummativeDescription = joinIfArray(summativeDescription)
   if (joinedSummativeDescription) {
     contextLines.push(`- 선호하는 총괄 평가 유형: ${joinedSummativeDescription}`)
+  }
+
+  const graspsLines = buildGraspsLines(grasps)
+  if (graspsLines.length) {
+    contextLines.push('- 총괄 평가 상세(GRASPS):', ...graspsLines)
+  }
+
+  const formativeLines = buildFormativeLines(formativeAssessments)
+  if (formativeLines.length) {
+    contextLines.push('- 형성평가 계획:', ...formativeLines)
   }
 
   const ko = `[[ROLE]]당신은 IB MYP(중등교육프로그램) 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 IB MYP 유닛 플랜(Unit Plan) 초안을 작성해주세요.[[/PURPOSE]]
@@ -238,12 +287,33 @@ function joinIfArray(value) {
   return Array.isArray(value) ? value.join(', ') : value
 }
 
-export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescription, aiTool }) {
+export function generateIBAssessmentPrompt({
+  subject,
+  mypYear,
+  summativeDescription,
+  grasps,
+  formativeNotes,
+  aiTool,
+}) {
+  const contextLines = [
+    `- 교과군: ${subject}`,
+    `- MYP 학년: ${mypYear}`,
+    `- 총괄평가 간략 설명: ${joinIfArray(summativeDescription)}`,
+  ]
+
+  const graspsLines = buildGraspsLines(grasps)
+  if (graspsLines.length) {
+    contextLines.push('- 총괄 평가 상세(GRASPS):', ...graspsLines)
+  }
+
+  const joinedFormativeNotes = joinIfArray(formativeNotes)
+  if (joinedFormativeNotes) {
+    contextLines.push(`- 참고할 형성평가 계획: ${joinedFormativeNotes}`)
+  }
+
   const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 총괄평가(Summative Assessment)를 GRASPS 모델을 기반으로 설계해주세요.[[/PURPOSE]]
 
-[[CONTEXT]]- 교과군: ${subject}
-- MYP 학년: ${mypYear}
-- 총괄평가 간략 설명: ${joinIfArray(summativeDescription)}[[/CONTEXT]]
+[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
 
 [[CONDITION]]- G(Goal, 목표): 학생이 달성해야 할 목표
 - R(Role, 역할): 과제 수행 중 학생이 맡는 역할
@@ -251,7 +321,26 @@ export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescript
 - S(Situation, 상황): 과제가 주어지는 맥락과 도전 과제
 - P(Product/Performance, 결과물): 학생이 만들어낼 산출물
 - S(Standards, 기준): 평가 기준(루브릭 기준을 간략히 함께 제시)
+- 위에 이미 입력된 GRASPS 항목이 있다면 그 내용을 우선 반영해주세요.
 - 해당 MYP 학년 수준에 적합한 난이도로 설계해주세요.[[/CONDITION]]`
+
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+}
+
+export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments, aiTool }) {
+  const formativeLines = buildFormativeLines(formativeAssessments)
+  const formativeBlock = formativeLines.length ? formativeLines.join('\n') : '  (입력된 단계 없음)'
+
+  const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 단계별 형성평가(Formative Assessment) 계획을 바탕으로, 각 단계에서 어떤 형성평가를 어떻게 실시할지 구체적으로 작성해주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- MYP 학년: ${mypYear}
+- 형성평가 계획:
+${formativeBlock}[[/CONTEXT]]
+
+[[CONDITION]]- 각 단계별로 구체적인 평가 도구·문항·관찰 기준을 제안해주세요.
+- 학생의 이해도를 어떻게 확인하고, 그 결과를 다음 수업에 어떻게 반영할지 설명해주세요.
+- 총괄평가로 자연스럽게 이어지도록 난이도와 연계성을 고려해주세요.[[/CONDITION]]`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
