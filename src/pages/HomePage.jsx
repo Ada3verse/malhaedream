@@ -352,7 +352,7 @@ export default function HomePage() {
         {selectedCategory === 'ib' && (
           <div className="mt-4 rounded-2xl border border-navy-200 bg-navy-50 p-4 text-sm text-navy-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
             🎓 IB MYP 단원 계획서(Unit Plan) 작성을 도와드려요. 교과군, 개념, 세계적 맥락을 선택하면
-            ChatGPT·Claude에 붙여넣을 프롬프트를 생성해드립니다.
+            ChatGPT·Claude·Gemini에 붙여넣을 프롬프트를 생성해드립니다.
           </div>
         )}
 

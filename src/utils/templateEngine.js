@@ -138,6 +138,11 @@ export function generatePromptFromTemplate(template, content, tones, formats) {
   return { ko: blocks.join('\n\n'), en: null }
 }
 
+export function getAiToolIntro(aiTool) {
+  const tool = aiTool || 'ChatGPT'
+  return `다음 내용을 ${tool}에 붙여넣어 IB MYP 유닛 플랜 작성에 활용하세요.\n\n`
+}
+
 export function generateIBUnitPlanPrompt({
   subject,
   keyConceptsSelected,
@@ -148,6 +153,7 @@ export function generateIBUnitPlanPrompt({
   mypYear,
   lessonActivity,
   summativeDescription,
+  aiTool,
 }) {
   const contextLines = [
     `- 교과군: ${subject}`,
@@ -178,7 +184,7 @@ export function generateIBUnitPlanPrompt({
 - 학습 경험 및 수업 활동의 흐름을 차시별로 간략히 제시해주세요.
 - MYP 학년 수준에 맞는 난이도와 분량으로 작성해주세요.[[/CONDITION]]`
 
-  return { ko }
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
 export function generateIBInquiryQuestionsPrompt({
@@ -187,6 +193,7 @@ export function generateIBInquiryQuestionsPrompt({
   globalContext,
   explorationSelected,
   statementKeyword,
+  aiTool,
 }) {
   const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 탐구 질문(Inquiry Questions)을 사실적/개념적/논쟁적 질문 각 1개씩, 총 3개 만들어주세요.[[/PURPOSE]]
 
@@ -201,7 +208,7 @@ export function generateIBInquiryQuestionsPrompt({
 - 논쟁적 질문(Debatable Question): 다양한 관점에서 토론할 수 있는 열린 질문
 - 각 질문 아래에 해당 질문이 왜 그 유형에 해당하는지 한 줄로 설명을 덧붙여주세요.[[/CONDITION]]`
 
-  return { ko }
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
 export function generateIBStatementPrompt({
@@ -210,6 +217,7 @@ export function generateIBStatementPrompt({
   relatedConceptsInput,
   globalContext,
   explorationSelected,
+  aiTool,
 }) {
   const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건을 반영한 탐구 진술문(Statement of Inquiry) 초안을 2~3개 제안해주세요.[[/PURPOSE]]
 
@@ -223,14 +231,14 @@ export function generateIBStatementPrompt({
 - 학생 수준에서 이해할 수 있는 명확하고 간결한 문장으로 작성해주세요.
 - 특정 사실이 아닌, 전이 가능한 이해(transferable understanding)를 담아주세요.[[/CONDITION]]`
 
-  return { ko }
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
 function joinIfArray(value) {
   return Array.isArray(value) ? value.join(', ') : value
 }
 
-export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescription }) {
+export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescription, aiTool }) {
   const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 총괄평가(Summative Assessment)를 GRASPS 모델을 기반으로 설계해주세요.[[/PURPOSE]]
 
 [[CONTEXT]]- 교과군: ${subject}
@@ -245,10 +253,10 @@ export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescript
 - S(Standards, 기준): 평가 기준(루브릭 기준을 간략히 함께 제시)
 - 해당 MYP 학년 수준에 적합한 난이도로 설계해주세요.[[/CONDITION]]`
 
-  return { ko }
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
-export function generateIBATLPrompt({ subject, atlSelected, lessonActivity }) {
+export function generateIBATLPrompt({ subject, atlSelected, lessonActivity, aiTool }) {
   const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 수업 활동에서 드러나는 ATL(학습접근방법) 기능 서술 문장을 만들어주세요.[[/PURPOSE]]
 
 [[CONTEXT]]- 교과군: ${subject}
@@ -259,7 +267,7 @@ export function generateIBATLPrompt({ subject, atlSelected, lessonActivity }) {
 - "학생은 ~할 수 있다" 형태로, 수업 활동과 직접 연결되도록 작성해주세요.
 - 관찰 가능하고 평가 가능한 표현을 사용해주세요.[[/CONDITION]]`
 
-  return { ko }
+  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
 export function refinePrompt(originalPrompt, quickFixes, customRequest) {

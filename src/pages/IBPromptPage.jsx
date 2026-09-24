@@ -33,6 +33,8 @@ const SECTION_TABS = [
   { id: 'atl', label: 'ATL 기능' },
 ]
 
+const AI_TOOLS = ['ChatGPT', 'Claude', 'Gemini']
+
 const SELECT_CLASS =
   'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white'
 const INPUT_CLASS = SELECT_CLASS
@@ -77,6 +79,30 @@ function MypYearButtons({ value, onChange }) {
             }`}
           >
             {year}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function AiToolButtons({ value, onChange }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {AI_TOOLS.map((tool) => {
+        const active = value === tool
+        return (
+          <button
+            key={tool}
+            type="button"
+            onClick={() => onChange(tool)}
+            className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
+              active
+                ? 'border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
+                : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            {tool}
           </button>
         )
       })}
@@ -179,6 +205,7 @@ export default function IBPromptPage() {
   const [mode, setMode] = useState('full')
 
   // 전체 유닛 플랜
+  const [aiTool, setAiTool] = useState('ChatGPT')
   const [subject, setSubject] = useState('')
   const [mypYear, setMypYear] = useState('')
   const [keyConcept, setKeyConcept] = useState('')
@@ -191,6 +218,7 @@ export default function IBPromptPage() {
   const [fullSummativeSelected, setFullSummativeSelected] = useState([])
 
   // 섹션별 작성
+  const [sectionAiTool, setSectionAiTool] = useState('ChatGPT')
   const [sectionSubject, setSectionSubject] = useState('')
   const [activeSection, setActiveSection] = useState('inquiry')
   const [sectionKeyConcept, setSectionKeyConcept] = useState('')
@@ -269,6 +297,7 @@ export default function IBPromptPage() {
       mypYear,
       lessonActivity: fullLessonActivitySelected,
       summativeDescription: fullSummativeSelected,
+      aiTool,
     })
 
     setResult(generated)
@@ -294,6 +323,7 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionUnitKeyword.trim() || '(입력 없음)',
+          aiTool: sectionAiTool,
         }),
       )
     } else if (activeSection === 'statement') {
@@ -310,6 +340,7 @@ export default function IBPromptPage() {
             '(입력 없음)',
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
+          aiTool: sectionAiTool,
         }),
       )
     } else if (activeSection === 'assessment') {
@@ -322,6 +353,7 @@ export default function IBPromptPage() {
           subject: sectionSubject,
           mypYear: sectionMypYear,
           summativeDescription: sectionSummativeSelected,
+          aiTool: sectionAiTool,
         }),
       )
     } else if (activeSection === 'atl') {
@@ -334,6 +366,7 @@ export default function IBPromptPage() {
           subject: sectionSubject,
           atlSelected,
           lessonActivity: sectionLessonActivitySelected,
+          aiTool: sectionAiTool,
         }),
       )
     }
@@ -406,6 +439,10 @@ export default function IBPromptPage() {
 
         {mode === 'full' ? (
           <div className="mt-6 flex flex-col gap-6">
+            <Field label="AI 툴 선택" hint="프롬프트를 어떤 AI 툴에 붙여넣을지 선택하세요.">
+              <AiToolButtons value={aiTool} onChange={setAiTool} />
+            </Field>
+
             <Field label="교과군">
               <Select value={subject} onChange={handleSubjectChange} options={ibData.subjects} />
             </Field>
@@ -480,6 +517,10 @@ export default function IBPromptPage() {
           </div>
         ) : (
           <div className="mt-6 flex flex-col gap-6">
+            <Field label="AI 툴 선택" hint="프롬프트를 어떤 AI 툴에 붙여넣을지 선택하세요.">
+              <AiToolButtons value={sectionAiTool} onChange={setSectionAiTool} />
+            </Field>
+
             <Field label="교과군 (공통)">
               <Select
                 value={sectionSubject}
@@ -625,6 +666,7 @@ export default function IBPromptPage() {
             result={result}
             onSave={handleSaveClick}
             onEdit={setResult}
+            hint={`💡 위 프롬프트를 복사해서 ${mode === 'full' ? aiTool : sectionAiTool}에 붙여넣으세요.`}
           />
         </div>
       </main>
