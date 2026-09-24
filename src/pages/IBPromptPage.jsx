@@ -38,10 +38,16 @@ const SECTION_TABS = [
 const AI_TOOLS = ['ChatGPT', 'Claude', 'Gemini']
 
 const RELATED_CONCEPTS_HINT =
-  "핵심 개념을 이 단원에서 구체적으로 들여다볼 렌즈예요. 예를 들어 핵심 개념이 '변화'라면, 관련 개념은 '적응', '결과', '패턴' 같은 것들이에요. 교과군을 먼저 선택하면 목록이 나타나요."
+  "핵심 개념이 큰 그림이라면, 관련 개념은 이 단원에서 그 큰 그림을 바라보는 창문이에요. 예를 들어 핵심 개념 '변화'를 과학 수업에서 다룬다면, '적응', '에너지', '균형' 같은 관련 개념으로 구체화할 수 있어요. 교과군 선택 후 목록에서 고르거나 직접 입력하세요."
 
 const UNIT_KEYWORD_HINT =
   '이번 단원에서 학생들이 탐구할 내용을 핵심 단어나 짧은 문장으로 표현해주세요. 탐구 진술문의 씨앗이 될 내용이에요. 예: 플라스틱과 해양 생태계 / 독립운동과 정체성 / 함수와 실생활 패턴'
+
+const DEFAULT_UNIT_KEYWORD_PLACEHOLDER = '예: 생태계의 균형과 인간의 책임'
+
+function getUnitKeywordPlaceholder(subject) {
+  return ibData.unitKeywordExamples[subject] ?? DEFAULT_UNIT_KEYWORD_PLACEHOLDER
+}
 
 const EMPTY_GRASPS = { goal: '', role: '', audience: '', situation: '', product: '', standards: '' }
 
@@ -95,16 +101,8 @@ const GRASPS_FIELDS = [
   },
 ]
 
-const FORMATIVE_TIMING_HINTS = {
-  '수업 초반': '이전 학습 확인, 사전 지식 파악에 활용해요',
-  '수업 중반': '개념 이해도 점검, 오개념 수정에 활용해요',
-  '수업 후반': '학습 목표 달성 여부 확인에 활용해요',
-  '단원 중간': '중간 점검 및 피드백 제공에 활용해요',
-  '단원 마무리': '총괄 평가 준비도 확인에 활용해요',
-}
-
 function emptyFormativeStage() {
-  return { timing: '', types: [], description: '' }
+  return { purposes: [], types: [], description: '' }
 }
 
 const SELECT_CLASS =
@@ -298,78 +296,104 @@ function FormativeAssessmentEditor({ stages, onChange }) {
     onChange(stages.map((stage, i) => (i === index ? { ...stage, ...patch } : stage)))
   }
 
+  const togglePurpose = (index, stage, label) => {
+    const nextPurposes = stage.purposes.includes(label)
+      ? stage.purposes.filter((item) => item !== label)
+      : [...stage.purposes, label]
+    updateStage(index, { purposes: nextPurposes })
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-slate-400">
         단원 진행 중 학생의 이해도를 확인하는 중간 평가예요. 총괄 평가로 가기 위한 디딤돌 역할을 해요.
-        단계별로 계획을 세워보세요.
+        계획을 세워보세요.
       </p>
 
-      {stages.map((stage, index) => (
-        <div key={index} className="rounded-lg border border-slate-200 p-3 dark:border-slate-600">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-navy-700 dark:text-slate-300">
-              {index + 1}단계 형성평가
-            </p>
-            <button
-              type="button"
-              onClick={() => removeStage(index)}
-              aria-label="단계 삭제"
-              className="text-slate-400 transition hover:text-red-500"
-            >
-              ✕
-            </button>
-          </div>
+      {stages.map((stage, index) => {
+        const selectedPurposeOptions = ibData.formativePurposeOptions.filter((option) =>
+          stage.purposes.includes(option.label),
+        )
+        const recommendedTypes = [
+          ...new Set(selectedPurposeOptions.flatMap((option) => option.recommendedTypes)),
+        ]
 
-          <div className="mt-3">
-            <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">시점</p>
-            <div className="flex flex-wrap gap-2">
-              {ibData.formativeTimingOptions.map((timing) => {
-                const active = stage.timing === timing
-                return (
-                  <button
-                    key={timing}
-                    type="button"
-                    onClick={() => updateStage(index, { timing })}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                      active
-                        ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {timing}
-                  </button>
-                )
-              })}
+        return (
+          <div key={index} className="rounded-lg border border-slate-200 p-3 dark:border-slate-600">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-navy-700 dark:text-slate-300">
+                형성평가 계획 {index + 1}
+              </p>
+              <button
+                type="button"
+                onClick={() => removeStage(index)}
+                aria-label="형성평가 계획 삭제"
+                className="text-slate-400 transition hover:text-red-500"
+              >
+                ✕
+              </button>
             </div>
-            {stage.timing && FORMATIVE_TIMING_HINTS[stage.timing] && (
-              <p className="mt-1.5 text-xs text-gray-400">{FORMATIVE_TIMING_HINTS[stage.timing]}</p>
-            )}
-          </div>
 
-          <div className="mt-3">
-            <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">유형</p>
-            <TagSelector
-              categories={ibData.formativeTypeCategories}
-              selected={stage.types}
-              onChange={(types) => updateStage(index, { types })}
-            />
-          </div>
+            <div className="mt-3">
+              <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">목적</p>
+              <div className="flex flex-wrap gap-2">
+                {ibData.formativePurposeOptions.map((option) => {
+                  const active = stage.purposes.includes(option.label)
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => togglePurpose(index, stage, option.label)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                        active
+                          ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  )
+                })}
+              </div>
+              {selectedPurposeOptions.length > 0 && (
+                <div className="mt-1.5 flex flex-col gap-0.5">
+                  {selectedPurposeOptions.map((option) => (
+                    <p key={option.id} className="text-xs text-gray-400">
+                      {option.hint}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <div className="mt-3">
-            <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
-              보충 설명 (선택)
-            </p>
-            <textarea
-              value={stage.description}
-              onChange={(e) => updateStage(index, { description: e.target.value })}
-              rows={2}
-              placeholder="자유롭게 입력하세요"
-              className={`${INPUT_CLASS} resize-y`}
-            />
+            <div className="mt-3">
+              <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">유형</p>
+              {recommendedTypes.length > 0 && (
+                <p className="mb-1.5 text-xs text-slate-400">✨ 선택한 목적에 어울리는 유형</p>
+              )}
+              <TagSelector
+                categories={ibData.formativeTypeCategories}
+                selected={stage.types}
+                onChange={(types) => updateStage(index, { types })}
+                highlightedTags={recommendedTypes}
+              />
+            </div>
+
+            <div className="mt-3">
+              <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                보충 설명 (선택)
+              </p>
+              <textarea
+                value={stage.description}
+                onChange={(e) => updateStage(index, { description: e.target.value })}
+                rows={2}
+                placeholder="자유롭게 입력하세요"
+                className={`${INPUT_CLASS} resize-y`}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
 
       {stages.length < 3 && (
         <button
@@ -377,7 +401,7 @@ function FormativeAssessmentEditor({ stages, onChange }) {
           onClick={addStage}
           className="self-start rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500 transition hover:border-navy-400 hover:text-navy-600 dark:border-slate-600 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400"
         >
-          + 단계 추가
+          + 형성평가 계획 추가
         </button>
       )}
     </div>
@@ -512,7 +536,7 @@ export default function IBPromptPage() {
   const buildFormativeNotes = (stages) =>
     stages.map(
       (stage, index) =>
-        `${index + 1}단계(${stage.timing || '시점 미정'}): ${
+        `형성평가 계획 ${index + 1}(${stage.purposes.length ? stage.purposes.join(', ') : '목적 미정'}): ${
           stage.types.length ? stage.types.join(', ') : '유형 미정'
         }`,
     )
@@ -745,7 +769,7 @@ export default function IBPromptPage() {
                 type="text"
                 value={statementKeyword}
                 onChange={(e) => setStatementKeyword(e.target.value)}
-                placeholder="예: 생태계의 균형과 인간의 책임"
+                placeholder={getUnitKeywordPlaceholder(subject)}
                 className={INPUT_CLASS}
               />
             </Field>
@@ -865,7 +889,7 @@ export default function IBPromptPage() {
                     type="text"
                     value={sectionUnitKeyword}
                     onChange={(e) => setSectionUnitKeyword(e.target.value)}
-                    placeholder="예: 생태계의 균형과 인간의 책임"
+                    placeholder={getUnitKeywordPlaceholder(sectionSubject)}
                     className={INPUT_CLASS}
                   />
                 </Field>

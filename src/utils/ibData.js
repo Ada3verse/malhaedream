@@ -263,7 +263,57 @@ export const assessmentCategories = [
   },
 ]
 
-export const formativeTimingOptions = ['수업 초반', '수업 중반', '수업 후반', '단원 중간', '단원 마무리']
+export const unitKeywordExamples = {
+  '언어와 문학-국어': '예: 독립운동과 정체성 / 미디어 속 편견과 언어',
+  '언어습득-영어': '예: SNS와 자기표현 / 광고 언어와 소비자 심리',
+  '언어습득-중국어': '예: 중국 전통문화와 현대 변화 / 언어와 정체성',
+  '언어습득-진로와 직업': '예: 직업 세계의 변화와 미래 역량 / 자기소개와 진로 탐색',
+  '개인과 사회-도덕': '예: 공정함이란 무엇인가 / 디지털 시대의 윤리적 선택',
+  '개인과 사회-역사': '예: 전쟁의 원인과 결과 / 혁명과 사회 변화',
+  '개인과 사회-사회': '예: 불평등과 공정한 사회 / 도시화와 지속 가능한 발전',
+  '과학': '예: 플라스틱과 해양 생태계 / 바이러스와 면역 반응',
+  '수학': '예: 함수와 실생활 패턴 / 확률과 의사결정',
+  '예술-음악': '예: 음악과 사회 변화 / 전통 음악과 현대적 재해석',
+  '예술-미술': '예: 예술로 표현하는 정체성 / 환경 문제와 시각 예술',
+  '체육과 보건-체육': '예: 스포츠와 팀워크 / 신체 변화와 건강한 생활',
+  '체육과 보건-보건': '예: 정신 건강과 스트레스 관리 / 생활 습관과 질병 예방',
+  '디자인-기술': '예: 지속 가능한 포장재 설계 / 사용자 중심 앱 개발',
+  '디자인-가정': '예: 건강한 식생활과 음식 디자인 / 주거 환경과 삶의 질',
+  '디자인-정보': '예: 데이터 시각화와 의사결정 / 정보 보안과 프라이버시',
+}
+
+export const formativePurposeOptions = [
+  {
+    id: 'pre',
+    label: '사전 확인',
+    hint: '단원 시작 전 학생의 사전 지식·경험을 파악해요',
+    recommendedTypes: ['구두 확인', '학습지', '퀴즈'],
+  },
+  {
+    id: 'concept',
+    label: '개념 이해 점검',
+    hint: '핵심·관련 개념을 제대로 이해했는지 확인해요',
+    recommendedTypes: ['퀴즈', '개념 지도', '구두 확인', '작업 결과물 검토'],
+  },
+  {
+    id: 'process',
+    label: '과정 피드백',
+    hint: '탐구·제작 과정에서 방향을 조정하고 피드백을 줘요',
+    recommendedTypes: ['작업 결과물 검토', '동료 피드백', '관찰', '토론 참여'],
+  },
+  {
+    id: 'reflection',
+    label: '동료·자기 성찰',
+    hint: '학생 스스로 또는 서로 학습을 점검해요',
+    recommendedTypes: ['자기 평가', '동료 피드백', '출구 티켓', '성찰 일지'],
+  },
+  {
+    id: 'readiness',
+    label: '총괄 준비도 확인',
+    hint: '총괄 평가 전 학생의 준비 상태를 최종 점검해요',
+    recommendedTypes: ['퀴즈', '작업 결과물 검토', '구두 확인', '학습지'],
+  },
+]
 
 export const formativeTypeCategories = [
   {
@@ -284,6 +334,7 @@ export const ibData = {
   relatedConceptsBySubject,
   lessonActivityCategories,
   assessmentCategories,
-  formativeTimingOptions,
+  unitKeywordExamples,
+  formativePurposeOptions,
   formativeTypeCategories,
 }

@@ -5,10 +5,12 @@ const TAG_ACTIVE_CLASS =
   'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
 const TAG_INACTIVE_CLASS =
   'border-slate-200 bg-slate-100 text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
+const TAG_HIGHLIGHT_CLASS =
+  'border-navy-400 bg-navy-50 text-navy-700 ring-1 ring-navy-300 hover:bg-navy-100 dark:border-blue-400/60 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-400/40 dark:hover:bg-blue-500/20'
 const TAG_ADD_CLASS =
   'rounded-full border border-dashed border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:border-navy-400 hover:text-navy-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400'
 
-export default function TagSelector({ categories, selected, onChange, placeholder }) {
+export default function TagSelector({ categories, selected, onChange, placeholder, highlightedTags = [] }) {
   const [openCategories, setOpenCategories] = useState({})
   const [customTexts, setCustomTexts] = useState({})
 
@@ -48,13 +50,17 @@ export default function TagSelector({ categories, selected, onChange, placeholde
           <div className="flex flex-wrap gap-2">
             {category.tags.map((tag) => {
               const active = selected.includes(tag)
+              const highlighted = !active && highlightedTags.includes(tag)
               return (
                 <button
                   key={tag}
                   type="button"
                   onClick={() => toggleTag(tag)}
-                  className={`${TAG_BASE_CLASS} ${active ? TAG_ACTIVE_CLASS : TAG_INACTIVE_CLASS}`}
+                  className={`${TAG_BASE_CLASS} ${
+                    active ? TAG_ACTIVE_CLASS : highlighted ? TAG_HIGHLIGHT_CLASS : TAG_INACTIVE_CLASS
+                  }`}
                 >
+                  {highlighted ? '⭐ ' : ''}
                   {tag}
                 </button>
               )

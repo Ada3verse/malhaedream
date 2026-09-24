@@ -167,11 +167,11 @@ function buildFormativeLines(formativeAssessments) {
   return formativeAssessments
     .map((stage, index) => {
       const parts = []
-      if (stage.timing) parts.push(`시점: ${stage.timing}`)
+      if (stage.purposes?.length) parts.push(`목적: ${stage.purposes.join(', ')}`)
       if (stage.types?.length) parts.push(`유형: ${stage.types.join(', ')}`)
       if (stage.description && stage.description.trim()) parts.push(`설명: ${stage.description.trim()}`)
       if (parts.length === 0) return null
-      return `  · ${index + 1}단계 - ${parts.join(' / ')}`
+      return `  · 형성평가 계획 ${index + 1} - ${parts.join(' / ')}`
     })
     .filter(Boolean)
 }
