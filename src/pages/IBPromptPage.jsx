@@ -590,7 +590,6 @@ export default function IBPromptPage() {
       summativeDescription: fullSummativeSelected,
       grasps: fullGrasps,
       formativeAssessments: fullFormativeStages,
-      aiTool,
     })
 
     setResult(generated)
@@ -622,7 +621,6 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionUnitKeyword.trim() || '(입력 없음)',
-          aiTool,
         }),
       )
     } else if (activeSection === 'statement') {
@@ -641,7 +639,6 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionStatementKeyword.trim(),
-          aiTool,
         }),
       )
     } else if (activeSection === 'assessment') {
@@ -659,7 +656,6 @@ export default function IBPromptPage() {
           grasps: sectionGrasps,
           formativeNotes:
             sectionFormativeStages.length > 0 ? buildFormativeNotes(sectionFormativeStages) : undefined,
-          aiTool,
         }),
       )
     } else if (activeSection === 'atl') {
@@ -674,7 +670,6 @@ export default function IBPromptPage() {
           atlSelected,
           lessonActivity: sectionLessonActivitySelected,
           lessonActivityDescription: sectionLessonActivityDescriptionText.trim(),
-          aiTool,
         }),
       )
     } else if (activeSection === 'formative') {
@@ -687,7 +682,6 @@ export default function IBPromptPage() {
           subject: sectionSubject,
           mypYear,
           formativeAssessments: sectionFormativeStages,
-          aiTool,
         }),
       )
     }
@@ -1094,7 +1088,7 @@ export default function IBPromptPage() {
             result={result}
             onSave={handleSaveClick}
             onEdit={setResult}
-            hint={`💡 위 프롬프트를 복사해서 ${aiTool}에 붙여넣으세요.`}
+            banner={`💡 아래 프롬프트를 복사해서 ${aiTool}에 붙여넣으세요.`}
           />
         </div>
       </main>

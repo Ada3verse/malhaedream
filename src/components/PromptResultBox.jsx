@@ -47,7 +47,7 @@ function PromptField({ value, onChange, placeholder, disabled, rows = 8, textCla
   )
 }
 
-export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy, title, hint }) {
+export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy, title, hint, banner }) {
   const [copied, setCopied] = useState(false)
 
   const ko = result?.ko
@@ -92,6 +92,12 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
           </button>
         </div>
       </div>
+
+      {hasResult && banner && (
+        <p className="mb-2 mt-3 rounded bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+          {banner}
+        </p>
+      )}
 
       {hasResult && (
         <p className="mt-2 text-xs text-slate-400">

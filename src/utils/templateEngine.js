@@ -138,11 +138,6 @@ export function generatePromptFromTemplate(template, content, tones, formats) {
   return { ko: blocks.join('\n\n'), en: null }
 }
 
-export function getAiToolIntro(aiTool) {
-  const tool = aiTool || 'ChatGPT'
-  return `다음 내용을 ${tool}에 붙여넣어 IB MYP 유닛 플랜 작성에 활용하세요.\n\n`
-}
-
 const GRASPS_LABELS = {
   goal: 'G(목표)',
   role: 'R(역할)',
@@ -189,7 +184,6 @@ export function generateIBUnitPlanPrompt({
   summativeDescription,
   grasps,
   formativeAssessments,
-  aiTool,
 }) {
   const infoLines = [
     `- 교과군: ${subject}`,
@@ -225,9 +219,7 @@ export function generateIBUnitPlanPrompt({
   const formativeLines = buildFormativeLines(formativeAssessments)
   if (formativeLines.length) infoLines.push('- 형성평가 계획:', ...formativeLines)
 
-  const ko = `다음 내용을 ${aiTool || 'ChatGPT'}에 붙여넣어 IB MYP 단원 설계 방향을 잡는 데 활용하세요.
-
-당신은 IB MYP 교육과정 설계 전문가입니다.
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
 아래 조건을 바탕으로 이 단원의 설계 방향을 브레인스토밍해주세요.
 완성된 유닛 플랜이 아니라, 교사가 방향을 잡을 수 있도록 아이디어와 제안을 주는 것이 목적입니다.
 
@@ -269,7 +261,6 @@ export function generateIBInquiryQuestionsPrompt({
   globalContext,
   explorationSelected,
   statementKeyword,
-  aiTool,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -306,7 +297,7 @@ ${infoLines.join('\n')}
 
 각 질문 뒤에 이 질문이 왜 이 단원에 적합한지 한 줄 이유도 함께 써주세요.`
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+  return { ko }
 }
 
 export function generateIBStatementPrompt({
@@ -317,7 +308,6 @@ export function generateIBStatementPrompt({
   globalContext,
   explorationSelected,
   statementKeyword,
-  aiTool,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -347,7 +337,7 @@ ${infoLines.join('\n')}
 - 이 진술문에서 핵심 개념/관련 개념/세계적 맥락이 어떻게 반영됐는지 한 줄 설명
 - 이 진술문을 선택했을 때 어울리는 탐구 질문 방향 한 줄 제안`
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+  return { ko }
 }
 
 function joinIfArray(value) {
@@ -360,7 +350,6 @@ export function generateIBAssessmentPrompt({
   summativeDescription,
   grasps,
   formativeNotes,
-  aiTool,
 }) {
   const infoLines = [`- 교과군: ${subject}`, `- MYP 학년: ${mypYear}`]
 
@@ -403,10 +392,10 @@ S (Standards / 성공 기준)
 
 마지막으로, 이 총괄 평가와 연계할 수 있는 형성평가 아이디어를 1~2개 짧게 제안해주세요.`
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+  return { ko }
 }
 
-export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments, aiTool }) {
+export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments }) {
   const formativeLines = buildFormativeLines(formativeAssessments)
   const formativeBlock = formativeLines.length ? formativeLines.join('\n') : '  (입력된 계획 없음)'
 
@@ -438,7 +427,7 @@ ${formativeBlock}
 4. 총괄 평가와의 연계
    - 이 형성평가 결과가 총괄 평가 준비에 어떻게 도움이 되는지`
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+  return { ko }
 }
 
 export function generateIBATLPrompt({
@@ -447,7 +436,6 @@ export function generateIBATLPrompt({
   atlSelected,
   lessonActivity,
   lessonActivityDescription,
-  aiTool,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -479,7 +467,7 @@ ${infoLines.join('\n')}
 4. NEIS 세부능력특기사항 기재 시 참고할 수 있는 문장 예시를 1개 작성해주세요.
    (학생이 이 ATL 기능을 잘 발휘한 경우를 가정해서 작성)`
 
-  return { ko: `${getAiToolIntro(aiTool)}${ko}` }
+  return { ko }
 }
 
 export function refinePrompt(originalPrompt, quickFixes, customRequest) {
