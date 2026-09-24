@@ -646,8 +646,14 @@ export default function IBPromptPage() {
         }),
       )
     } else if (activeSection === 'statement') {
-      if (!sectionKeyConcept || !sectionGlobalContext || !sectionExploration) {
-        setGenerateError('핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
+      const missingMessage = getMissingFieldsMessage([
+        ['교과군', sectionSubject],
+        ['핵심 개념', sectionKeyConcept],
+        ['세계적 맥락', sectionGlobalContext],
+        ['탐구(세부)', sectionExploration],
+      ])
+      if (missingMessage) {
+        setGenerateError(missingMessage)
         return
       }
       setResult(
