@@ -13,7 +13,7 @@ import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { getCompletenessLevel } from '../utils/completeness'
+import { getCompletenessLevel, getImageCompletenessScore } from '../utils/completeness'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
@@ -87,16 +87,6 @@ const REFINE_OPTIONS = [
   '더 사실적으로',
   '더 추상적으로',
 ]
-
-function getImageCompletenessScore(purpose, topic, styles, moods, tool) {
-  let score = 0
-  if (purpose) score += 1
-  if (topic.trim().length >= 10) score += 1
-  if (styles.length > 0) score += 1
-  if (moods.length > 0) score += 1
-  if (tool) score += 1
-  return score
-}
 
 export default function ImagePromptPage() {
   const user = useAuthGuard()

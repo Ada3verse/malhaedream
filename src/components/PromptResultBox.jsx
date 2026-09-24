@@ -113,6 +113,9 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
               rows={6}
               textClassName="bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200"
             />
+            <p className="mt-1 text-xs text-slate-400">
+              💡 주제 설명은 한국어로 입력하셔도 ChatGPT와 Gemini가 이해합니다.
+            </p>
           </div>
           <div>
             <p className="mb-1 text-xs font-semibold text-violet-700 dark:text-violet-400">
