@@ -264,17 +264,19 @@ function isEmptyValue(value) {
 
 export function generateIBInquiryQuestionsPrompt({
   subject,
+  mypYear,
   keyConceptsSelected,
   globalContext,
   explorationSelected,
   statementKeyword,
   aiTool,
 }) {
-  const infoLines = [
-    `- 교과군: ${subject}`,
+  const infoLines = [`- 교과군: ${subject}`]
+  if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
+  infoLines.push(
     `- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`,
     `- 세계적 맥락: ${globalContext}`,
-  ]
+  )
   if (!isEmptyValue(explorationSelected)) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
   if (!isEmptyValue(statementKeyword)) infoLines.push(`- 단원 키워드: ${statementKeyword}`)
 
@@ -309,6 +311,7 @@ ${infoLines.join('\n')}
 
 export function generateIBStatementPrompt({
   subject,
+  mypYear,
   keyConceptsSelected,
   relatedConceptsInput,
   globalContext,
@@ -316,10 +319,9 @@ export function generateIBStatementPrompt({
   statementKeyword,
   aiTool,
 }) {
-  const infoLines = [
-    `- 교과군: ${subject}`,
-    `- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`,
-  ]
+  const infoLines = [`- 교과군: ${subject}`]
+  if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
+  infoLines.push(`- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`)
   if (!isEmptyValue(relatedConceptsInput)) infoLines.push(`- 관련 개념: ${relatedConceptsInput}`)
   infoLines.push(`- 세계적 맥락: ${globalContext}`)
   if (!isEmptyValue(explorationSelected)) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
@@ -441,12 +443,14 @@ ${formativeBlock}
 
 export function generateIBATLPrompt({
   subject,
+  mypYear,
   atlSelected,
   lessonActivity,
   lessonActivityDescription,
   aiTool,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
+  if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
 
   const joinedLessonActivity = joinIfArray(lessonActivity)
   if (!isEmptyValue(joinedLessonActivity)) infoLines.push(`- 수업 활동 유형: ${joinedLessonActivity}`)

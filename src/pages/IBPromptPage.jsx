@@ -487,7 +487,6 @@ export default function IBPromptPage() {
   const [fullFormativeStages, setFullFormativeStages] = useState([])
 
   // 섹션별 작성
-  const [sectionAiTool, setSectionAiTool] = useState('ChatGPT')
   const [sectionSubject, setSectionSubject] = useState('')
   const [activeSection, setActiveSection] = useState('inquiry')
   const [sectionKeyConcept, setSectionKeyConcept] = useState('')
@@ -497,7 +496,6 @@ export default function IBPromptPage() {
   const [sectionExploration, setSectionExploration] = useState('')
   const [sectionUnitKeyword, setSectionUnitKeyword] = useState('')
   const [sectionStatementKeyword, setSectionStatementKeyword] = useState('')
-  const [sectionMypYear, setSectionMypYear] = useState('')
   const [sectionSummativeSelected, setSectionSummativeSelected] = useState([])
   const [sectionSummativeDescriptionText, setSectionSummativeDescriptionText] = useState('')
   const [sectionGrasps, setSectionGrasps] = useState(EMPTY_GRASPS)
@@ -523,6 +521,8 @@ export default function IBPromptPage() {
     setSectionSubject(value)
     setSectionRelatedConceptsSelected([])
     setSectionRelatedConceptsCustom('')
+    setSectionUnitKeyword('')
+    setSectionStatementKeyword('')
   }
 
   const handleToggleRelatedConcept = (concept) => {
@@ -604,6 +604,11 @@ export default function IBPromptPage() {
       return
     }
 
+    if (!mypYear) {
+      setGenerateError('MYP 학년을 먼저 선택해주세요.')
+      return
+    }
+
     if (activeSection === 'inquiry') {
       if (!sectionKeyConcept || !sectionGlobalContext || !sectionExploration) {
         setGenerateError('핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
@@ -612,11 +617,12 @@ export default function IBPromptPage() {
       setResult(
         generateIBInquiryQuestionsPrompt({
           subject: sectionSubject,
+          mypYear,
           keyConceptsSelected: [sectionKeyConcept],
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionUnitKeyword.trim() || '(입력 없음)',
-          aiTool: sectionAiTool,
+          aiTool,
         }),
       )
     } else if (activeSection === 'statement') {
@@ -627,6 +633,7 @@ export default function IBPromptPage() {
       setResult(
         generateIBStatementPrompt({
           subject: sectionSubject,
+          mypYear,
           keyConceptsSelected: [sectionKeyConcept],
           relatedConceptsInput:
             combineRelatedConcepts(sectionRelatedConceptsSelected, sectionRelatedConceptsCustom) ||
@@ -634,25 +641,25 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionStatementKeyword.trim(),
-          aiTool: sectionAiTool,
+          aiTool,
         }),
       )
     } else if (activeSection === 'assessment') {
-      if (!sectionMypYear || sectionSummativeSelected.length === 0) {
-        setGenerateError('MYP 학년을 선택하고 총괄 평가 유형을 하나 이상 선택해주세요.')
+      if (sectionSummativeSelected.length === 0) {
+        setGenerateError('총괄 평가 유형을 하나 이상 선택해주세요.')
         return
       }
       setResult(
         generateIBAssessmentPrompt({
           subject: sectionSubject,
-          mypYear: sectionMypYear,
+          mypYear,
           summativeDescription: [...sectionSummativeSelected, sectionSummativeDescriptionText.trim()].filter(
             Boolean,
           ),
           grasps: sectionGrasps,
           formativeNotes:
             sectionFormativeStages.length > 0 ? buildFormativeNotes(sectionFormativeStages) : undefined,
-          aiTool: sectionAiTool,
+          aiTool,
         }),
       )
     } else if (activeSection === 'atl') {
@@ -663,23 +670,24 @@ export default function IBPromptPage() {
       setResult(
         generateIBATLPrompt({
           subject: sectionSubject,
+          mypYear,
           atlSelected,
           lessonActivity: sectionLessonActivitySelected,
           lessonActivityDescription: sectionLessonActivityDescriptionText.trim(),
-          aiTool: sectionAiTool,
+          aiTool,
         }),
       )
     } else if (activeSection === 'formative') {
-      if (!sectionMypYear || sectionFormativeStages.length === 0) {
-        setGenerateError('MYP 학년을 선택하고 형성평가 단계를 최소 1개 추가해주세요.')
+      if (sectionFormativeStages.length === 0) {
+        setGenerateError('형성평가 계획을 최소 1개 추가해주세요.')
         return
       }
       setResult(
         generateIBFormativePrompt({
           subject: sectionSubject,
-          mypYear: sectionMypYear,
+          mypYear,
           formativeAssessments: sectionFormativeStages,
-          aiTool: sectionAiTool,
+          aiTool,
         }),
       )
     }
@@ -883,7 +891,7 @@ export default function IBPromptPage() {
         ) : (
           <div className="mt-6 flex flex-col gap-6">
             <Field label="AI 툴 선택" hint="프롬프트를 어떤 AI 툴에 붙여넣을지 선택하세요.">
-              <AiToolButtons value={sectionAiTool} onChange={setSectionAiTool} />
+              <AiToolButtons value={aiTool} onChange={setAiTool} />
             </Field>
 
             <Field label="교과군 (공통)">
@@ -892,6 +900,10 @@ export default function IBPromptPage() {
                 onChange={handleSectionSubjectChange}
                 options={ibData.subjects}
               />
+            </Field>
+
+            <Field label="MYP 학년 (공통)">
+              <MypYearButtons value={mypYear} onChange={setMypYear} />
             </Field>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -992,9 +1004,6 @@ export default function IBPromptPage() {
 
             {activeSection === 'assessment' && (
               <>
-                <Field label="MYP 학년">
-                  <MypYearButtons value={sectionMypYear} onChange={setSectionMypYear} />
-                </Field>
                 <Field label="총괄 평가 간략 설명">
                   <TagSelector
                     categories={ibData.assessmentCategories}
@@ -1050,17 +1059,12 @@ export default function IBPromptPage() {
             )}
 
             {activeSection === 'formative' && (
-              <>
-                <Field label="MYP 학년">
-                  <MypYearButtons value={sectionMypYear} onChange={setSectionMypYear} />
-                </Field>
-                <Field label="형성평가 계획">
-                  <FormativeAssessmentEditor
-                    stages={sectionFormativeStages}
-                    onChange={setSectionFormativeStages}
-                  />
-                </Field>
-              </>
+              <Field label="형성평가 계획">
+                <FormativeAssessmentEditor
+                  stages={sectionFormativeStages}
+                  onChange={setSectionFormativeStages}
+                />
+              </Field>
             )}
 
             <button
@@ -1090,7 +1094,7 @@ export default function IBPromptPage() {
             result={result}
             onSave={handleSaveClick}
             onEdit={setResult}
-            hint={`💡 위 프롬프트를 복사해서 ${mode === 'full' ? aiTool : sectionAiTool}에 붙여넣으세요.`}
+            hint={`💡 위 프롬프트를 복사해서 ${aiTool}에 붙여넣으세요.`}
           />
         </div>
       </main>
