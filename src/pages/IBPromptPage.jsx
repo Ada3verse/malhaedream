@@ -84,6 +84,65 @@ function MypYearButtons({ value, onChange }) {
   )
 }
 
+function combineRelatedConcepts(selected, customText) {
+  const customItems = customText
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+  return [...selected, ...customItems].join(', ')
+}
+
+function RelatedConceptsField({ subject, selected, onToggle, customText, onCustomChange }) {
+  const concepts = ibData.relatedConceptsBySubject[subject]
+
+  if (!subject || !concepts) {
+    return (
+      <input
+        type="text"
+        value={customText}
+        onChange={(e) => onCustomChange(e.target.value)}
+        placeholder="예: 상호작용, 균형"
+        className={INPUT_CLASS}
+      />
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-2">
+        {concepts.map((concept) => {
+          const checked = selected.includes(concept)
+          return (
+            <label
+              key={concept}
+              className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                checked
+                  ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => onToggle(concept)}
+                className="sr-only"
+              />
+              {concept}
+            </label>
+          )
+        })}
+      </div>
+      <input
+        type="text"
+        value={customText}
+        onChange={(e) => onCustomChange(e.target.value)}
+        placeholder="목록에 없는 개념은 여기에 직접 입력하세요 (쉼표로 구분)"
+        className={INPUT_CLASS}
+      />
+    </div>
+  )
+}
+
 function ExplorationRadioGroup({ globalContext, value, onChange }) {
   const context = ibData.globalContexts.find((item) => item.name === globalContext)
   if (!context) return null
@@ -123,7 +182,8 @@ export default function IBPromptPage() {
   const [subject, setSubject] = useState('')
   const [mypYear, setMypYear] = useState('')
   const [keyConcept, setKeyConcept] = useState('')
-  const [relatedConceptsInput, setRelatedConceptsInput] = useState('')
+  const [relatedConceptsSelected, setRelatedConceptsSelected] = useState([])
+  const [relatedConceptsCustom, setRelatedConceptsCustom] = useState('')
   const [globalContext, setGlobalContext] = useState('')
   const [explorationSelected, setExplorationSelected] = useState('')
   const [statementKeyword, setStatementKeyword] = useState('')
@@ -132,7 +192,8 @@ export default function IBPromptPage() {
   const [sectionSubject, setSectionSubject] = useState('')
   const [activeSection, setActiveSection] = useState('inquiry')
   const [sectionKeyConcept, setSectionKeyConcept] = useState('')
-  const [sectionRelatedConcepts, setSectionRelatedConcepts] = useState('')
+  const [sectionRelatedConceptsSelected, setSectionRelatedConceptsSelected] = useState([])
+  const [sectionRelatedConceptsCustom, setSectionRelatedConceptsCustom] = useState('')
   const [sectionGlobalContext, setSectionGlobalContext] = useState('')
   const [sectionExploration, setSectionExploration] = useState('')
   const [sectionUnitKeyword, setSectionUnitKeyword] = useState('')
@@ -147,6 +208,30 @@ export default function IBPromptPage() {
   const [selectedTags, setSelectedTags] = useState([])
 
   if (!user) return null
+
+  const handleSubjectChange = (value) => {
+    setSubject(value)
+    setRelatedConceptsSelected([])
+    setRelatedConceptsCustom('')
+  }
+
+  const handleSectionSubjectChange = (value) => {
+    setSectionSubject(value)
+    setSectionRelatedConceptsSelected([])
+    setSectionRelatedConceptsCustom('')
+  }
+
+  const handleToggleRelatedConcept = (concept) => {
+    setRelatedConceptsSelected((prev) =>
+      prev.includes(concept) ? prev.filter((item) => item !== concept) : [...prev, concept],
+    )
+  }
+
+  const handleToggleSectionRelatedConcept = (concept) => {
+    setSectionRelatedConceptsSelected((prev) =>
+      prev.includes(concept) ? prev.filter((item) => item !== concept) : [...prev, concept],
+    )
+  }
 
   const handleGlobalContextChange = (value) => {
     setGlobalContext(value)
@@ -174,7 +259,8 @@ export default function IBPromptPage() {
     const generated = generateIBUnitPlanPrompt({
       subject,
       keyConceptsSelected: [keyConcept],
-      relatedConceptsInput: relatedConceptsInput.trim() || '(입력 없음)',
+      relatedConceptsInput:
+        combineRelatedConcepts(relatedConceptsSelected, relatedConceptsCustom) || '(입력 없음)',
       globalContext,
       explorationSelected,
       statementKeyword: statementKeyword.trim() || '(입력 없음)',
@@ -215,7 +301,9 @@ export default function IBPromptPage() {
         generateIBStatementPrompt({
           subject: sectionSubject,
           keyConceptsSelected: [sectionKeyConcept],
-          relatedConceptsInput: sectionRelatedConcepts.trim() || '(입력 없음)',
+          relatedConceptsInput:
+            combineRelatedConcepts(sectionRelatedConceptsSelected, sectionRelatedConceptsCustom) ||
+            '(입력 없음)',
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
         }),
@@ -315,7 +403,7 @@ export default function IBPromptPage() {
         {mode === 'full' ? (
           <div className="mt-6 flex flex-col gap-6">
             <Field label="교과군">
-              <Select value={subject} onChange={setSubject} options={ibData.subjects} />
+              <Select value={subject} onChange={handleSubjectChange} options={ibData.subjects} />
             </Field>
 
             <Field label="MYP 학년">
@@ -326,13 +414,16 @@ export default function IBPromptPage() {
               <Select value={keyConcept} onChange={setKeyConcept} options={ibData.keyConcepts} />
             </Field>
 
-            <Field label="관련 개념 (Related Concepts)" hint="1~2개 정도를 권장해요. 쉼표(,)로 구분해서 입력하세요.">
-              <input
-                type="text"
-                value={relatedConceptsInput}
-                onChange={(e) => setRelatedConceptsInput(e.target.value)}
-                placeholder="예: 상호작용, 균형"
-                className={INPUT_CLASS}
+            <Field
+              label="관련 개념 (Related Concepts)"
+              hint="1~2개를 선택하는 것을 권장해요. 목록에 없다면 직접 입력할 수 있어요."
+            >
+              <RelatedConceptsField
+                subject={subject}
+                selected={relatedConceptsSelected}
+                onToggle={handleToggleRelatedConcept}
+                customText={relatedConceptsCustom}
+                onCustomChange={setRelatedConceptsCustom}
               />
             </Field>
 
@@ -370,7 +461,11 @@ export default function IBPromptPage() {
         ) : (
           <div className="mt-6 flex flex-col gap-6">
             <Field label="교과군 (공통)">
-              <Select value={sectionSubject} onChange={setSectionSubject} options={ibData.subjects} />
+              <Select
+                value={sectionSubject}
+                onChange={handleSectionSubjectChange}
+                options={ibData.subjects}
+              />
             </Field>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -432,13 +527,16 @@ export default function IBPromptPage() {
                     options={ibData.keyConcepts}
                   />
                 </Field>
-                <Field label="관련 개념 (Related Concepts)" hint="1~2개 정도를 권장해요. 쉼표(,)로 구분해서 입력하세요.">
-                  <input
-                    type="text"
-                    value={sectionRelatedConcepts}
-                    onChange={(e) => setSectionRelatedConcepts(e.target.value)}
-                    placeholder="예: 상호작용, 균형"
-                    className={INPUT_CLASS}
+                <Field
+                  label="관련 개념 (Related Concepts)"
+                  hint="1~2개를 선택하는 것을 권장해요. 목록에 없다면 직접 입력할 수 있어요."
+                >
+                  <RelatedConceptsField
+                    subject={sectionSubject}
+                    selected={sectionRelatedConceptsSelected}
+                    onToggle={handleToggleSectionRelatedConcept}
+                    customText={sectionRelatedConceptsCustom}
+                    onCustomChange={setSectionRelatedConceptsCustom}
                   />
                 </Field>
                 <Field label="세계적 맥락 (Global Context)">
