@@ -214,6 +214,12 @@ function combineRelatedConcepts(selected, customText) {
   return [...selected, ...customItems].join(', ')
 }
 
+function getMissingFieldsMessage(fields) {
+  const missing = fields.filter(([, value]) => !value).map(([label]) => label)
+  if (missing.length === 0) return ''
+  return `아직 선택하지 않은 항목이 있어요: ${missing.join(', ')}`
+}
+
 function RelatedConceptsField({ subject, selected, onToggle, customText, onCustomChange }) {
   const concepts = ibData.relatedConceptsBySubject[subject]
 
@@ -440,6 +446,9 @@ function ExplorationRadioGroup({ globalContext, value, onChange }) {
 
   return (
     <div className="mt-2 flex flex-col gap-2">
+      <p className="text-sm text-gray-500 dark:text-slate-400">
+        세계적 맥락의 세부 탐구 방향을 선택해주세요. (필수)
+      </p>
       {context.explorations.map((exploration) => (
         <label
           key={exploration}
@@ -571,8 +580,15 @@ export default function IBPromptPage() {
   const handleGenerateFull = () => {
     setGenerateError('')
 
-    if (!subject || !mypYear || !keyConcept || !globalContext || !explorationSelected) {
-      setGenerateError('교과군, MYP 학년, 핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
+    const missingMessage = getMissingFieldsMessage([
+      ['교과군', subject],
+      ['MYP 학년', mypYear],
+      ['핵심 개념', keyConcept],
+      ['세계적 맥락', globalContext],
+      ['탐구(세부)', explorationSelected],
+    ])
+    if (missingMessage) {
+      setGenerateError(missingMessage)
       return
     }
 
@@ -609,8 +625,14 @@ export default function IBPromptPage() {
     }
 
     if (activeSection === 'inquiry') {
-      if (!sectionKeyConcept || !sectionGlobalContext || !sectionExploration) {
-        setGenerateError('핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
+      const missingMessage = getMissingFieldsMessage([
+        ['교과군', sectionSubject],
+        ['핵심 개념', sectionKeyConcept],
+        ['세계적 맥락', sectionGlobalContext],
+        ['탐구(세부)', sectionExploration],
+      ])
+      if (missingMessage) {
+        setGenerateError(missingMessage)
         return
       }
       setResult(
