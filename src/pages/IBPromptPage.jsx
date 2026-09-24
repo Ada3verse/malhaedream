@@ -664,9 +664,8 @@ export default function IBPromptPage() {
         generateIBATLPrompt({
           subject: sectionSubject,
           atlSelected,
-          lessonActivity: [...sectionLessonActivitySelected, sectionLessonActivityDescriptionText.trim()].filter(
-            Boolean,
-          ),
+          lessonActivity: sectionLessonActivitySelected,
+          lessonActivityDescription: sectionLessonActivityDescriptionText.trim(),
           aiTool: sectionAiTool,
         }),
       )

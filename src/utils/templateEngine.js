@@ -191,8 +191,6 @@ export function generateIBUnitPlanPrompt({
   formativeAssessments,
   aiTool,
 }) {
-  const isEmptyValue = (value) => !value || value === '(입력 없음)'
-
   const infoLines = [
     `- 교과군: ${subject}`,
     `- MYP 학년: ${mypYear}`,
@@ -260,6 +258,10 @@ ATL 카테고리명 + 이 단원에서 어떻게 드러나는지 한 줄 설명�
   return { ko }
 }
 
+function isEmptyValue(value) {
+  return !value || value === '(입력 없음)'
+}
+
 export function generateIBInquiryQuestionsPrompt({
   subject,
   keyConceptsSelected,
@@ -268,18 +270,39 @@ export function generateIBInquiryQuestionsPrompt({
   statementKeyword,
   aiTool,
 }) {
-  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 탐구 질문(Inquiry Questions)을 사실적/개념적/논쟁적 질문 각 1개씩, 총 3개 만들어주세요.[[/PURPOSE]]
+  const infoLines = [
+    `- 교과군: ${subject}`,
+    `- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`,
+    `- 세계적 맥락: ${globalContext}`,
+  ]
+  if (!isEmptyValue(explorationSelected)) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
+  if (!isEmptyValue(statementKeyword)) infoLines.push(`- 단원 키워드: ${statementKeyword}`)
 
-[[CONTEXT]]- 교과군: ${subject}
-- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
-- 세계적 맥락(Global Context): ${globalContext}
-- 탐구(세부, Exploration): ${explorationSelected}
-- 단원 키워드: ${statementKeyword}[[/CONTEXT]]
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건에 맞는 탐구 질문 3종을 작성해주세요.
 
-[[CONDITION]]- 사실적 질문(Factual Question): 구체적 지식이나 사실을 확인하는 질문
-- 개념적 질문(Conceptual Question): 핵심 개념을 이해와 연결하는 질문
-- 논쟁적 질문(Debatable Question): 다양한 관점에서 토론할 수 있는 열린 질문
-- 각 질문 아래에 해당 질문이 왜 그 유형에 해당하는지 한 줄로 설명을 덧붙여주세요.[[/CONDITION]]`
+[단원 정보]
+${infoLines.join('\n')}
+
+[작성 요청]
+아래 3가지 유형의 탐구 질문을 각각 1~2개씩 작성해주세요.
+
+1. 사실적 질문 (Factual Question)
+- 단원에서 학생이 알아야 할 사실·개념·정의를 묻는 질문
+- "~은 무엇인가?", "~은 어떻게 작동하는가?" 형태
+- 예: "생태계에서 에너지는 어떻게 이동하는가?"
+
+2. 개념적 질문 (Conceptual Question)
+- 핵심 개념과 관련 개념을 연결해 깊이 있는 이해를 묻는 질문
+- "~은 어떻게 연결되는가?", "~은 왜 중요한가?" 형태
+- 예: "균형의 변화는 생태계 전체에 어떤 영향을 미치는가?"
+
+3. 논쟁적 질문 (Debatable Question)
+- 정답이 없고 다양한 관점에서 토론할 수 있는 질문
+- "~해야 하는가?", "~은 정당한가?" 형태
+- 예: "인간은 생태계 균형을 위해 자연에 개입할 권리가 있는가?"
+
+각 질문 뒤에 이 질문이 왜 이 단원에 적합한지 한 줄 이유도 함께 써주세요.`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
@@ -293,25 +316,34 @@ export function generateIBStatementPrompt({
   statementKeyword,
   aiTool,
 }) {
-  const contextLines = [
+  const infoLines = [
     `- 교과군: ${subject}`,
-    `- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}`,
-    `- 관련 개념(Related Concepts): ${relatedConceptsInput}`,
-    `- 세계적 맥락(Global Context): ${globalContext}`,
-    `- 탐구(세부, Exploration): ${explorationSelected}`,
+    `- 핵심 개념: ${(keyConceptsSelected ?? []).join(', ')}`,
   ]
+  if (!isEmptyValue(relatedConceptsInput)) infoLines.push(`- 관련 개념: ${relatedConceptsInput}`)
+  infoLines.push(`- 세계적 맥락: ${globalContext}`)
+  if (!isEmptyValue(explorationSelected)) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
+  if (!isEmptyValue(statementKeyword)) infoLines.push(`- 단원 키워드: ${statementKeyword}`)
 
-  if (statementKeyword && statementKeyword.trim()) {
-    contextLines.push(`- 단원 키워드: ${statementKeyword.trim()}`)
-  }
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건에 맞는 탐구 진술문(Statement of Inquiry)을 작성해주세요.
 
-  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건을 반영한 탐구 진술문(Statement of Inquiry) 초안을 2~3개 제안해주세요.[[/PURPOSE]]
+[단원 정보]
+${infoLines.join('\n')}
 
-[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
+[작성 요청]
+탐구 진술문 후보를 3개 작성해주세요.
 
-[[CONDITION]]- 핵심 개념과 관련 개념, 세계적 맥락이 하나의 문장 안에 자연스럽게 연결되도록 작성해주세요.
-- 학생 수준에서 이해할 수 있는 명확하고 간결한 문장으로 작성해주세요.
-- 특정 사실이 아닌, 전이 가능한 이해(transferable understanding)를 담아주세요.[[/CONDITION]]`
+탐구 진술문 작성 규칙:
+- 핵심 개념 + 관련 개념 + 세계적 맥락이 하나의 문장에 자연스럽게 녹아야 해요
+- 학생이 탐구할 내용을 함축적으로 담아야 해요
+- 질문이 아닌 서술문 형태여야 해요
+- 너무 길지 않게 1~2문장으로 작성해주세요
+
+각 후보마다:
+- 진술문 본문
+- 이 진술문에서 핵심 개념/관련 개념/세계적 맥락이 어떻게 반영됐는지 한 줄 설명
+- 이 진술문을 선택했을 때 어울리는 탐구 질문 방향 한 줄 제안`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
@@ -328,66 +360,120 @@ export function generateIBAssessmentPrompt({
   formativeNotes,
   aiTool,
 }) {
-  const contextLines = [
-    `- 교과군: ${subject}`,
-    `- MYP 학년: ${mypYear}`,
-    `- 총괄평가 간략 설명: ${joinIfArray(summativeDescription)}`,
-  ]
+  const infoLines = [`- 교과군: ${subject}`, `- MYP 학년: ${mypYear}`]
+
+  const joinedSummativeDescription = joinIfArray(summativeDescription)
+  if (!isEmptyValue(joinedSummativeDescription)) infoLines.push(`- 평가 유형: ${joinedSummativeDescription}`)
 
   const graspsLines = buildGraspsLines(grasps)
-  if (graspsLines.length) {
-    contextLines.push('- 총괄 평가 상세(GRASPS):', ...graspsLines)
-  }
+  if (graspsLines.length) infoLines.push('- GRASPS 참고사항:', ...graspsLines)
 
   const joinedFormativeNotes = joinIfArray(formativeNotes)
-  if (joinedFormativeNotes) {
-    contextLines.push(`- 참고할 형성평가 계획: ${joinedFormativeNotes}`)
-  }
+  if (!isEmptyValue(joinedFormativeNotes)) infoLines.push(`- 형성평가 참고: ${joinedFormativeNotes}`)
 
-  const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 총괄평가(Summative Assessment)를 GRASPS 모델을 기반으로 설계해주세요.[[/PURPOSE]]
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건에 맞는 총괄 평가(Summative Assessment)를 GRASPS 모델로 설계해주세요.
 
-[[CONTEXT]]${contextLines.join('\n')}[[/CONTEXT]]
+[단원 정보]
+${infoLines.join('\n')}
 
-[[CONDITION]]- G(Goal, 목표): 학생이 달성해야 할 목표
-- R(Role, 역할): 과제 수행 중 학생이 맡는 역할
-- A(Audience, 대상): 결과물을 전달받는 대상
-- S(Situation, 상황): 과제가 주어지는 맥락과 도전 과제
-- P(Product/Performance, 결과물): 학생이 만들어낼 산출물
-- S(Standards, 기준): 평가 기준(루브릭 기준을 간략히 함께 제시)
-- 위에 이미 입력된 GRASPS 항목이 있다면 그 내용을 우선 반영해주세요.
-- 해당 MYP 학년 수준에 적합한 난이도로 설계해주세요.[[/CONDITION]]`
+[작성 요청]
+총괄 평가 설계안을 아래 GRASPS 형식으로 작성해주세요.
+위에서 제시한 GRASPS 참고사항이 있으면 그것을 우선 반영하고, 없는 항목만 새로 제안해주세요.
+
+G (Goal / 목표)
+이 평가에서 학생이 해결해야 할 실제적인 문제나 도전을 서술해주세요.
+
+R (Role / 역할)
+학생이 맡을 구체적인 역할을 제시해주세요. 교과와 연결된 역할이면 더 좋아요.
+
+A (Audience / 청중)
+결과물을 보여줄 실제 대상을 명시해주세요. 선생님이 아닌 실제 청중으로요.
+
+S (Situation / 상황)
+이 과제가 주어진 배경과 맥락을 서술해주세요.
+
+P (Product / 결과물)
+학생이 만들어야 할 최종 결과물의 형태를 구체적으로 명시해주세요.
+
+S (Standards / 성공 기준)
+이 평가에서 사용할 MYP 평가기준(A/B/C/D 중)과 각 기준에서 중점적으로 볼 내용을 서술해주세요.
+
+마지막으로, 이 총괄 평가와 연계할 수 있는 형성평가 아이디어를 1~2개 짧게 제안해주세요.`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
 export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments, aiTool }) {
   const formativeLines = buildFormativeLines(formativeAssessments)
-  const formativeBlock = formativeLines.length ? formativeLines.join('\n') : '  (입력된 단계 없음)'
+  const formativeBlock = formativeLines.length ? formativeLines.join('\n') : '  (입력된 계획 없음)'
 
-  const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 단계별 형성평가(Formative Assessment) 계획을 바탕으로, 각 단계에서 어떤 형성평가를 어떻게 실시할지 구체적으로 작성해주세요.[[/PURPOSE]]
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건에 맞는 형성평가 계획을 구체적으로 작성해주세요.
 
-[[CONTEXT]]- 교과군: ${subject}
+[단원 정보]
+- 교과군: ${subject}
 - MYP 학년: ${mypYear}
-- 형성평가 계획:
-${formativeBlock}[[/CONTEXT]]
 
-[[CONDITION]]- 각 단계별로 구체적인 평가 도구·문항·관찰 기준을 제안해주세요.
-- 학생의 이해도를 어떻게 확인하고, 그 결과를 다음 수업에 어떻게 반영할지 설명해주세요.
-- 총괄평가로 자연스럽게 이어지도록 난이도와 연계성을 고려해주세요.[[/CONDITION]]`
+[형성평가 계획]
+${formativeBlock}
+
+[작성 요청]
+각 형성평가 계획마다 아래 내용을 작성해주세요.
+
+1. 이 형성평가의 목적과 기대 효과
+   - 학생에게 어떤 피드백을 주고, 교사는 무엇을 파악할 수 있는지
+
+2. 구체적인 실시 방법
+   - 시간: 몇 분 정도 소요되는지
+   - 방법: 어떻게 진행하는지 단계별로 설명
+   - 도구: 필요한 자료나 도구가 있으면 명시
+
+3. 학생 반응에 따른 교사 대응 방안
+   - 이해도가 높은 학생 → 어떻게 심화할지
+   - 이해도가 낮은 학생 → 어떻게 보완할지
+
+4. 총괄 평가와의 연계
+   - 이 형성평가 결과가 총괄 평가 준비에 어떻게 도움이 되는지`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
 
-export function generateIBATLPrompt({ subject, atlSelected, lessonActivity, aiTool }) {
-  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 수업 활동에서 드러나는 ATL(학습접근방법) 기능 서술 문장을 만들어주세요.[[/PURPOSE]]
+export function generateIBATLPrompt({
+  subject,
+  atlSelected,
+  lessonActivity,
+  lessonActivityDescription,
+  aiTool,
+}) {
+  const infoLines = [`- 교과군: ${subject}`]
 
-[[CONTEXT]]- 교과군: ${subject}
-- ATL 카테고리: ${atlSelected}
-- 수업 활동: ${joinIfArray(lessonActivity)}[[/CONTEXT]]
+  const joinedLessonActivity = joinIfArray(lessonActivity)
+  if (!isEmptyValue(joinedLessonActivity)) infoLines.push(`- 수업 활동 유형: ${joinedLessonActivity}`)
+  if (lessonActivityDescription && lessonActivityDescription.trim()) {
+    infoLines.push(`- 수업 활동 보충 설명: ${lessonActivityDescription.trim()}`)
+  }
 
-[[CONDITION]]- 선택한 ATL 카테고리에 해당하는 구체적인 기능(skill) 서술 문장을 2~3개 만들어주세요.
-- "학생은 ~할 수 있다" 형태로, 수업 활동과 직접 연결되도록 작성해주세요.
-- 관찰 가능하고 평가 가능한 표현을 사용해주세요.[[/CONDITION]]`
+  const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
+아래 조건에 맞는 ATL(학습접근방법) 기능 서술을 작성해주세요.
+
+[단원 정보]
+${infoLines.join('\n')}
+
+[작성 요청]
+선택한 ATL 카테고리: ${atlSelected}
+
+위 ATL 카테고리를 중심으로 아래 내용을 작성해주세요.
+
+1. 이 단원에서 해당 ATL 기능이 왜 중요한지 2~3줄로 설명해주세요.
+
+2. 수업 활동과 연결해서 학생이 이 ATL 기능을 어떻게 발휘하는지 구체적인 장면을 2~3개 서술해주세요.
+   예: "모둠 토론에서 학생들은 서로의 주장을 경청하고 비판적 피드백을 주고받으며 협력적 기능을 발휘합니다."
+
+3. 이 ATL 기능을 평가하거나 관찰할 수 있는 방법을 1~2개 제안해주세요.
+
+4. NEIS 세부능력특기사항 기재 시 참고할 수 있는 문장 예시를 1개 작성해주세요.
+   (학생이 이 ATL 기능을 잘 발휘한 경우를 가정해서 작성)`
 
   return { ko: `${getAiToolIntro(aiTool)}${ko}` }
 }
