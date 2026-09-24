@@ -18,11 +18,13 @@ const RECENT_PROMPTS_LIMIT = 3
 const TYPE_LABELS = {
   image: '이미지',
   document: '문서',
+  ib: 'IB',
 }
 
 const TYPE_BADGE_STYLES = {
   image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
   document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
+  ib: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
 }
 
 const CATEGORY_TABS = [
@@ -54,6 +56,7 @@ const TEMPLATE_CATEGORY_MAP = {
   '기타': 'admin',
   '학급 규칙 안내문': 'class',
   '상담 일지': 'class',
+  'IB MYP 유닛 플랜 프롬프트': 'lesson',
 }
 
 const DEFAULT_TEMPLATE_ICON = '📝'
@@ -78,6 +81,7 @@ const TEMPLATE_ICON_MAP = {
   '독서 활동지': '📖',
   '진로 탐색 활동지': '🧭',
   '학급 규칙 안내문': '📣',
+  'IB MYP 유닛 플랜 프롬프트': '🎓',
 }
 
 function formatDate(timestamp) {

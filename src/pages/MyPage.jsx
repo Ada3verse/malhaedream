@@ -22,6 +22,7 @@ import {
 const TYPE_LABELS = {
   image: '이미지',
   document: '문서',
+  ib: 'IB',
 }
 
 const TYPE_BADGE_STYLES = {

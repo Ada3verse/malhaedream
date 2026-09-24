@@ -138,6 +138,112 @@ export function generatePromptFromTemplate(template, content, tones, formats) {
   return { ko: blocks.join('\n\n'), en: null }
 }
 
+export function generateIBUnitPlanPrompt({
+  subject,
+  keyConceptsSelected,
+  relatedConceptsInput,
+  globalContext,
+  explorationSelected,
+  statementKeyword,
+  mypYear,
+}) {
+  const ko = `[[ROLE]]당신은 IB MYP(중등교육프로그램) 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 IB MYP 유닛 플랜(Unit Plan) 초안을 작성해주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- MYP 학년: ${mypYear}
+- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
+- 관련 개념(Related Concepts): ${relatedConceptsInput}
+- 세계적 맥락(Global Context): ${globalContext}
+- 탐구(세부, Exploration): ${explorationSelected}
+- 탐구 진술문 키워드: ${statementKeyword}[[/CONTEXT]]
+
+[[CONDITION]]- 탐구 진술문(Statement of Inquiry)을 먼저 한 문장으로 제시해주세요.
+- 사실적(Factual)/개념적(Conceptual)/논쟁적(Debatable) 탐구 질문을 각 1개 이상 제시해주세요.
+- 총괄평가(Summative Assessment) 개요를 GRASPS(목표-역할-대상-상황-결과물-기준) 요소를 포함해 제시해주세요.
+- 이 단원과 관련된 ATL(학습접근방법) 기능을 2~3개 제안하고 각각 수업에서 어떻게 드러나는지 설명해주세요.
+- 학습 경험 및 수업 활동의 흐름을 차시별로 간략히 제시해주세요.
+- MYP 학년 수준에 맞는 난이도와 분량으로 작성해주세요.[[/CONDITION]]`
+
+  return { ko }
+}
+
+export function generateIBInquiryQuestionsPrompt({
+  subject,
+  keyConceptsSelected,
+  globalContext,
+  explorationSelected,
+  statementKeyword,
+}) {
+  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 탐구 질문(Inquiry Questions)을 사실적/개념적/논쟁적 질문 각 1개씩, 총 3개 만들어주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
+- 세계적 맥락(Global Context): ${globalContext}
+- 탐구(세부, Exploration): ${explorationSelected}
+- 단원 키워드: ${statementKeyword}[[/CONTEXT]]
+
+[[CONDITION]]- 사실적 질문(Factual Question): 구체적 지식이나 사실을 확인하는 질문
+- 개념적 질문(Conceptual Question): 핵심 개념을 이해와 연결하는 질문
+- 논쟁적 질문(Debatable Question): 다양한 관점에서 토론할 수 있는 열린 질문
+- 각 질문 아래에 해당 질문이 왜 그 유형에 해당하는지 한 줄로 설명을 덧붙여주세요.[[/CONDITION]]`
+
+  return { ko }
+}
+
+export function generateIBStatementPrompt({
+  subject,
+  keyConceptsSelected,
+  relatedConceptsInput,
+  globalContext,
+  explorationSelected,
+}) {
+  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건을 반영한 탐구 진술문(Statement of Inquiry) 초안을 2~3개 제안해주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- 핵심 개념(Key Concept): ${(keyConceptsSelected ?? []).join(', ')}
+- 관련 개념(Related Concepts): ${relatedConceptsInput}
+- 세계적 맥락(Global Context): ${globalContext}
+- 탐구(세부, Exploration): ${explorationSelected}[[/CONTEXT]]
+
+[[CONDITION]]- 핵심 개념과 관련 개념, 세계적 맥락이 하나의 문장 안에 자연스럽게 연결되도록 작성해주세요.
+- 학생 수준에서 이해할 수 있는 명확하고 간결한 문장으로 작성해주세요.
+- 특정 사실이 아닌, 전이 가능한 이해(transferable understanding)를 담아주세요.[[/CONDITION]]`
+
+  return { ko }
+}
+
+export function generateIBAssessmentPrompt({ subject, mypYear, summativeDescription }) {
+  const ko = `[[ROLE]]당신은 IB MYP 평가 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 조건에 맞는 총괄평가(Summative Assessment)를 GRASPS 모델을 기반으로 설계해주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- MYP 학년: ${mypYear}
+- 총괄평가 간략 설명: ${summativeDescription}[[/CONTEXT]]
+
+[[CONDITION]]- G(Goal, 목표): 학생이 달성해야 할 목표
+- R(Role, 역할): 과제 수행 중 학생이 맡는 역할
+- A(Audience, 대상): 결과물을 전달받는 대상
+- S(Situation, 상황): 과제가 주어지는 맥락과 도전 과제
+- P(Product/Performance, 결과물): 학생이 만들어낼 산출물
+- S(Standards, 기준): 평가 기준(루브릭 기준을 간략히 함께 제시)
+- 해당 MYP 학년 수준에 적합한 난이도로 설계해주세요.[[/CONDITION]]`
+
+  return { ko }
+}
+
+export function generateIBATLPrompt({ subject, atlSelected, lessonActivity }) {
+  const ko = `[[ROLE]]당신은 IB MYP 교육과정 설계 전문가입니다.[[/ROLE]] [[PURPOSE]]아래 수업 활동에서 드러나는 ATL(학습접근방법) 기능 서술 문장을 만들어주세요.[[/PURPOSE]]
+
+[[CONTEXT]]- 교과군: ${subject}
+- ATL 카테고리: ${atlSelected}
+- 수업 활동: ${lessonActivity}[[/CONTEXT]]
+
+[[CONDITION]]- 선택한 ATL 카테고리에 해당하는 구체적인 기능(skill) 서술 문장을 2~3개 만들어주세요.
+- "학생은 ~할 수 있다" 형태로, 수업 활동과 직접 연결되도록 작성해주세요.
+- 관찰 가능하고 평가 가능한 표현을 사용해주세요.[[/CONDITION]]`
+
+  return { ko }
+}
+
 export function refinePrompt(originalPrompt, quickFixes, customRequest) {
   const items = [
     ...quickFixes,

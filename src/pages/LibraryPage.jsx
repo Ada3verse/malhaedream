@@ -16,6 +16,7 @@ const DEFAULT_RANK_COLOR = '#1e3a5f'
 const TYPE_LABELS = {
   image: '이미지',
   document: '문서',
+  ib: 'IB',
 }
 
 const TYPE_BADGE_STYLES = {
