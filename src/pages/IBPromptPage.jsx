@@ -9,6 +9,7 @@ import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { ibData } from '../utils/ibData'
+import { exportIBProjectToXlsx } from '../utils/ibProjectExport'
 import {
   IB_PROJECT_SECTIONS,
   deleteIBProjectSection,
@@ -1040,6 +1041,13 @@ export default function IBPromptPage() {
                 className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
               >
                 ⚙️ 프로젝트 설정
+              </button>
+              <button
+                type="button"
+                onClick={() => exportIBProjectToXlsx(project)}
+                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+              >
+                📥 xlsx 다운로드
               </button>
               <Link
                 to="/ib-projects"

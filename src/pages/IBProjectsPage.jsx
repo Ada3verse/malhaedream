@@ -5,6 +5,7 @@ import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { ibData } from '../utils/ibData'
+import { exportIBProjectToXlsx } from '../utils/ibProjectExport'
 import {
   IB_PROJECT_SECTIONS,
   createIBProject,
@@ -26,7 +27,23 @@ function formatDate(timestamp) {
 
 function ProjectCard({ project, onDelete, onEdit }) {
   const navigate = useNavigate()
+  const showToast = useToast()
+  const [downloading, setDownloading] = useState(false)
   const completedCount = IB_PROJECT_SECTIONS.filter((section) => project.sections?.[section.key]).length
+
+  // 목록 조회(getIBProjects)가 이미 sections를 포함한 전체 문서를 반환하므로 별도 재조회 없이 사용.
+  // 다운로드는 클릭의 사용자 제스처 컨텍스트 안에서 동기적으로 실행해야 브라우저가 차단하지 않는다.
+  const handleDownload = (e) => {
+    e.stopPropagation()
+    setDownloading(true)
+    try {
+      exportIBProjectToXlsx(project)
+    } catch {
+      showToast('다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   return (
     <div
@@ -102,6 +119,15 @@ function ProjectCard({ project, onDelete, onEdit }) {
       </div>
 
       <p className="mt-1 text-xs text-slate-400">마지막 수정: {formatDate(project.updatedAt) || '-'}</p>
+
+      <button
+        type="button"
+        onClick={handleDownload}
+        disabled={downloading}
+        className="mt-1 self-start rounded-lg border border-navy-300 px-3 py-1.5 text-xs font-medium text-navy-700 transition hover:bg-navy-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+      >
+        {downloading ? '다운로드 중...' : '📥 xlsx 다운로드'}
+      </button>
     </div>
   )
 }
