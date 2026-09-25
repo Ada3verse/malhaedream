@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
@@ -9,6 +9,7 @@ import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { ibData } from '../utils/ibData'
+import { createIBProject, updateIBProjectInfo, updateIBProjectSection } from '../utils/ibProjects'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
 import {
@@ -20,6 +21,7 @@ import {
 } from '../utils/templateEngine'
 
 const IB_TEMPLATE_NAME = 'IB MYP 유닛 플랜 프롬프트'
+const CURRENT_PROJECT_STORAGE_KEY = 'ib_current_project_id'
 
 const MODE_TABS = [
   { id: 'full', label: '전체 유닛 플랜' },
@@ -237,7 +239,51 @@ export default function IBPromptPage() {
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
 
+  // 프로젝트 자동 누적 저장
+  const [currentProjectId, setCurrentProjectId] = useState(null)
+  const [currentProjectLabel, setCurrentProjectLabel] = useState('')
+
+  useEffect(() => {
+    const savedId = localStorage.getItem(CURRENT_PROJECT_STORAGE_KEY)
+    if (savedId) setCurrentProjectId(savedId)
+  }, [])
+
   if (!user) return null
+
+  const handleStartNewProject = () => {
+    localStorage.removeItem(CURRENT_PROJECT_STORAGE_KEY)
+    setCurrentProjectId(null)
+    setCurrentProjectLabel('')
+    showToast('새 프로젝트를 시작합니다. 다음 생성부터 새로 저장돼요.', 'success')
+  }
+
+  // 프롬프트를 생성할 때마다 현재 프로젝트에 자동으로 누적 저장합니다.
+  // 실패해도 프롬프트 생성/복사 자체는 막지 않도록 별도로 처리합니다.
+  const saveToProject = async (basicInfo, sectionKey, sectionData) => {
+    try {
+      let projectId = currentProjectId
+
+      if (!projectId) {
+        projectId = await createIBProject({
+          nickname: user.nickname,
+          deviceId: user.deviceId,
+          teacherName: user.nickname,
+          ...basicInfo,
+        })
+        localStorage.setItem(CURRENT_PROJECT_STORAGE_KEY, projectId)
+        setCurrentProjectId(projectId)
+      } else {
+        await updateIBProjectInfo(projectId, basicInfo)
+      }
+
+      await updateIBProjectSection(projectId, sectionKey, sectionData)
+      setCurrentProjectLabel(
+        [basicInfo.subject, basicInfo.title].filter(Boolean).join(' · ') || currentProjectLabel,
+      )
+    } catch {
+      showToast('프로젝트 자동 저장에 실패했어요. (프롬프트는 정상적으로 생성되었습니다)', 'warning')
+    }
+  }
 
   const handleSubjectChange = (value) => {
     setSubject(value)
@@ -301,6 +347,20 @@ export default function IBPromptPage() {
     })
 
     setResult(generated)
+
+    saveToProject(
+      {
+        subject,
+        mypYear,
+        title: statementKeyword.trim() || subject,
+        keyConcept,
+        relatedConcepts: combineRelatedConcepts(relatedConceptsSelected, relatedConceptsCustom),
+        globalContext,
+        exploration: explorationSelected,
+      },
+      'unitPlan',
+      { prompt: generated.ko, aiTool },
+    )
   }
 
   const handleGenerateSection = () => {
@@ -316,23 +376,35 @@ export default function IBPromptPage() {
         setGenerateError('핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
         return
       }
-      setResult(
-        generateIBInquiryQuestionsPrompt({
+      {
+        const generated = generateIBInquiryQuestionsPrompt({
           subject: sectionSubject,
           keyConceptsSelected: [sectionKeyConcept],
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionUnitKeyword.trim() || '(입력 없음)',
           aiTool: sectionAiTool,
-        }),
-      )
+        })
+        setResult(generated)
+        saveToProject(
+          {
+            subject: sectionSubject,
+            title: sectionUnitKeyword.trim() || sectionSubject,
+            keyConcept: sectionKeyConcept,
+            globalContext: sectionGlobalContext,
+            exploration: sectionExploration,
+          },
+          'inquiry',
+          { prompt: generated.ko, aiTool: sectionAiTool },
+        )
+      }
     } else if (activeSection === 'statement') {
       if (!sectionKeyConcept || !sectionGlobalContext || !sectionExploration) {
         setGenerateError('핵심 개념, 세계적 맥락, 탐구(세부)를 모두 선택해주세요.')
         return
       }
-      setResult(
-        generateIBStatementPrompt({
+      {
+        const generated = generateIBStatementPrompt({
           subject: sectionSubject,
           keyConceptsSelected: [sectionKeyConcept],
           relatedConceptsInput:
@@ -341,34 +413,60 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           aiTool: sectionAiTool,
-        }),
-      )
+        })
+        setResult(generated)
+        saveToProject(
+          {
+            subject: sectionSubject,
+            keyConcept: sectionKeyConcept,
+            relatedConcepts: combineRelatedConcepts(
+              sectionRelatedConceptsSelected,
+              sectionRelatedConceptsCustom,
+            ),
+            globalContext: sectionGlobalContext,
+            exploration: sectionExploration,
+          },
+          'statement',
+          { prompt: generated.ko, aiTool: sectionAiTool },
+        )
+      }
     } else if (activeSection === 'assessment') {
       if (!sectionMypYear || sectionSummativeSelected.length === 0) {
         setGenerateError('MYP 학년을 선택하고 총괄 평가 유형을 하나 이상 선택해주세요.')
         return
       }
-      setResult(
-        generateIBAssessmentPrompt({
+      {
+        const generated = generateIBAssessmentPrompt({
           subject: sectionSubject,
           mypYear: sectionMypYear,
           summativeDescription: sectionSummativeSelected,
           aiTool: sectionAiTool,
-        }),
-      )
+        })
+        setResult(generated)
+        saveToProject(
+          { subject: sectionSubject, mypYear: sectionMypYear },
+          'assessment',
+          { prompt: generated.ko, aiTool: sectionAiTool },
+        )
+      }
     } else if (activeSection === 'atl') {
       if (!atlSelected || sectionLessonActivitySelected.length === 0) {
         setGenerateError('ATL 카테고리를 선택하고 수업 활동 유형을 하나 이상 선택해주세요.')
         return
       }
-      setResult(
-        generateIBATLPrompt({
+      {
+        const generated = generateIBATLPrompt({
           subject: sectionSubject,
           atlSelected,
           lessonActivity: sectionLessonActivitySelected,
           aiTool: sectionAiTool,
-        }),
-      )
+        })
+        setResult(generated)
+        saveToProject({ subject: sectionSubject }, 'atl', {
+          prompt: generated.ko,
+          aiTool: sectionAiTool,
+        })
+      }
     }
   }
 
@@ -415,6 +513,28 @@ export default function IBPromptPage() {
         <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
           📋 IB MYP 유닛 플랜 프롬프트
         </h1>
+
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-violet-50 px-3 py-2 text-xs text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+          <span>
+            {currentProjectId
+              ? `📁 진행 중인 프로젝트${currentProjectLabel ? `: ${currentProjectLabel}` : ''} — 생성할 때마다 자동으로 저장돼요.`
+              : '📁 프롬프트를 생성하면 새 프로젝트가 자동으로 시작돼요.'}
+          </span>
+          <div className="flex shrink-0 gap-3">
+            <Link to="/ib-projects" className="font-medium underline hover:text-violet-900 dark:hover:text-violet-100">
+              프로젝트 목록 보기
+            </Link>
+            {currentProjectId && (
+              <button
+                type="button"
+                onClick={handleStartNewProject}
+                className="font-medium underline hover:text-violet-900 dark:hover:text-violet-100"
+              >
+                새 프로젝트로 시작
+              </button>
+            )}
+          </div>
+        </div>
 
         <div className="mt-5 flex gap-2">
           {MODE_TABS.map((tab) => (

@@ -4,6 +4,7 @@ import AdminPage from './pages/AdminPage'
 import DocumentPromptPage from './pages/DocumentPromptPage'
 import HomePage from './pages/HomePage'
 import IBPromptPage from './pages/IBPromptPage'
+import IBProjectsPage from './pages/IBProjectsPage'
 import ImagePromptPage from './pages/ImagePromptPage'
 import LibraryPage from './pages/LibraryPage'
 import LoginPage from './pages/LoginPage'
@@ -21,6 +22,7 @@ function App() {
           <Route path="/prompt/image" element={<ImagePromptPage />} />
           <Route path="/prompt/document" element={<DocumentPromptPage />} />
           <Route path="/prompt/ib" element={<IBPromptPage />} />
+          <Route path="/ib-projects" element={<IBProjectsPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/shared/:promptId" element={<SharedPromptPage />} />
