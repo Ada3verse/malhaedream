@@ -47,7 +47,17 @@ function PromptField({ value, onChange, placeholder, disabled, rows = 8, textCla
   )
 }
 
-export default function PromptResultBox({ result, onSave, refined = false, onEdit, onCopy, title, hint, banner }) {
+export default function PromptResultBox({
+  result,
+  onSave,
+  refined = false,
+  onEdit,
+  onCopy,
+  title,
+  hint,
+  banner,
+  onSaveProject,
+}) {
   const [copied, setCopied] = useState(false)
 
   const ko = result?.ko
@@ -74,7 +84,7 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
         <h2 className="text-sm font-semibold text-navy-700 dark:text-slate-200">
           {refined ? '🔄 보완된 프롬프트' : (title ?? '생성된 프롬프트')}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={handleCopy}
@@ -90,6 +100,15 @@ export default function PromptResultBox({ result, onSave, refined = false, onEdi
           >
             저장
           </button>
+          {onSaveProject && (
+            <button
+              type="button"
+              onClick={onSaveProject}
+              className="rounded-lg border-2 border-emerald-500 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/60 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+            >
+              📁 프로젝트에 저장
+            </button>
+          )}
         </div>
       </div>
 

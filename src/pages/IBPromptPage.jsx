@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import DarkModeToggle from '../components/DarkModeToggle'
 import Modal from '../components/Modal'
 import PromptResultBox from '../components/PromptResultBox'
@@ -9,6 +9,7 @@ import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { ibData } from '../utils/ibData'
+import { IB_PROJECT_SECTIONS, getIBProject, saveIBProjectSection } from '../utils/ibProjectService'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
 import {
@@ -34,6 +35,14 @@ const SECTION_TABS = [
   { id: 'atl', label: 'ATL 기능' },
   { id: 'formative', label: '형성평가' },
 ]
+
+const SECTION_KEY_MAP = {
+  inquiry: 'inquiry_questions',
+  statement: 'statement',
+  assessment: 'assessment',
+  atl: 'atl',
+  formative: 'formative',
+}
 
 const AI_TOOLS = ['ChatGPT', 'Claude', 'Gemini']
 
@@ -518,6 +527,57 @@ export default function IBPromptPage() {
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
 
+  // 프로젝트 모드
+  const [searchParams] = useSearchParams()
+  const projectId = searchParams.get('projectId')
+  const [project, setProject] = useState(null)
+
+  useEffect(() => {
+    if (!projectId) {
+      setProject(null)
+      return
+    }
+
+    let cancelled = false
+
+    getIBProject(projectId).then((data) => {
+      if (cancelled || !data) return
+      setProject(data)
+
+      if (data.subject) {
+        setSubject(data.subject)
+        setSectionSubject(data.subject)
+      }
+      if (data.mypYear) setMypYear(data.mypYear)
+      if (data.keyConcept) {
+        setKeyConcept(data.keyConcept)
+        setSectionKeyConcept(data.keyConcept)
+      }
+      if (data.relatedConcepts) {
+        setRelatedConceptsCustom(data.relatedConcepts)
+        setSectionRelatedConceptsCustom(data.relatedConcepts)
+      }
+      if (data.globalContext) {
+        setGlobalContext(data.globalContext)
+        setSectionGlobalContext(data.globalContext)
+      }
+      if (data.exploration) {
+        setExplorationSelected(data.exploration)
+        setSectionExploration(data.exploration)
+      }
+      if (data.statementKeyword) {
+        setStatementKeyword(data.statementKeyword)
+        setSectionStatementKeyword(data.statementKeyword)
+        setSectionUnitKeyword(data.statementKeyword)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId])
+
   if (!user) return null
 
   const handleSubjectChange = (value) => {
@@ -742,6 +802,30 @@ export default function IBPromptPage() {
     }
   }
 
+  const currentSectionKey = mode === 'full' ? 'briefing' : SECTION_KEY_MAP[activeSection]
+
+  const handleSaveToProject = async () => {
+    if (!projectId || !result) return
+
+    try {
+      await saveIBProjectSection(projectId, currentSectionKey, { prompt: result.ko })
+      setProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              sections: {
+                ...prev.sections,
+                [currentSectionKey]: { prompt: result.ko, savedAt: new Date().toISOString() },
+              },
+            }
+          : prev,
+      )
+      showToast('저장됐어요!', 'success')
+    } catch {
+      showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+    }
+  }
+
   const fullConceptSummary = buildConceptSummary({
     keyConcept,
     relatedConceptsText: combineRelatedConcepts(relatedConceptsSelected, relatedConceptsCustom),
@@ -770,6 +854,18 @@ export default function IBPromptPage() {
         <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
           📋 IB MYP 유닛 플랜 프롬프트
         </h1>
+
+        {projectId && project && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-navy-200 bg-navy-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-sm font-medium text-navy-700 dark:text-slate-200">📁 {project.title}</p>
+            <Link
+              to="/ib-projects"
+              className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+            >
+              프로젝트 목록으로
+            </Link>
+          </div>
+        )}
 
         <div className="mt-5 flex gap-2">
           {MODE_TABS.map((tab) => (
@@ -929,21 +1025,53 @@ export default function IBPromptPage() {
             </Field>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-              {SECTION_TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => handleSelectSection(tab.id)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
-                    activeSection === tab.id
-                      ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
-                      : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              {SECTION_TABS.map((tab) => {
+                const isSaved = Boolean(project?.sections?.[SECTION_KEY_MAP[tab.id]])
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleSelectSection(tab.id)}
+                    className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
+                      activeSection === tab.id
+                        ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
+                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {tab.label}
+                    {isSaved ? ' ✅' : ''}
+                  </button>
+                )
+              })}
             </div>
+
+            {projectId && project && (
+              <Accordion title="📎 저장된 다른 섹션 결과 참고하기">
+                {(() => {
+                  const referenceSections = IB_PROJECT_SECTIONS.filter(
+                    (section) =>
+                      section.key !== SECTION_KEY_MAP[activeSection] && project.sections?.[section.key],
+                  )
+                  if (referenceSections.length === 0) {
+                    return <p className="text-xs text-slate-400">아직 저장된 다른 섹션이 없어요.</p>
+                  }
+                  return (
+                    <div className="flex flex-col gap-3">
+                      {referenceSections.map((section) => (
+                        <div key={section.key}>
+                          <p className="mb-1 text-xs font-semibold text-navy-700 dark:text-slate-300">
+                            {section.label}
+                          </p>
+                          <p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-2 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                            {project.sections[section.key].prompt}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </Accordion>
+            )}
 
             {activeSection === 'inquiry' && (
               <>
@@ -1117,6 +1245,7 @@ export default function IBPromptPage() {
             onSave={handleSaveClick}
             onEdit={setResult}
             banner={`💡 아래 프롬프트를 복사해서 ${aiTool}에 붙여넣으세요.`}
+            onSaveProject={projectId ? handleSaveToProject : undefined}
           />
         </div>
       </main>

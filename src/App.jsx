@@ -3,6 +3,7 @@ import { ToastProvider } from './components/Toast'
 import AdminPage from './pages/AdminPage'
 import DocumentPromptPage from './pages/DocumentPromptPage'
 import HomePage from './pages/HomePage'
+import IBProjectsPage from './pages/IBProjectsPage'
 import IBPromptPage from './pages/IBPromptPage'
 import ImagePromptPage from './pages/ImagePromptPage'
 import LibraryPage from './pages/LibraryPage'
@@ -21,6 +22,7 @@ function App() {
           <Route path="/prompt/image" element={<ImagePromptPage />} />
           <Route path="/prompt/document" element={<DocumentPromptPage />} />
           <Route path="/prompt/ib" element={<IBPromptPage />} />
+          <Route path="/ib-projects" element={<IBProjectsPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/shared/:promptId" element={<SharedPromptPage />} />
