@@ -9,7 +9,13 @@ import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { ibData } from '../utils/ibData'
-import { IB_PROJECT_SECTIONS, getIBProject, saveIBProjectSection } from '../utils/ibProjectService'
+import {
+  IB_PROJECT_SECTIONS,
+  deleteIBProjectSection,
+  getIBProject,
+  saveIBProjectSection,
+  updateIBProjectInfo,
+} from '../utils/ibProjectService'
 import { savePrompt } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
 import {
@@ -481,6 +487,67 @@ function ExplorationRadioGroup({ globalContext, value, onChange }) {
   )
 }
 
+function SavedSectionPanel({ savedSection, onDelete, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedText, setEditedText] = useState(savedSection?.prompt ?? '')
+
+  useEffect(() => {
+    setEditedText(savedSection?.prompt ?? '')
+    setIsEditing(false)
+  }, [savedSection])
+
+  if (!savedSection) return null
+
+  return (
+    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">📋 저장된 프롬프트</p>
+        <div className="flex gap-2">
+          {isEditing ? (
+            <button
+              type="button"
+              onClick={() => onUpdate(editedText)}
+              className="rounded-lg border border-emerald-500 px-3 py-1 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-400 dark:text-emerald-300 dark:hover:bg-emerald-500/20"
+            >
+              💾 저장
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="rounded-lg border border-emerald-300 px-3 py-1 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-500/40 dark:text-emerald-300 dark:hover:bg-emerald-500/20"
+              >
+                ✏️ 수정
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
+              >
+                🗑️ 삭제
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {isEditing ? (
+        <textarea
+          value={editedText}
+          onChange={(e) => setEditedText(e.target.value)}
+          rows={6}
+          className="mt-2 max-h-48 w-full resize-y overflow-y-auto rounded-lg border border-emerald-200 bg-white p-2 text-xs text-slate-700 transition focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 dark:border-emerald-500/30 dark:bg-slate-900 dark:text-slate-200"
+        />
+      ) : (
+        <p className="mt-2 max-h-48 overflow-y-auto whitespace-pre-wrap rounded-lg bg-white p-2 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+          {savedSection.prompt}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export default function IBPromptPage() {
   const user = useAuthGuard()
   const showToast = useToast()
@@ -531,6 +598,14 @@ export default function IBPromptPage() {
   const [searchParams] = useSearchParams()
   const projectId = searchParams.get('projectId')
   const [project, setProject] = useState(null)
+  const [showProjectSettingsModal, setShowProjectSettingsModal] = useState(false)
+  const [settingsTitle, setSettingsTitle] = useState('')
+  const [settingsSubject, setSettingsSubject] = useState('')
+  const [settingsMypYear, setSettingsMypYear] = useState('')
+  const [settingsKeyConcept, setSettingsKeyConcept] = useState('')
+  const [settingsGlobalContext, setSettingsGlobalContext] = useState('')
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [settingsError, setSettingsError] = useState('')
 
   useEffect(() => {
     if (!projectId) {
@@ -826,6 +901,106 @@ export default function IBPromptPage() {
     }
   }
 
+  const handleDeleteSavedSection = async () => {
+    if (!projectId) return
+
+    try {
+      await deleteIBProjectSection(projectId, currentSectionKey)
+      setProject((prev) => {
+        if (!prev) return prev
+        const nextSections = { ...prev.sections }
+        delete nextSections[currentSectionKey]
+        return { ...prev, sections: nextSections }
+      })
+      showToast('삭제됐어요.', 'success')
+    } catch {
+      showToast('삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+    }
+  }
+
+  const handleUpdateSavedSection = async (newPrompt) => {
+    if (!projectId) return
+
+    try {
+      await saveIBProjectSection(projectId, currentSectionKey, { prompt: newPrompt })
+      setProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              sections: {
+                ...prev.sections,
+                [currentSectionKey]: { prompt: newPrompt, savedAt: new Date().toISOString() },
+              },
+            }
+          : prev,
+      )
+      showToast('수정됐어요!', 'success')
+    } catch {
+      showToast('수정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+    }
+  }
+
+  const openProjectSettings = () => {
+    if (!project) return
+    setSettingsTitle(project.title ?? '')
+    setSettingsSubject(project.subject ?? '')
+    setSettingsMypYear(project.mypYear ?? '')
+    setSettingsKeyConcept(project.keyConcept ?? '')
+    setSettingsGlobalContext(project.globalContext ?? '')
+    setSettingsError('')
+    setShowProjectSettingsModal(true)
+  }
+
+  const handleSaveProjectSettings = async () => {
+    if (!settingsTitle.trim()) {
+      setSettingsError('프로젝트 제목을 입력해주세요.')
+      return
+    }
+
+    setSavingSettings(true)
+    setSettingsError('')
+    try {
+      await updateIBProjectInfo(projectId, {
+        title: settingsTitle.trim(),
+        subject: settingsSubject,
+        mypYear: settingsMypYear,
+        keyConcept: settingsKeyConcept,
+        relatedConcepts: project.relatedConcepts ?? '',
+        globalContext: settingsGlobalContext,
+        exploration: project.exploration ?? '',
+        statementKeyword: project.statementKeyword ?? '',
+      })
+
+      setProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              title: settingsTitle.trim(),
+              subject: settingsSubject,
+              mypYear: settingsMypYear,
+              keyConcept: settingsKeyConcept,
+              globalContext: settingsGlobalContext,
+            }
+          : prev,
+      )
+
+      setSubject(settingsSubject)
+      setSectionSubject(settingsSubject)
+      setMypYear(settingsMypYear)
+      setKeyConcept(settingsKeyConcept)
+      setSectionKeyConcept(settingsKeyConcept)
+      setGlobalContext(settingsGlobalContext)
+      setSectionGlobalContext(settingsGlobalContext)
+
+      setShowProjectSettingsModal(false)
+      showToast('저장됐어요!', 'success')
+    } catch {
+      setSettingsError('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
   const fullConceptSummary = buildConceptSummary({
     keyConcept,
     relatedConceptsText: combineRelatedConcepts(relatedConceptsSelected, relatedConceptsCustom),
@@ -858,12 +1033,21 @@ export default function IBPromptPage() {
         {projectId && project && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-navy-200 bg-navy-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
             <p className="text-sm font-medium text-navy-700 dark:text-slate-200">📁 {project.title}</p>
-            <Link
-              to="/ib-projects"
-              className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
-            >
-              프로젝트 목록으로
-            </Link>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={openProjectSettings}
+                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+              >
+                ⚙️ 프로젝트 설정
+              </button>
+              <Link
+                to="/ib-projects"
+                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+              >
+                프로젝트 목록으로
+              </Link>
+            </div>
           </div>
         )}
 
@@ -998,6 +1182,14 @@ export default function IBPromptPage() {
               </div>
             </Field>
 
+            {projectId && project?.sections?.briefing && (
+              <SavedSectionPanel
+                savedSection={project.sections.briefing}
+                onDelete={handleDeleteSavedSection}
+                onUpdate={handleUpdateSavedSection}
+              />
+            )}
+
             <button
               type="button"
               onClick={handleGenerateFull}
@@ -1060,7 +1252,7 @@ export default function IBPromptPage() {
                       {referenceSections.map((section) => (
                         <div key={section.key}>
                           <p className="mb-1 text-xs font-semibold text-navy-700 dark:text-slate-300">
-                            {section.label}
+                            {section.icon} {section.label}
                           </p>
                           <p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-2 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300">
                             {project.sections[section.key].prompt}
@@ -1217,6 +1409,14 @@ export default function IBPromptPage() {
               </Field>
             )}
 
+            {projectId && project?.sections?.[currentSectionKey] && (
+              <SavedSectionPanel
+                savedSection={project.sections[currentSectionKey]}
+                onDelete={handleDeleteSavedSection}
+                onUpdate={handleUpdateSavedSection}
+              />
+            )}
+
             <button
               type="button"
               onClick={handleGenerateSection}
@@ -1247,6 +1447,12 @@ export default function IBPromptPage() {
             banner={`💡 아래 프롬프트를 복사해서 ${aiTool}에 붙여넣으세요.`}
             onSaveProject={projectId ? handleSaveToProject : undefined}
           />
+
+          {mode === 'full' && projectId && project?.sections?.briefing && (
+            <p className="mt-3 rounded bg-blue-50 px-3 py-2 text-sm text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
+              💡 브리핑 결과를 저장했어요. 이제 섹션별 작성 탭에서 각 부분을 완성해보세요.
+            </p>
+          )}
         </div>
       </main>
 
@@ -1277,6 +1483,84 @@ export default function IBPromptPage() {
             이 프롬프트에 해당하는 과목을 선택해주세요 (복수 선택 가능)
           </p>
           <TagToggleGroup options={SUBJECT_TAGS} onChange={setSelectedTags} />
+        </Modal>
+      )}
+
+      {showProjectSettingsModal && (
+        <Modal
+          title="⚙️ 프로젝트 설정"
+          onClose={() => setShowProjectSettingsModal(false)}
+          footer={
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowProjectSettingsModal(false)}
+                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveProjectSettings}
+                disabled={savingSettings}
+                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              >
+                {savingSettings ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                프로젝트 제목
+              </label>
+              <input
+                type="text"
+                value={settingsTitle}
+                onChange={(e) => setSettingsTitle(e.target.value)}
+                className={INPUT_CLASS}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                교과군
+              </label>
+              <Select value={settingsSubject} onChange={setSettingsSubject} options={ibData.subjects} />
+            </div>
+
+            <div>
+              <p className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">MYP 학년</p>
+              <MypYearButtons value={settingsMypYear} onChange={setSettingsMypYear} />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                핵심 개념 (Key Concept)
+              </label>
+              <Select
+                value={settingsKeyConcept}
+                onChange={setSettingsKeyConcept}
+                options={ibData.keyConcepts}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                세계적 맥락 (Global Context)
+              </label>
+              <Select
+                value={settingsGlobalContext}
+                onChange={setSettingsGlobalContext}
+                options={ibData.globalContexts.map((context) => context.name)}
+              />
+            </div>
+
+            {settingsError && (
+              <p className="text-sm text-red-600 dark:text-red-400">{settingsError}</p>
+            )}
+          </div>
         </Modal>
       )}
     </div>

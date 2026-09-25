@@ -10,6 +10,7 @@ import {
   createIBProject,
   deleteIBProject,
   getIBProjects,
+  updateIBProjectInfo,
 } from '../utils/ibProjectService'
 
 function formatDate(timestamp) {
@@ -23,7 +24,7 @@ function formatDate(timestamp) {
   })
 }
 
-function ProjectCard({ project, onDelete }) {
+function ProjectCard({ project, onDelete, onEdit }) {
   const navigate = useNavigate()
   const completedCount = IB_PROJECT_SECTIONS.filter((section) => project.sections?.[section.key]).length
 
@@ -37,19 +38,32 @@ function ProjectCard({ project, onDelete }) {
       }}
       className="relative flex cursor-pointer flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:shadow-none"
     >
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete(project)
-        }}
-        aria-label="프로젝트 삭제"
-        className="absolute right-3 top-3 text-slate-400 transition hover:text-red-500"
-      >
-        ✕
-      </button>
+      <div className="absolute right-3 top-3 flex gap-1">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onEdit(project)
+          }}
+          aria-label="프로젝트 편집"
+          className="text-slate-400 transition hover:text-navy-600 dark:hover:text-blue-400"
+        >
+          ✏️
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(project)
+          }}
+          aria-label="프로젝트 삭제"
+          className="text-slate-400 transition hover:text-red-500"
+        >
+          ✕
+        </button>
+      </div>
 
-      <h2 className="pr-6 text-lg font-semibold text-navy-800 dark:text-white">{project.title}</h2>
+      <h2 className="pr-12 text-lg font-semibold text-navy-800 dark:text-white">{project.title}</h2>
 
       <div className="flex flex-wrap gap-1.5">
         {project.subject && (
@@ -68,14 +82,24 @@ function ProjectCard({ project, onDelete }) {
         {completedCount}/{IB_PROJECT_SECTIONS.length} 섹션 완료
       </p>
 
-      <p className="text-xs text-slate-500 dark:text-slate-400">
-        {IB_PROJECT_SECTIONS.map((section) => (
-          <span key={section.key} className="mr-2 inline-block">
-            {section.label}
-            {project.sections?.[section.key] ? '✅' : '⬜'}
-          </span>
-        ))}
-      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {IB_PROJECT_SECTIONS.map((section) => {
+          const done = Boolean(project.sections?.[section.key])
+          return (
+            <span
+              key={section.key}
+              title={section.label}
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-sm ${
+                done
+                  ? 'bg-emerald-100 dark:bg-emerald-500/20'
+                  : 'bg-slate-100 grayscale opacity-50 dark:bg-slate-700'
+              }`}
+            >
+              {section.icon}
+            </span>
+          )
+        })}
+      </div>
 
       <p className="mt-1 text-xs text-slate-400">마지막 수정: {formatDate(project.updatedAt) || '-'}</p>
     </div>
@@ -96,6 +120,15 @@ export default function IBProjectsPage() {
   const [newMypYear, setNewMypYear] = useState('')
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
+
+  const [editingProject, setEditingProject] = useState(null)
+  const [editTitle, setEditTitle] = useState('')
+  const [editSubject, setEditSubject] = useState('')
+  const [editMypYear, setEditMypYear] = useState('')
+  const [editKeyConcept, setEditKeyConcept] = useState('')
+  const [editGlobalContext, setEditGlobalContext] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [editError, setEditError] = useState('')
 
   const navigate = useNavigate()
 
@@ -162,6 +195,58 @@ export default function IBProjectsPage() {
     }
   }
 
+  const openEditModal = (project) => {
+    setEditingProject(project)
+    setEditTitle(project.title ?? '')
+    setEditSubject(project.subject ?? '')
+    setEditMypYear(project.mypYear ?? '')
+    setEditKeyConcept(project.keyConcept ?? '')
+    setEditGlobalContext(project.globalContext ?? '')
+    setEditError('')
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editTitle.trim()) {
+      setEditError('프로젝트 제목을 입력해주세요.')
+      return
+    }
+
+    setSavingEdit(true)
+    setEditError('')
+    try {
+      await updateIBProjectInfo(editingProject.id, {
+        title: editTitle.trim(),
+        subject: editSubject,
+        mypYear: editMypYear,
+        keyConcept: editKeyConcept,
+        relatedConcepts: editingProject.relatedConcepts ?? '',
+        globalContext: editGlobalContext,
+        exploration: editingProject.exploration ?? '',
+        statementKeyword: editingProject.statementKeyword ?? '',
+      })
+      setProjects((prev) =>
+        prev.map((item) =>
+          item.id === editingProject.id
+            ? {
+                ...item,
+                title: editTitle.trim(),
+                subject: editSubject,
+                mypYear: editMypYear,
+                keyConcept: editKeyConcept,
+                globalContext: editGlobalContext,
+              }
+            : item,
+        ),
+      )
+      setEditingProject(null)
+      showToast('저장됐어요!', 'success')
+    } catch {
+      setEditError('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
       <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
@@ -201,7 +286,7 @@ export default function IBProjectsPage() {
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} onDelete={handleDelete} />
+              <ProjectCard key={project.id} project={project} onDelete={handleDelete} onEdit={openEditModal} />
             ))}
           </div>
         )}
@@ -289,6 +374,125 @@ export default function IBProjectsPage() {
             {createError && (
               <p className="text-sm text-red-600 dark:text-red-400">{createError}</p>
             )}
+          </div>
+        </Modal>
+      )}
+
+      {editingProject && (
+        <Modal
+          title="프로젝트 편집"
+          onClose={() => setEditingProject(null)}
+          footer={
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setEditingProject(null)}
+                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={savingEdit}
+                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              >
+                {savingEdit ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                프로젝트 제목
+              </label>
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                교과군
+              </label>
+              <select
+                value={editSubject}
+                onChange={(e) => setEditSubject(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              >
+                <option value="">선택하세요</option>
+                {ibData.subjects.map((subject) => (
+                  <option key={subject} value={subject}>
+                    {subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <p className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">MYP 학년</p>
+              <div className="flex flex-wrap gap-2">
+                {ibData.mypYears.map((year) => {
+                  const active = editMypYear === year
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => setEditMypYear(year)}
+                      className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
+                        active
+                          ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                핵심 개념 (Key Concept)
+              </label>
+              <select
+                value={editKeyConcept}
+                onChange={(e) => setEditKeyConcept(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              >
+                <option value="">선택하세요</option>
+                {ibData.keyConcepts.map((concept) => (
+                  <option key={concept} value={concept}>
+                    {concept}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+                세계적 맥락 (Global Context)
+              </label>
+              <select
+                value={editGlobalContext}
+                onChange={(e) => setEditGlobalContext(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              >
+                <option value="">선택하세요</option>
+                {ibData.globalContexts.map((context) => (
+                  <option key={context.name} value={context.name}>
+                    {context.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {editError && <p className="text-sm text-red-600 dark:text-red-400">{editError}</p>}
           </div>
         </Modal>
       )}

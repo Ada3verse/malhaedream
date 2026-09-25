@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -15,12 +16,12 @@ import { db } from '../firebase'
 const IB_PROJECTS_COLLECTION = 'ib_projects'
 
 export const IB_PROJECT_SECTIONS = [
-  { key: 'briefing', label: '브리핑' },
-  { key: 'inquiry_questions', label: '탐구질문' },
-  { key: 'statement', label: '탐구진술문' },
-  { key: 'assessment', label: '총괄평가' },
-  { key: 'atl', label: 'ATL' },
-  { key: 'formative', label: '형성평가' },
+  { key: 'briefing', label: '전체 브리핑', icon: '📋' },
+  { key: 'inquiry_questions', label: '탐구질문', icon: '❓' },
+  { key: 'statement', label: '탐구진술문', icon: '📝' },
+  { key: 'assessment', label: '총괄평가', icon: '🎯' },
+  { key: 'atl', label: 'ATL', icon: '🧠' },
+  { key: 'formative', label: '형성평가', icon: '📊' },
 ]
 
 export async function createIBProject({
@@ -97,6 +98,13 @@ export async function saveIBProjectSection(projectId, sectionKey, { prompt }) {
       prompt,
       savedAt: new Date().toISOString(),
     },
+    updatedAt: serverTimestamp(),
+  })
+}
+
+export async function deleteIBProjectSection(projectId, sectionKey) {
+  await updateDoc(doc(db, IB_PROJECTS_COLLECTION, projectId), {
+    [`sections.${sectionKey}`]: deleteField(),
     updatedAt: serverTimestamp(),
   })
 }
