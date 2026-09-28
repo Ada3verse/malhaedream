@@ -18,6 +18,7 @@ import { getCompletenessLevel } from '../utils/completeness'
 import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
 import { autoSavePrompt, markPromptSaved } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
+import { savePreset, getPresets, deletePreset } from '../utils/presets'
 
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
 const FORMAT_OPTIONS = ['개조식', '줄글', '표 포함']
@@ -201,12 +202,23 @@ export default function DocumentPromptPage() {
   const [showTagModal, setShowTagModal] = useState(false)
   const [selectedTags, setSelectedTags] = useState([])
   const [isCopied, setIsCopied] = useState(false)
+  const [presets, setPresets] = useState([])
+  const [showPresets, setShowPresets] = useState(false)
+  const [showPresetNameModal, setShowPresetNameModal] = useState(false)
+  const [presetName, setPresetName] = useState('')
 
   useEffect(() => {
     getTemplates('document')
       .then(setTemplates)
       .finally(() => setLoadingTemplates(false))
   }, [])
+
+  useEffect(() => {
+    if (!user) return
+    getPresets({ nickname: user.nickname, deviceId: user.deviceId, type: 'document' })
+      .then(setPresets)
+      .catch(() => {})
+  }, [user])
 
   if (!user) return null
 
@@ -225,6 +237,51 @@ export default function DocumentPromptPage() {
     Boolean(guideConfig) &&
     completenessScore < 4 &&
     !hasRequiredGuideInfo(docTypeName, content)
+
+  const handleLoadPreset = (preset) => {
+    const { inputs } = preset
+    if (inputs.templateName) setDocTypeName(inputs.templateName)
+    if (inputs.content !== undefined) setContent(inputs.content)
+    if (inputs.tones) setTones(inputs.tones)
+    if (inputs.formats) setFormats(inputs.formats)
+    setShowPresets(false)
+    showToast(`'${preset.name}' 설정을 불러왔어요.`, 'success')
+  }
+
+  const handleSavePresetClick = () => {
+    setPresetName('')
+    setShowPresetNameModal(true)
+  }
+
+  const handleSavePreset = async () => {
+    const trimmed = presetName.trim()
+    if (!trimmed) return
+    try {
+      await savePreset({
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+        type: 'document',
+        name: trimmed,
+        inputs: { templateName: docTypeName, content, tones, formats },
+      })
+      const updated = await getPresets({ nickname: user.nickname, deviceId: user.deviceId, type: 'document' })
+      setPresets(updated)
+      showToast('즐겨찾기에 저장되었습니다!', 'success')
+    } catch {
+      showToast('저장 중 오류가 발생했습니다.', 'error')
+    } finally {
+      setShowPresetNameModal(false)
+    }
+  }
+
+  const handleDeletePreset = async (id) => {
+    try {
+      await deletePreset(id)
+      setPresets((prev) => prev.filter((p) => p.id !== id))
+    } catch {
+      showToast('삭제 중 오류가 발생했습니다.', 'error')
+    }
+  }
 
   const handleInsertGuideTag = (tag) => {
     const label = extractGuideTagLabel(tag)
@@ -339,6 +396,47 @@ export default function DocumentPromptPage() {
           📝 문서 작성 프롬프트
         </h1>
 
+        {presets.length > 0 && (
+          <div className="mt-4 rounded-xl border border-mint-100 bg-mint-50/60 p-3 dark:border-slate-700 dark:bg-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowPresets((v) => !v)}
+              className="flex w-full items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
+              <span>⭐ 즐겨찾기 설정 불러오기</span>
+              <span className="text-slate-400">{showPresets ? '▲' : '▼'}</span>
+            </button>
+            {showPresets && (
+              <div className="mt-2 flex flex-col gap-1.5">
+                {presets.map((preset) => (
+                  <div
+                    key={preset.id}
+                    className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 dark:bg-slate-700"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleLoadPreset(preset)}
+                      className="flex-1 text-left text-sm text-slate-700 hover:text-mint-700 dark:text-slate-200 dark:hover:text-mint-400"
+                    >
+                      {preset.name}
+                      {preset.inputs.templateName && (
+                        <span className="ml-1.5 text-xs text-slate-400">({preset.inputs.templateName})</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePreset(preset.id)}
+                      className="text-xs text-slate-300 hover:text-red-400 dark:text-slate-500 dark:hover:text-red-400"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="mt-6 flex flex-col gap-6">
           <section>
             <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">문서 유형</h2>
@@ -412,14 +510,24 @@ export default function DocumentPromptPage() {
             <TagToggleGroup options={FORMAT_OPTIONS} onChange={setFormats} />
           </section>
 
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={!content.trim() || generating}
-            className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
-          >
-            {generating ? '생성 중...' : '프롬프트 생성'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={!content.trim() || generating}
+              className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+            >
+              {generating ? '생성 중...' : '프롬프트 생성'}
+            </button>
+            <button
+              type="button"
+              onClick={handleSavePresetClick}
+              title="현재 설정을 즐겨찾기로 저장"
+              className="rounded-lg border border-mint-300 px-3 py-2.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
+            >
+              ⭐
+            </button>
+          </div>
 
           {generateError && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-300">
@@ -454,6 +562,45 @@ export default function DocumentPromptPage() {
           {result && <FileUploadGuideBox type="document" />}
         </div>
       </main>
+
+      {showPresetNameModal && (
+        <Modal
+          title="즐겨찾기 저장"
+          onClose={() => setShowPresetNameModal(false)}
+          footer={
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowPresetNameModal(false)}
+                className="flex-1 rounded-lg border border-slate-300 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePreset}
+                disabled={!presetName.trim()}
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              >
+                저장
+              </button>
+            </div>
+          }
+        >
+          <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">
+            현재 설정(문서유형, 내용, 말투, 형식)을 저장합니다.
+          </p>
+          <input
+            type="text"
+            value={presetName}
+            onChange={(e) => setPresetName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSavePreset()}
+            placeholder="예: 수업 지도안 기본 설정"
+            maxLength={30}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+          />
+        </Modal>
+      )}
 
       {showTagModal && (
         <Modal
