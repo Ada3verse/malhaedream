@@ -174,6 +174,31 @@ function Select({ value, onChange, options, placeholder }) {
   )
 }
 
+function SingleSelectTags({ options, value, onChange, getLabel = (option) => option }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((option) => {
+        const label = getLabel(option)
+        const active = value === label
+        return (
+          <button
+            key={label}
+            type="button"
+            onClick={() => onChange(active ? '' : label)}
+            className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
+              active
+                ? 'border-indigo-600 bg-indigo-600 text-white'
+                : 'border-gray-200 text-gray-600 hover:border-indigo-400'
+            }`}
+          >
+            {label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 function MypYearButtons({ value, onChange }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -1118,7 +1143,7 @@ export default function IBPromptPage() {
             </Field>
 
             <Field label="핵심 개념 (Key Concept)">
-              <Select value={keyConcept} onChange={setKeyConcept} options={ibData.keyConcepts} />
+              <SingleSelectTags options={ibData.keyConcepts} value={keyConcept} onChange={setKeyConcept} />
             </Field>
 
             <Field label="관련 개념 (Related Concepts)" hint={RELATED_CONCEPTS_HINT}>
@@ -1132,10 +1157,11 @@ export default function IBPromptPage() {
             </Field>
 
             <Field label="세계적 맥락 (Global Context)">
-              <Select
+              <SingleSelectTags
+                options={ibData.globalContexts}
+                getLabel={(context) => context.name}
                 value={globalContext}
                 onChange={handleGlobalContextChange}
-                options={ibData.globalContexts.map((context) => context.name)}
               />
               <ExplorationRadioGroup
                 globalContext={globalContext}
@@ -1326,17 +1352,18 @@ export default function IBPromptPage() {
             {activeSection === 'inquiry' && (
               <>
                 <Field label="핵심 개념 (Key Concept)">
-                  <Select
+                  <SingleSelectTags
+                    options={ibData.keyConcepts}
                     value={sectionKeyConcept}
                     onChange={setSectionKeyConcept}
-                    options={ibData.keyConcepts}
                   />
                 </Field>
                 <Field label="세계적 맥락 (Global Context)">
-                  <Select
+                  <SingleSelectTags
+                    options={ibData.globalContexts}
+                    getLabel={(context) => context.name}
                     value={sectionGlobalContext}
                     onChange={handleSectionGlobalContextChange}
-                    options={ibData.globalContexts.map((context) => context.name)}
                   />
                   <ExplorationRadioGroup
                     globalContext={sectionGlobalContext}
@@ -1395,10 +1422,10 @@ export default function IBPromptPage() {
             {activeSection === 'statement' && (
               <>
                 <Field label="핵심 개념 (Key Concept)">
-                  <Select
+                  <SingleSelectTags
+                    options={ibData.keyConcepts}
                     value={sectionKeyConcept}
                     onChange={setSectionKeyConcept}
-                    options={ibData.keyConcepts}
                   />
                 </Field>
                 <Field label="관련 개념 (Related Concepts)" hint={RELATED_CONCEPTS_HINT}>
@@ -1411,10 +1438,11 @@ export default function IBPromptPage() {
                   />
                 </Field>
                 <Field label="세계적 맥락 (Global Context)">
-                  <Select
+                  <SingleSelectTags
+                    options={ibData.globalContexts}
+                    getLabel={(context) => context.name}
                     value={sectionGlobalContext}
                     onChange={handleSectionGlobalContextChange}
-                    options={ibData.globalContexts.map((context) => context.name)}
                   />
                   <ExplorationRadioGroup
                     globalContext={sectionGlobalContext}
