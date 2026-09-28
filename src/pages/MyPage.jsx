@@ -88,12 +88,24 @@ export default function MyPage() {
 
   const handleShare = async (item) => {
     const shareUrl = `https://malhaedream.vercel.app/shared/${item.id}`
+    // Web Share API 지원 시 (모바일·일부 데스크톱) 네이티브 공유 시트 사용
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: '말해드림 프롬프트',
+          text: `${item.content.slice(0, 60)}...`,
+          url: shareUrl,
+        })
+        return
+      } catch {
+        // 사용자가 공유 취소 시 — 아무 처리 없이 종료
+        return
+      }
+    }
+    // 폴백: 클립보드 복사
     try {
       await navigator.clipboard.writeText(shareUrl)
-      showToast(
-        '공유 링크가 복사됐습니다! 카카오톡이나 메신저로 공유해보세요.',
-        'success',
-      )
+      showToast('공유 링크가 복사됐습니다! 카카오톡이나 메신저로 공유해보세요.', 'success')
     } catch {
       showToast('공유 링크 복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
     }

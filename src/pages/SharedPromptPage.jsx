@@ -59,10 +59,7 @@ export default function SharedPromptPage() {
         <div className="flex w-full items-center justify-end">
           <DarkModeToggle className="!border-slate-300 !text-slate-500 hover:!bg-slate-100 dark:!border-white/30 dark:!text-slate-300 dark:hover:!bg-white/10" />
         </div>
-        <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-lg shadow-mint-700/30 dark:bg-blue-500"
-          style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
-        >
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-mint-700 to-mint-500 text-2xl shadow-lg shadow-mint-700/30">
           💬
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-700 dark:text-white">
@@ -88,7 +85,7 @@ export default function SharedPromptPage() {
           </p>
         ) : (
           <>
-            <div className="rounded-2xl border-2 border-mint-600 bg-[#faf5ff] p-5 shadow-md shadow-mint-200/60 dark:border-mint-500/40 dark:bg-slate-800">
+            <div className="rounded-2xl border-2 border-mint-600 bg-mint-50/60 p-5 shadow-md shadow-mint-200/60 dark:border-mint-500/40 dark:bg-slate-800">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -126,8 +123,7 @@ export default function SharedPromptPage() {
               <button
                 type="button"
                 onClick={handleCopy}
-                style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
-                className="mt-4 w-full rounded-lg py-3 text-base font-semibold text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="mt-4 w-full rounded-lg bg-gradient-to-br from-mint-700 to-mint-500 py-3 text-base font-semibold text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg"
               >
                 {copied ? '복사됨!' : '프롬프트 복사'}
               </button>
@@ -143,8 +139,7 @@ export default function SharedPromptPage() {
               </p>
               <Link
                 to="/"
-                style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
-                className="rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-500 px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg"
               >
                 말해드림 시작하기
               </Link>
