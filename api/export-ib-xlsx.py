@@ -1,14 +1,14 @@
 import json
+import pathlib
 import re
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler
 from io import BytesIO
-from pathlib import Path
 from urllib.parse import quote
 
 from openpyxl import load_workbook
 
-TEMPLATE_PATH = Path(__file__).resolve().parent.parent / 'public' / 'ib_unit_plan_template.xlsx'
+TEMPLATE_PATH = str(pathlib.Path(__file__).resolve().parent.parent / 'public' / 'ib_unit_plan_template.xlsx')
 SHEET_NAME = 'UNIT 4.'
 
 GRADE_MAP = {
