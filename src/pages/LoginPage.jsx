@@ -430,15 +430,14 @@ export default function LoginPage() {
 
             <div className="ll-body">
               <h1>AI에게 대신 말해드립니다</h1>
-              <p>복잡한 프롬프트도 대신 말해드립니다.</p>
               <div className="ll-features">
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
-                  <span>이미지 생성·문서 작성·IB 유닛 플랜 — 교사 맞춤 프롬프트</span>
+                  <span>이미지 생성 · 문서 작성 · IB 유닛 플랜 · 교사 맞춤 프롬프트</span>
                 </div>
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
-                  <span>ChatGPT · Claude · Gemini 어디에든 바로 붙여넣기</span>
+                  <span>ChatGPT · Claude · Gemini 어디든 바로 붙여넣기</span>
                 </div>
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
