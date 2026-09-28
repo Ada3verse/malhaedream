@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 from openpyxl import load_workbook
 
-TEMPLATE_PATH = str(pathlib.Path(__file__).resolve().parent.parent / 'public' / 'ib_unit_plan_template.xlsx')
+TEMPLATE_PATH = str(pathlib.Path(__file__).resolve().parent / 'ib_unit_plan_template.xlsx')
 SHEET_NAME = 'UNIT 4.'
 
 GRADE_MAP = {
