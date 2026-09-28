@@ -201,17 +201,18 @@ export default function LoginPage() {
           z-index: 1;
         }
         .ll-logo-icon {
-          width: 40px; height: 40px;
+          width: 48px; height: 48px;
           background: rgba(255,255,255,0.22);
-          border-radius: 10px;
+          border-radius: 12px;
           display: flex; align-items: center; justify-content: center;
           backdrop-filter: blur(4px);
-          font-size: 20px;
+          font-size: 24px;
         }
         .ll-logo-name {
-          font-size: 20px;
-          font-weight: 700;
-          letter-spacing: -0.3px;
+          font-size: 28px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+          white-space: nowrap;
         }
 
         .ll-body {
@@ -219,18 +220,19 @@ export default function LoginPage() {
           z-index: 1;
         }
         .ll-body h1 {
-          font-size: 28px;
-          font-weight: 700;
-          line-height: 1.35;
-          letter-spacing: -0.5px;
-          margin-bottom: 12px;
-          text-wrap: balance;
+          font-size: 36px;
+          font-weight: 800;
+          line-height: 1.2;
+          letter-spacing: -1px;
+          margin-bottom: 16px;
+          white-space: nowrap;
         }
         .ll-body p {
-          font-size: 13.5px;
-          line-height: 1.7;
-          opacity: 0.85;
+          font-size: 15px;
+          line-height: 1.6;
+          opacity: 0.9;
           margin-bottom: 28px;
+          white-space: nowrap;
         }
 
         .ll-features {
@@ -240,10 +242,11 @@ export default function LoginPage() {
         }
         .ll-feature {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 10px;
-          font-size: 13px;
-          line-height: 1.55;
+          font-size: 15px;
+          line-height: 1.5;
+          white-space: nowrap;
         }
         .ll-dot {
           width: 22px; height: 22px;
@@ -419,11 +422,8 @@ export default function LoginPage() {
             </div>
 
             <div className="ll-body">
-              <h1>AI에게 대신<br />말해드립니다</h1>
-              <p>
-                복잡한 프롬프트 없이도 좋은 결과물을.<br />
-                선생님의 업무를 AI가 돕는 가장 쉬운 방법이에요.
-              </p>
+              <h1>AI에게 대신 말해드립니다</h1>
+              <p>복잡한 프롬프트 없이도 좋은 결과물을.</p>
               <div className="ll-features">
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
