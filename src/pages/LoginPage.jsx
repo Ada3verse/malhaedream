@@ -166,10 +166,11 @@ export default function LoginPage() {
         /* ── Left panel ── */
         .login-left {
           background: linear-gradient(145deg, #1BA88A 0%, #2DC9A8 60%, #4DD6BA 100%);
-          padding: 48px 40px;
+          padding: 52px 44px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+          gap: 32px;
           color: #fff;
           position: relative;
           overflow: hidden;
@@ -209,10 +210,9 @@ export default function LoginPage() {
           font-size: 24px;
         }
         .ll-logo-name {
-          font-size: 28px;
+          font-size: 26px;
           font-weight: 800;
           letter-spacing: -0.5px;
-          white-space: nowrap;
         }
 
         .ll-body {
@@ -220,33 +220,30 @@ export default function LoginPage() {
           z-index: 1;
         }
         .ll-body h1 {
-          font-size: 36px;
+          font-size: 30px;
           font-weight: 800;
-          line-height: 1.2;
-          letter-spacing: -1px;
-          margin-bottom: 16px;
-          white-space: nowrap;
+          line-height: 1.3;
+          letter-spacing: -0.8px;
+          margin-bottom: 12px;
         }
         .ll-body p {
-          font-size: 15px;
-          line-height: 1.6;
-          opacity: 0.9;
-          margin-bottom: 28px;
-          white-space: nowrap;
+          font-size: 14.5px;
+          line-height: 1.65;
+          opacity: 0.88;
+          margin-bottom: 36px;
         }
 
         .ll-features {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 16px;
         }
         .ll-feature {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 10px;
-          font-size: 15px;
-          line-height: 1.5;
-          white-space: nowrap;
+          font-size: 14px;
+          line-height: 1.6;
         }
         .ll-dot {
           width: 22px; height: 22px;
@@ -260,9 +257,16 @@ export default function LoginPage() {
 
         .ll-footer {
           font-size: 12px;
-          opacity: 0.6;
+          font-weight: 600;
+          letter-spacing: 0.4px;
+          color: rgba(255,255,255,0.95);
+          background: rgba(0,0,0,0.12);
+          display: inline-block;
+          padding: 5px 12px;
+          border-radius: 20px;
           position: relative;
           z-index: 1;
+          backdrop-filter: blur(4px);
         }
 
         /* ── Right panel ── */
