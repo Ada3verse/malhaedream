@@ -8,7 +8,7 @@ import TagToggleGroup from '../components/TagToggleGroup'
 import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
-import { ibData } from '../utils/ibData'
+import { ibData, recommendedBySubject } from '../utils/ibData'
 import { exportIBProjectToXlsx } from '../utils/ibProjectExport'
 import {
   IB_PROJECT_SECTIONS,
@@ -55,6 +55,9 @@ const AI_TOOLS = ['ChatGPT', 'Claude', 'Gemini']
 
 const RELATED_CONCEPTS_HINT =
   "핵심 개념이 큰 그림이라면, 관련 개념은 이 단원에서 그 큰 그림을 바라보는 창문이에요. 예를 들어 핵심 개념 '변화'를 과학 수업에서 다룬다면, '적응', '에너지', '균형' 같은 관련 개념으로 구체화할 수 있어요. 교과군 선택 후 목록에서 고르거나 직접 입력하세요."
+
+const RECOMMENDED_TAG_HINT =
+  '⭐ 표시는 선택한 교과군에서 자주 쓰이는 개념이에요. 물론 다른 개념을 골라도 괜찮아요.'
 
 const UNIT_KEYWORD_HINT =
   '이번 단원에서 학생들이 탐구할 내용을 핵심 단어나 짧은 문장으로 표현해주세요. 탐구 진술문의 씨앗이 될 내용이에요. 예: 플라스틱과 해양 생태계 / 독립운동과 정체성 / 함수와 실생활 패턴'
@@ -174,12 +177,13 @@ function Select({ value, onChange, options, placeholder }) {
   )
 }
 
-function SingleSelectTags({ options, value, onChange, getLabel = (option) => option }) {
+function SingleSelectTags({ options, value, onChange, getLabel = (option) => option, highlightedTags = [] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((option) => {
         const label = getLabel(option)
         const active = value === label
+        const recommended = highlightedTags.includes(label)
         return (
           <button
             key={label}
@@ -188,10 +192,12 @@ function SingleSelectTags({ options, value, onChange, getLabel = (option) => opt
             className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
               active
                 ? 'border-indigo-600 bg-indigo-600 text-white'
-                : 'border-gray-200 text-gray-600 hover:border-indigo-400'
+                : recommended
+                  ? 'border-indigo-300 text-indigo-600 hover:border-indigo-400'
+                  : 'border-gray-200 text-gray-600 hover:border-indigo-400'
             }`}
           >
-            {label}
+            {recommended ? `⭐ ${label}` : label}
           </button>
         )
       })}
@@ -1051,6 +1057,12 @@ export default function IBPromptPage() {
     globalContext: sectionGlobalContext,
   })
 
+  const EMPTY_RECOMMENDED = { keyConcepts: [], globalContexts: [] }
+  const recommended = subject ? recommendedBySubject[subject] || EMPTY_RECOMMENDED : EMPTY_RECOMMENDED
+  const sectionRecommended = sectionSubject
+    ? recommendedBySubject[sectionSubject] || EMPTY_RECOMMENDED
+    : EMPTY_RECOMMENDED
+
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
       <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
@@ -1143,7 +1155,13 @@ export default function IBPromptPage() {
             </Field>
 
             <Field label="핵심 개념 (Key Concept)">
-              <SingleSelectTags options={ibData.keyConcepts} value={keyConcept} onChange={setKeyConcept} />
+              <SingleSelectTags
+                options={ibData.keyConcepts}
+                value={keyConcept}
+                onChange={setKeyConcept}
+                highlightedTags={recommended.keyConcepts}
+              />
+              <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
             </Field>
 
             <Field label="관련 개념 (Related Concepts)" hint={RELATED_CONCEPTS_HINT}>
@@ -1162,7 +1180,9 @@ export default function IBPromptPage() {
                 getLabel={(context) => context.name}
                 value={globalContext}
                 onChange={handleGlobalContextChange}
+                highlightedTags={recommended.globalContexts}
               />
+              <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
               <ExplorationRadioGroup
                 globalContext={globalContext}
                 value={explorationSelected}
@@ -1356,7 +1376,9 @@ export default function IBPromptPage() {
                     options={ibData.keyConcepts}
                     value={sectionKeyConcept}
                     onChange={setSectionKeyConcept}
+                    highlightedTags={sectionRecommended.keyConcepts}
                   />
+                  <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
                 </Field>
                 <Field label="세계적 맥락 (Global Context)">
                   <SingleSelectTags
@@ -1364,7 +1386,9 @@ export default function IBPromptPage() {
                     getLabel={(context) => context.name}
                     value={sectionGlobalContext}
                     onChange={handleSectionGlobalContextChange}
+                    highlightedTags={sectionRecommended.globalContexts}
                   />
+                  <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
                   <ExplorationRadioGroup
                     globalContext={sectionGlobalContext}
                     value={sectionExploration}
@@ -1426,7 +1450,9 @@ export default function IBPromptPage() {
                     options={ibData.keyConcepts}
                     value={sectionKeyConcept}
                     onChange={setSectionKeyConcept}
+                    highlightedTags={sectionRecommended.keyConcepts}
                   />
+                  <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
                 </Field>
                 <Field label="관련 개념 (Related Concepts)" hint={RELATED_CONCEPTS_HINT}>
                   <RelatedConceptsField
@@ -1443,7 +1469,9 @@ export default function IBPromptPage() {
                     getLabel={(context) => context.name}
                     value={sectionGlobalContext}
                     onChange={handleSectionGlobalContextChange}
+                    highlightedTags={sectionRecommended.globalContexts}
                   />
+                  <p className="mt-1 text-xs text-gray-400">{RECOMMENDED_TAG_HINT}</p>
                   <ExplorationRadioGroup
                     globalContext={sectionGlobalContext}
                     value={sectionExploration}

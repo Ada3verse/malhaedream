@@ -325,6 +325,25 @@ export const formativeTypeCategories = [
   },
 ]
 
+export const recommendedBySubject = {
+  '언어와 문학-국어': { keyConcepts: ['의사소통', '창의성', '관점'], globalContexts: ['개인적·문화적 표현', '정체성과 관계'] },
+  '언어습득-영어': { keyConcepts: ['의사소통', '문화', '연결'], globalContexts: ['개인적·문화적 표현', '세계화 및 지속 가능성'] },
+  '언어습득-중국어': { keyConcepts: ['의사소통', '문화', '정체성'], globalContexts: ['개인적·문화적 표현', '세계화 및 지속 가능성'] },
+  '언어습득-진로와 직업': { keyConcepts: ['의사소통', '개발', '연결'], globalContexts: ['과학과 기술의 혁신', '세계화 및 지속 가능성'] },
+  '개인과 사회-도덕': { keyConcepts: ['정체성', '관점', '공동체'], globalContexts: ['정체성과 관계', '공정과 발전'] },
+  '개인과 사회-역사': { keyConcepts: ['시간·장소·공간', '변화', '관점'], globalContexts: ['시공간의 방향성', '공정과 발전'] },
+  '개인과 사회-사회': { keyConcepts: ['공동체', '세계적 상호작용', '관계'], globalContexts: ['세계화 및 지속 가능성', '공정과 발전'] },
+  과학: { keyConcepts: ['변화', '시스템', '연결'], globalContexts: ['과학과 기술의 혁신', '세계화 및 지속 가능성'] },
+  수학: { keyConcepts: ['논리', '형식', '관계'], globalContexts: ['과학과 기술의 혁신', '시공간의 방향성'] },
+  '예술-음악': { keyConcepts: ['미학', '창의성', '의사소통'], globalContexts: ['개인적·문화적 표현', '정체성과 관계'] },
+  '예술-미술': { keyConcepts: ['미학', '창의성', '형식'], globalContexts: ['개인적·문화적 표현', '정체성과 관계'] },
+  '체육과 보건-체육': { keyConcepts: ['변화', '관계', '시스템'], globalContexts: ['정체성과 관계', '세계화 및 지속 가능성'] },
+  '체육과 보건-보건': { keyConcepts: ['변화', '공동체', '시스템'], globalContexts: ['정체성과 관계', '세계화 및 지속 가능성'] },
+  '디자인-기술': { keyConcepts: ['개발', '시스템', '창의성'], globalContexts: ['과학과 기술의 혁신', '세계화 및 지속 가능성'] },
+  '디자인-가정': { keyConcepts: ['개발', '관계', '시스템'], globalContexts: ['세계화 및 지속 가능성', '정체성과 관계'] },
+  '디자인-정보': { keyConcepts: ['개발', '시스템', '연결'], globalContexts: ['과학과 기술의 혁신', '세계화 및 지속 가능성'] },
+}
+
 export const ibData = {
   subjects,
   keyConcepts,
@@ -337,4 +356,5 @@ export const ibData = {
   unitKeywordExamples,
   formativePurposeOptions,
   formativeTypeCategories,
+  recommendedBySubject,
 }
