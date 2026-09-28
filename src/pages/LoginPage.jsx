@@ -433,7 +433,7 @@ export default function LoginPage() {
               <div className="ll-features">
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
-                  <span>이미지 생성 · 문서 작성 · IB 유닛 플랜 · 교사 맞춤 프롬프트</span>
+                  <span>이미지 생성 · 문서 작성 · IB 유닛 플랜 등</span>
                 </div>
                 <div className="ll-feature">
                   <div className="ll-dot">✦</div>
