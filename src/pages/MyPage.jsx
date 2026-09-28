@@ -15,6 +15,7 @@ import { useAuthGuard } from '../hooks/useAuthGuard'
 import { hashPin } from '../utils/hash'
 import {
   deletePrompt,
+  getHistoryByUser,
   getPromptsByNickname,
   toggleFavorite,
 } from '../utils/prompts'
@@ -45,10 +46,12 @@ export default function MyPage() {
   const user = useAuthGuard()
   const showToast = useToast()
   const [prompts, setPrompts] = useState([])
+  const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null)
   const [activeTab, setActiveTab] = useState('all')
   const [activeTagFilter, setActiveTagFilter] = useState('전체')
+  const [mainTab, setMainTab] = useState('saved') // 'saved' | 'history'
 
   const [currentPin, setCurrentPin] = useState('')
   const [newPin, setNewPin] = useState('')
@@ -60,8 +63,12 @@ export default function MyPage() {
   const loadPrompts = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const list = await getPromptsByNickname(user.nickname, user.deviceId)
-    setPrompts(list)
+    const [saved, hist] = await Promise.all([
+      getPromptsByNickname(user.nickname, user.deviceId),
+      getHistoryByUser(user.nickname, user.deviceId),
+    ])
+    setPrompts(saved)
+    setHistory(hist)
     setLoading(false)
   }, [user])
 
@@ -208,7 +215,82 @@ export default function MyPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        {loading ? (
+        {/* 상단 메인 탭: 저장함 / 생성 내역 */}
+        <div className="mb-6 flex gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
+          {[
+            { value: 'saved', label: '📁 저장한 프롬프트' },
+            { value: 'history', label: '🕐 생성 내역' },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setMainTab(tab.value)}
+              className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+                mainTab === tab.value
+                  ? 'bg-white text-mint-700 shadow-sm dark:bg-slate-700 dark:text-mint-300'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {mainTab === 'history' ? (
+          /* 생성 내역 탭 */
+          loading ? (
+            <p className="py-12 text-center text-slate-400">불러오는 중...</p>
+          ) : history.length === 0 ? (
+            <div className="flex flex-col items-center gap-4 py-12">
+              <p className="text-center text-slate-400">아직 생성한 프롬프트가 없어요.</p>
+              <Link
+                to="/home"
+                className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110"
+              >
+                프롬프트 만들러 가기
+              </Link>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {history.map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          TYPE_BADGE_STYLES[item.type] ?? 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {TYPE_LABELS[item.type] ?? item.type}
+                      </span>
+                      {item.isSaved && (
+                        <span className="rounded-full bg-mint-100 px-2 py-0.5 text-xs font-medium text-mint-700 dark:bg-mint-500/20 dark:text-mint-300">
+                          저장됨
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-slate-400">{formatDate(item.createdAt)}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
+                    {item.content.length > 80 ? `${item.content.slice(0, 80)}...` : item.content}
+                  </p>
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(item)}
+                      className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
+                    >
+                      {copiedId === item.id ? '복사됨!' : '복사'}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )
+        ) : loading ? (
           <p className="py-12 text-center text-slate-400">불러오는 중...</p>
         ) : prompts.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-12">

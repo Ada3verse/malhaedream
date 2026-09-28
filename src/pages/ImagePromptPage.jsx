@@ -15,7 +15,7 @@ import { useToast } from '../components/Toast'
 import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { generateImagePrompt, getTemplates, refinePrompt } from '../utils/templateEngine'
-import { savePrompt } from '../utils/prompts'
+import { autoSavePrompt, markPromptSaved } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
 
 const DEFAULT_IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
@@ -82,6 +82,7 @@ export default function ImagePromptPage() {
   const [styles, setStyles] = useState([])
   const [moods, setMoods] = useState([])
   const [result, setResult] = useState(null)
+  const [historyId, setHistoryId] = useState(null)
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
   const [generating, setGenerating] = useState(false)
@@ -135,6 +136,14 @@ export default function ImagePromptPage() {
       setResult(generated)
       setIsRefined(false)
       setIsCopied(false)
+      setHistoryId(null)
+      autoSavePrompt({
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+        type: 'image',
+        content: stripMarkers(generated.ko),
+        templateName: imageTemplateName,
+      }).then(setHistoryId).catch(() => {})
     } finally {
       setGenerating(false)
     }
@@ -164,14 +173,19 @@ export default function ImagePromptPage() {
     const content = stripMarkers(result.ko)
 
     try {
-      await savePrompt({
-        nickname: user.nickname,
-        deviceId: user.deviceId,
-        type: 'image',
-        content,
-        templateName: imageTemplateName,
-        tags,
-      })
+      if (historyId) {
+        await markPromptSaved(historyId, { tags, isShared: true })
+      } else {
+        const { savePrompt } = await import('../utils/prompts')
+        await savePrompt({
+          nickname: user.nickname,
+          deviceId: user.deviceId,
+          type: 'image',
+          content,
+          templateName: imageTemplateName,
+          tags,
+        })
+      }
       showToast('저장되었습니다!', 'success')
     } catch {
       showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')

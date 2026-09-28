@@ -16,7 +16,7 @@ import { SUBJECT_TAGS } from '../constants/tags'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import { getCompletenessLevel } from '../utils/completeness'
 import { generatePromptFromTemplate, getTemplates, refinePrompt } from '../utils/templateEngine'
-import { savePrompt } from '../utils/prompts'
+import { autoSavePrompt, markPromptSaved } from '../utils/prompts'
 import { stripMarkers } from '../utils/promptMarkers'
 
 const TONE_OPTIONS = ['공식적인', '친근한', '간결한', '상세한']
@@ -194,6 +194,7 @@ export default function DocumentPromptPage() {
   const [tones, setTones] = useState([])
   const [formats, setFormats] = useState([])
   const [result, setResult] = useState(null)
+  const [historyId, setHistoryId] = useState(null) // 자동저장된 문서 id
   const [isRefined, setIsRefined] = useState(false)
   const [generateError, setGenerateError] = useState('')
   const [generating, setGenerating] = useState(false)
@@ -263,6 +264,15 @@ export default function DocumentPromptPage() {
       setResult(generated)
       setIsRefined(false)
       setIsCopied(false)
+      setHistoryId(null)
+      // 생성 내역 자동저장
+      autoSavePrompt({
+        nickname: user.nickname,
+        deviceId: user.deviceId,
+        type: 'document',
+        content: stripMarkers(generated.ko),
+        templateName: selectedTemplate?.name,
+      }).then(setHistoryId).catch(() => {})
     } finally {
       setGenerating(false)
     }
@@ -289,14 +299,21 @@ export default function DocumentPromptPage() {
 
   const performSave = async (tags) => {
     try {
-      await savePrompt({
-        nickname: user.nickname,
-        deviceId: user.deviceId,
-        type: 'document',
-        content: stripMarkers(result.ko),
-        templateName: selectedTemplate?.name,
-        tags,
-      })
+      if (historyId) {
+        // 자동저장 항목을 정식 저장으로 업데이트
+        await markPromptSaved(historyId, { tags, isShared: true })
+      } else {
+        // 자동저장 실패했거나 없는 경우 새로 저장
+        const { savePrompt } = await import('../utils/prompts')
+        await savePrompt({
+          nickname: user.nickname,
+          deviceId: user.deviceId,
+          type: 'document',
+          content: stripMarkers(result.ko),
+          templateName: selectedTemplate?.name,
+          tags,
+        })
+      }
       showToast('저장되었습니다!', 'success')
     } catch {
       showToast('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
