@@ -42,8 +42,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
             onClick={() => toggleOption(option)}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               active
-                ? 'border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
-                : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-violet-500/50 dark:hover:bg-slate-700'
+                ? 'border-mint-600 bg-mint-600 text-white shadow-sm shadow-mint-600/20 dark:border-mint-500 dark:bg-mint-500'
+                : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-mint-500/50 dark:hover:bg-slate-700'
             }`}
           >
             {option}
@@ -57,8 +57,8 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           onClick={toggleCustom}
           className={`rounded-full border px-3 py-1.5 text-sm transition ${
             customActive
-              ? 'border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
-              : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-violet-500/50 dark:hover:bg-slate-700'
+              ? 'border-mint-600 bg-mint-600 text-white shadow-sm shadow-mint-600/20 dark:border-mint-500 dark:bg-mint-500'
+              : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-mint-500/50 dark:hover:bg-slate-700'
           }`}
         >
           직접입력
@@ -71,7 +71,7 @@ export default function TagToggleGroup({ options, allowCustom = false, onChange 
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           placeholder="키워드 직접 입력"
-          className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white sm:w-auto"
+          className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white sm:w-auto"
         />
       )}
     </div>

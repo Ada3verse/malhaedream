@@ -51,7 +51,7 @@ const STEPS = [
 function Section({ title, tone, children }) {
   return (
     <div className={`px-6 py-5 ${tone === 'alt' ? 'bg-slate-50' : 'bg-white'}`}>
-      <h3 className="text-base font-bold text-navy-800">{title}</h3>
+      <h3 className="text-base font-bold text-slate-800">{title}</h3>
       <div className="mt-2 flex flex-col gap-2 text-sm text-slate-700">{children}</div>
     </div>
   )
@@ -79,7 +79,7 @@ export default function UsageGuideModal({ onClose }) {
           <div className="flex flex-col gap-4">
             {STEPS.map((step, index) => (
               <div key={step.title}>
-                <p className="font-bold text-navy-800">
+                <p className="font-bold text-slate-800">
                   {CIRCLED_NUMBERS[index]} STEP {index + 1}. {step.title}
                 </p>
                 <div className="mt-1 pl-1">{step.body}</div>

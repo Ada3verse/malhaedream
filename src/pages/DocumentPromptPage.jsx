@@ -307,10 +307,10 @@ export default function DocumentPromptPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
         <Link
           to="/home"
-          className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-white/90 dark:hover:text-white"
+          className="text-sm text-mint-700 transition hover:text-slate-700 dark:text-white/90 dark:hover:text-white"
         >
           ← 돌아가기
         </Link>
@@ -318,13 +318,13 @@ export default function DocumentPromptPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
           📝 문서 작성 프롬프트
         </h1>
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">문서 유형</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">문서 유형</h2>
             {loadingTemplates ? (
               <p className="text-sm text-slate-400">불러오는 중...</p>
             ) : docTypeOptions.length === 0 ? (
@@ -340,7 +340,7 @@ export default function DocumentPromptPage() {
 
           <section>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-              <h2 className="text-sm font-medium text-navy-700 dark:text-slate-300">
+              <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 어떤 내용의 문서인가요?
               </h2>
               <div className={`flex items-center gap-1.5 text-sm ${completenessLevel.colorClass}`}>
@@ -356,7 +356,7 @@ export default function DocumentPromptPage() {
               onChange={(e) => setContent(e.target.value)}
               rows={3}
               placeholder={contentPlaceholder}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
             />
             {!content.trim() && (
               <p className="mt-1 text-xs text-slate-400">핵심 내용을 입력해주세요.</p>
@@ -370,7 +370,7 @@ export default function DocumentPromptPage() {
                       key={tag}
                       type="button"
                       onClick={() => handleInsertGuideTag(tag)}
-                      className="rounded-full border border-slate-300 bg-slate-100 px-2 py-1 text-[11px] text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                      className="rounded-full border border-slate-300 bg-slate-100 px-2 py-1 text-[11px] text-slate-600 transition hover:border-mint-300 hover:bg-mint-50 hover:text-mint-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
                     >
                       [{tag}]
                     </button>
@@ -386,12 +386,12 @@ export default function DocumentPromptPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">말투/톤</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">말투/톤</h2>
             <TagToggleGroup options={TONE_OPTIONS} onChange={setTones} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">출력 형식</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">출력 형식</h2>
             <TagToggleGroup options={FORMAT_OPTIONS} onChange={setFormats} />
           </section>
 
@@ -399,7 +399,7 @@ export default function DocumentPromptPage() {
             type="button"
             onClick={handleGenerate}
             disabled={!content.trim() || generating}
-            className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+            className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
           >
             {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
@@ -454,7 +454,7 @@ export default function DocumentPromptPage() {
               <button
                 type="button"
                 onClick={() => performSave(selectedTags)}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 저장
               </button>

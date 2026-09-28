@@ -182,10 +182,10 @@ export default function ImagePromptPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
         <Link
           to="/home"
-          className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-white/90 dark:hover:text-white"
+          className="text-sm text-mint-700 transition hover:text-slate-700 dark:text-white/90 dark:hover:text-white"
         >
           ← 돌아가기
         </Link>
@@ -193,20 +193,20 @@ export default function ImagePromptPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
           🖼️ 이미지 생성 프롬프트
         </h1>
 
         <div className="mt-6 flex flex-col gap-6">
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
               어떤 용도로 사용하실 건가요?
             </h2>
             <OptionCards options={PURPOSE_OPTIONS} onChange={setPurpose} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">사용할 도구</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">사용할 도구</h2>
             <OptionCards options={TOOL_OPTIONS} value={selectedToolValue} onChange={setTool} />
             {toolInfo && (
               <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 dark:bg-blue-950 dark:text-blue-300">
@@ -216,7 +216,7 @@ export default function ImagePromptPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
               어떤 이미지를 만들고 싶으신가요?
             </h2>
             <textarea
@@ -224,7 +224,7 @@ export default function ImagePromptPage() {
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
               placeholder={topicPlaceholder}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
             />
             {!topic.trim() && (
               <p className="mt-1 text-xs text-slate-400">주제를 입력해주세요.</p>
@@ -232,12 +232,12 @@ export default function ImagePromptPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">스타일 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">스타일 키워드</h2>
             <TagToggleGroup options={STYLE_OPTIONS} allowCustom onChange={setStyles} />
           </section>
 
           <section>
-            <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">분위기 키워드</h2>
+            <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">분위기 키워드</h2>
             <TagToggleGroup options={MOOD_OPTIONS} allowCustom onChange={setMoods} />
           </section>
 
@@ -245,7 +245,7 @@ export default function ImagePromptPage() {
             type="button"
             onClick={handleGenerate}
             disabled={!topic.trim() || generating}
-            className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+            className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
           >
             {generating ? '생성 중...' : '프롬프트 생성'}
           </button>
@@ -298,7 +298,7 @@ export default function ImagePromptPage() {
               <button
                 type="button"
                 onClick={() => performSave(selectedTags)}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 저장
               </button>

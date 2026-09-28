@@ -22,8 +22,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
-  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
+  image: 'bg-mint-100 text-mint-700 dark:bg-mint-500/20 dark:text-mint-300',
+  document: 'bg-mint-50 text-mint-700 dark:bg-slate-700 dark:text-slate-200',
   ib: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
 }
 
@@ -195,33 +195,33 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
-        <span className="text-lg font-bold text-navy-600 dark:text-white">말해드림</span>
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <span className="text-lg font-bold text-mint-700 dark:text-white">말해드림</span>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-navy-600 dark:text-navy-100">{user.nickname}님</span>
+          <span className="text-sm text-mint-700 dark:text-navy-100">{user.nickname}님</span>
           <button
             type="button"
             onClick={() => setShowGuideModal(true)}
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-600 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             ❓ 도움말
           </button>
           <Link
             to="/mypage"
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-600 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             내 보관함
           </Link>
           <Link
             to="/library"
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-600 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             📚 라이브러리
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-600 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             로그아웃
           </button>
@@ -231,21 +231,21 @@ export default function HomePage() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {showBanner && (
-          <div className="mb-5 rounded-2xl border border-navy-200 bg-navy-50 p-5 dark:border-slate-700 dark:bg-slate-800">
+          <div className="mb-5 rounded-2xl border border-mint-100 bg-mint-50 p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-base font-semibold text-navy-800 dark:text-white">
+              <h2 className="text-base font-semibold text-slate-800 dark:text-white">
                 💡 말해드림 사용법
               </h2>
               <button
                 type="button"
                 onClick={handleDismissBanner}
                 aria-label="안내 닫기"
-                className="rounded-lg px-2 py-1 text-sm text-navy-500 transition hover:bg-navy-100 dark:text-slate-400 dark:hover:bg-slate-700"
+                className="rounded-lg px-2 py-1 text-sm text-slate-500 transition hover:bg-mint-50 dark:text-slate-400 dark:hover:bg-slate-700"
               >
                 ✕
               </button>
             </div>
-            <ol className="mt-3 flex flex-col gap-1.5 text-sm text-navy-700 dark:text-slate-300">
+            <ol className="mt-3 flex flex-col gap-1.5 text-sm text-slate-700 dark:text-slate-300">
               {GUIDE_STEPS.map((step, index) => (
                 <li key={step}>
                   {CIRCLED_NUMBERS[index]} {step}
@@ -255,13 +255,13 @@ export default function HomePage() {
           </div>
         )}
 
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
           어떤 프롬프트가 필요하신가요?
         </h1>
 
         {(currentEvents.length > 0 || upcomingEvents.length > 0) && (
           <section className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950">
-            <h2 className="text-base font-semibold text-navy-800 dark:text-white">
+            <h2 className="text-base font-semibold text-slate-800 dark:text-white">
               📅 이번 주 추천
             </h2>
             <div className="mt-3 flex flex-col gap-3">
@@ -283,7 +283,7 @@ export default function HomePage() {
                         D-{event.daysUntilStart}
                       </span>
                     )}
-                    <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
                       {event.title}
                     </h3>
                   </div>
@@ -297,7 +297,7 @@ export default function HomePage() {
                           key={templateName}
                           type="button"
                           onClick={() => handleGoToRecommendedTemplate(templateName)}
-                          className="rounded-full border border-violet-300 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-100 dark:border-violet-500/40 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
+                          className="rounded-full border border-mint-300 bg-mint-50 px-2.5 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-100 dark:border-mint-500/40 dark:bg-mint-500/10 dark:text-mint-300 dark:hover:bg-mint-500/20"
                         >
                           {templateName}
                         </button>
@@ -316,7 +316,7 @@ export default function HomePage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="어떤 프롬프트가 필요하세요? (예: 가정통신문, 이미지)"
-            className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-10 text-sm text-slate-900 transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-10 text-sm text-slate-900 transition focus:border-mint-600 focus:outline-none focus:ring-2 focus:ring-mint-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
           />
           {isSearching && (
             <button
@@ -339,7 +339,7 @@ export default function HomePage() {
                 onClick={() => setSelectedCategory(tab.id)}
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
                   selectedCategory === tab.id
-                    ? 'bg-violet-600 text-white'
+                    ? 'bg-mint-600 text-white'
                     : 'border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
                 }`}
               >
@@ -350,14 +350,14 @@ export default function HomePage() {
         </div>
 
         {selectedCategory === 'ib' && (
-          <div className="mt-4 rounded-2xl border border-navy-200 bg-navy-50 p-4 text-sm text-navy-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          <div className="mt-4 rounded-2xl border border-mint-100 bg-mint-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
             <p>
               🎓 IB MYP 단원 계획서(Unit Plan) 작성을 도와드려요. 교과군, 개념, 세계적 맥락을 선택하면
               ChatGPT·Claude·Gemini에 붙여넣을 프롬프트를 생성해드립니다.
             </p>
             <Link
               to="/ib-projects"
-              className="mt-3 inline-block rounded-lg border border-navy-600 px-3 py-1.5 text-sm font-medium text-navy-600 transition hover:bg-navy-100 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+              className="mt-3 inline-block rounded-lg border border-mint-600 px-3 py-1.5 text-sm font-medium text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
             >
               📁 내 프로젝트 보기
             </Link>
@@ -402,12 +402,12 @@ export default function HomePage() {
                 <Link
                   to={template.type === 'ib' ? '/ib-projects' : `/prompt/${template.type}`}
                   state={{ templateName: template.name }}
-                  className="relative flex h-full min-h-[9.5rem] flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 border-l-4 border-l-violet-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(124,58,237,0.15)] dark:border-slate-700 dark:border-l-violet-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(124,58,237,0.25)]"
+                  className="relative flex h-full min-h-[9.5rem] flex-1 flex-col gap-1.5 rounded-2xl border border-slate-200 border-l-4 border-l-mint-600 bg-white p-5 shadow-md shadow-slate-200/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(45,201,168,0.15)] dark:border-slate-700 dark:border-l-mint-500 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-[0_8px_25px_rgba(45,201,168,0.25)]"
                 >
                   <span className="text-3xl">
                     {TEMPLATE_ICON_MAP[template.name] ?? DEFAULT_TEMPLATE_ICON}
                   </span>
-                  <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+                  <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
                     {template.name}
                   </h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400">{template.description}</p>
@@ -436,12 +436,12 @@ export default function HomePage() {
         {recentPrompts.length > 0 && (
           <section className="mt-8">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="border-l-4 border-violet-600 pl-3 text-lg font-semibold text-navy-800 dark:text-white">
+              <h2 className="border-l-4 border-mint-500 pl-3 text-lg font-semibold text-slate-800 dark:text-white">
                 최근에 만든 프롬프트
               </h2>
               <Link
                 to="/mypage"
-                className="text-sm text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                className="text-sm text-mint-600 transition hover:text-mint-700 dark:text-mint-400 dark:hover:text-mint-300"
               >
                 전체 보기 →
               </Link>
@@ -476,7 +476,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => handleCopyRecent(item)}
-                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                      className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>

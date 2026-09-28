@@ -26,8 +26,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
-  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
+  image: 'bg-mint-100 text-mint-700 dark:bg-mint-500/20 dark:text-mint-300',
+  document: 'bg-mint-50 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 function formatDate(timestamp) {
@@ -194,12 +194,12 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
-        <span className="text-lg font-bold text-navy-600 dark:text-white">내 프롬프트 보관함</span>
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <span className="text-lg font-bold text-mint-700 dark:text-white">내 프롬프트 보관함</span>
         <div className="flex items-center gap-2">
           <Link
             to="/home"
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-700 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             돌아가기
           </Link>
@@ -217,7 +217,7 @@ export default function MyPage() {
             </p>
             <Link
               to="/home"
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               홈으로 가기
             </Link>
@@ -235,8 +235,8 @@ export default function MyPage() {
                   onClick={() => setActiveTab(tab.value)}
                   className={`rounded-lg border px-4 py-1.5 text-sm font-medium transition ${
                     activeTab === tab.value
-                      ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                      : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                      : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   {tab.label}
@@ -253,8 +253,8 @@ export default function MyPage() {
                     onClick={() => setActiveTagFilter(tag)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                       activeTagFilter === tag
-                        ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                        : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                        ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                        : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     {tag}
@@ -324,7 +324,7 @@ export default function MyPage() {
                       <button
                         type="button"
                         onClick={() => handleCopy(item)}
-                        className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                        className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                       >
                         {copiedId === item.id ? '복사됨!' : '복사'}
                       </button>
@@ -351,7 +351,7 @@ export default function MyPage() {
         )}
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">내 PIN 변경</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">내 PIN 변경</h2>
           <form onSubmit={handleChangePin} className="mt-4 flex flex-col gap-3">
             <div>
               <label
@@ -369,7 +369,7 @@ export default function MyPage() {
                 onChange={(e) =>
                   setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
@@ -389,7 +389,7 @@ export default function MyPage() {
                 onChange={(e) =>
                   setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
@@ -409,7 +409,7 @@ export default function MyPage() {
                 onChange={(e) =>
                   setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full max-w-[160px] rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
@@ -421,7 +421,7 @@ export default function MyPage() {
             <button
               type="submit"
               disabled={changingPin}
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600 sm:w-auto sm:self-start"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600 sm:w-auto sm:self-start"
             >
               {changingPin ? '변경 중...' : 'PIN 변경'}
             </button>

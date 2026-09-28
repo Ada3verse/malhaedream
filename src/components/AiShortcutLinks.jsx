@@ -11,7 +11,7 @@ const AI_LINKS = [
     url: 'https://claude.ai',
     emoji: '🟠',
     description: '글쓰기·분석',
-    className: 'bg-navy-600 hover:bg-navy-700',
+    className: 'bg-mint-700 hover:bg-slate-700',
   },
   {
     name: 'Gemini',
@@ -27,8 +27,8 @@ export default function AiShortcutLinks({ isCopied = false, links }) {
   const gridClass = visibleLinks.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
 
   return (
-    <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-950">
-      <p className="text-center text-base font-bold text-navy-800 dark:text-white">
+    <div className="rounded-2xl border border-mint-200 bg-mint-50 p-5 dark:border-mint-800 dark:bg-violet-950">
+      <p className="text-center text-base font-bold text-slate-800 dark:text-white">
         ✨ 생성된 프롬프트를 바로 사용해보세요!
       </p>
       <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">

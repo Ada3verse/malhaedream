@@ -140,13 +140,13 @@ function emptyFormativeStage() {
 }
 
 const SELECT_CLASS =
-  'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white'
+  'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white'
 const INPUT_CLASS = SELECT_CLASS
 
 function Field({ label, hint, children }) {
   return (
     <section>
-      <h2 className="mb-2 text-sm font-medium text-navy-700 dark:text-slate-300">{label}</h2>
+      <h2 className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">{label}</h2>
       {children}
       {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
     </section>
@@ -217,8 +217,8 @@ function MypYearButtons({ value, onChange }) {
             onClick={() => onChange(year)}
             className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
               active
-                ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
-                : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                ? 'border-mint-700 bg-mint-700 text-white shadow-md shadow-mint-700/20 dark:border-blue-500 dark:bg-blue-500'
+                : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
             {year}
@@ -241,8 +241,8 @@ function AiToolButtons({ value, onChange }) {
             onClick={() => onChange(tool)}
             className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
               active
-                ? 'border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
-                : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                ? 'border-mint-600 bg-mint-600 text-white shadow-md shadow-mint-600/20 dark:border-mint-500 dark:bg-mint-500'
+                : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
             }`}
           >
             {tool}
@@ -292,8 +292,8 @@ function RelatedConceptsField({ subject, selected, onToggle, customText, onCusto
               key={concept}
               className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                 checked
-                  ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'border-mint-700 bg-mint-700 text-white dark:border-blue-500 dark:bg-blue-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               <input
@@ -326,7 +326,7 @@ function Accordion({ title, defaultOpen = false, children }) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-navy-700 dark:text-slate-300"
+        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-slate-700 dark:text-slate-300"
       >
         <span>{title}</span>
         <span className="text-slate-400">{open ? '▲' : '▼'}</span>
@@ -343,7 +343,7 @@ function GraspsFields({ value, onChange }) {
     <div className="flex flex-col gap-4">
       {GRASPS_FIELDS.map((field) => (
         <div key={field.key}>
-          <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             {field.label}
           </label>
           <p className="mb-1.5 text-xs text-slate-400">{field.hint}</p>
@@ -400,7 +400,7 @@ function FormativeAssessmentEditor({ stages, onChange }) {
         return (
           <div key={index} className="rounded-lg border border-slate-200 p-3 dark:border-slate-600">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-navy-700 dark:text-slate-300">
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 형성평가 계획 {index + 1}
               </p>
               <button
@@ -425,8 +425,8 @@ function FormativeAssessmentEditor({ stages, onChange }) {
                       onClick={() => togglePurpose(index, stage, option.label)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                         active
-                          ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                          ? 'border-mint-700 bg-mint-700 text-white dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       {option.label}
@@ -478,7 +478,7 @@ function FormativeAssessmentEditor({ stages, onChange }) {
         <button
           type="button"
           onClick={addStage}
-          className="self-start rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500 transition hover:border-navy-400 hover:text-navy-600 dark:border-slate-600 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400"
+          className="self-start rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500 transition hover:border-mint-400 hover:text-mint-700 dark:border-slate-600 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400"
         >
           + 형성평가 계획 추가
         </button>
@@ -501,8 +501,8 @@ function ExplorationRadioGroup({ globalContext, value, onChange }) {
           key={exploration}
           className={`flex cursor-pointer items-start gap-2 rounded-lg border p-3 text-sm transition ${
             value === exploration
-              ? 'border-navy-600 bg-navy-50 dark:border-blue-500 dark:bg-blue-500/10'
-              : 'border-slate-200 hover:border-navy-300 dark:border-slate-600 dark:hover:border-blue-500/50'
+              ? 'border-mint-700 bg-mint-50 dark:border-blue-500 dark:bg-blue-500/10'
+              : 'border-slate-200 hover:border-mint-300 dark:border-slate-600 dark:hover:border-blue-500/50'
           }`}
         >
           <input
@@ -1065,10 +1065,10 @@ export default function IBPromptPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
         <Link
           to="/home"
-          className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-white/90 dark:hover:text-white"
+          className="text-sm text-mint-700 transition hover:text-slate-700 dark:text-white/90 dark:hover:text-white"
         >
           ← 돌아가기
         </Link>
@@ -1076,18 +1076,18 @@ export default function IBPromptPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
           📋 IB MYP 유닛 플랜 프롬프트
         </h1>
 
         {projectId && project && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-navy-200 bg-navy-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
-            <p className="text-sm font-medium text-navy-700 dark:text-slate-200">📁 {project.title}</p>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-mint-200 bg-mint-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">📁 {project.title}</p>
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={openProjectSettings}
-                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+                className="text-xs font-medium text-mint-700 underline-offset-2 hover:underline dark:text-blue-400"
               >
                 ⚙️ 프로젝트 설정
               </button>
@@ -1100,13 +1100,13 @@ export default function IBPromptPage() {
                     showToast(error.message || '다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
                   }
                 }}
-                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+                className="text-xs font-medium text-mint-700 underline-offset-2 hover:underline dark:text-blue-400"
               >
                 📥 xlsx 다운로드
               </button>
               <Link
                 to="/ib-projects"
-                className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
+                className="text-xs font-medium text-mint-700 underline-offset-2 hover:underline dark:text-blue-400"
               >
                 프로젝트 목록으로
               </Link>
@@ -1126,8 +1126,8 @@ export default function IBPromptPage() {
               }}
               className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                 mode === tab.id
-                  ? 'border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
-                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'border-mint-600 bg-mint-600 text-white shadow-md shadow-mint-600/20 dark:border-mint-500 dark:bg-mint-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {tab.label}
@@ -1265,7 +1265,7 @@ export default function IBPromptPage() {
             <button
               type="button"
               onClick={handleGenerateFull}
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               프롬프트 생성
             </button>
@@ -1298,8 +1298,8 @@ export default function IBPromptPage() {
                     onClick={() => handleSelectSection(tab.id)}
                     className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
                       activeSection === tab.id
-                        ? 'border-navy-600 bg-navy-600 text-white shadow-md shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
-                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                        ? 'border-mint-700 bg-mint-700 text-white shadow-md shadow-mint-700/20 dark:border-blue-500 dark:bg-blue-500'
+                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     {tab.label}
@@ -1355,7 +1355,7 @@ export default function IBPromptPage() {
                     <div className="flex flex-col gap-3">
                       {referenceSections.map((section) => (
                         <div key={section.key}>
-                          <p className="mb-1 text-xs font-semibold text-navy-700 dark:text-slate-300">
+                          <p className="mb-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
                             {section.icon} {section.label}
                           </p>
                           <p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-2 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300">
@@ -1570,7 +1570,7 @@ export default function IBPromptPage() {
             <button
               type="button"
               onClick={handleGenerateSection}
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               프롬프트 생성
             </button>
@@ -1622,7 +1622,7 @@ export default function IBPromptPage() {
               <button
                 type="button"
                 onClick={() => performSave(selectedTags)}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 저장
               </button>
@@ -1653,7 +1653,7 @@ export default function IBPromptPage() {
                 type="button"
                 onClick={handleSaveProjectSettings}
                 disabled={savingSettings}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 {savingSettings ? '저장 중...' : '저장'}
               </button>
@@ -1662,7 +1662,7 @@ export default function IBPromptPage() {
         >
           <div className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 프로젝트 제목
               </label>
               <input
@@ -1674,19 +1674,19 @@ export default function IBPromptPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 교과군
               </label>
               <Select value={settingsSubject} onChange={setSettingsSubject} options={ibData.subjects} />
             </div>
 
             <div>
-              <p className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">MYP 학년</p>
+              <p className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">MYP 학년</p>
               <MypYearButtons value={settingsMypYear} onChange={setSettingsMypYear} />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 핵심 개념 (Key Concept)
               </label>
               <Select
@@ -1697,7 +1697,7 @@ export default function IBPromptPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 세계적 맥락 (Global Context)
               </label>
               <Select

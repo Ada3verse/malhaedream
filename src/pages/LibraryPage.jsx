@@ -20,8 +20,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
-  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
+  image: 'bg-mint-100 text-mint-700 dark:bg-mint-500/20 dark:text-mint-300',
+  document: 'bg-mint-50 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 const PREVIEW_LENGTH = 100
@@ -105,22 +105,22 @@ export default function LibraryPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
-        <Link to="/home" className="text-lg font-bold text-navy-600 dark:text-white">
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <Link to="/home" className="text-lg font-bold text-mint-700 dark:text-white">
           말해드림
         </Link>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-navy-600 dark:text-navy-100">{user.nickname}님</span>
+          <span className="text-sm text-mint-700 dark:text-mint-100">{user.nickname}님</span>
           <Link
             to="/mypage"
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-700 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             내 보관함
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-700 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             로그아웃
           </button>
@@ -129,14 +129,14 @@ export default function LibraryPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">📚 공유 라이브러리</h1>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">📚 공유 라이브러리</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           선생님들이 공유한 프롬프트를 확인하고 바로 복사해보세요.
         </p>
 
         {topPrompts.length > 0 && (
           <section className="mt-5">
-            <h2 className="border-l-4 border-violet-600 pl-3 text-lg font-semibold text-navy-800 dark:text-white">
+            <h2 className="border-l-4 border-mint-600 pl-3 text-lg font-semibold text-slate-800 dark:text-white">
               🔥 인기 프롬프트 TOP 5
             </h2>
             <ul className="mt-3 flex flex-col gap-2">
@@ -173,7 +173,7 @@ export default function LibraryPage() {
                   <button
                     type="button"
                     onClick={() => setViewingItem(item)}
-                    className="shrink-0 rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                    className="shrink-0 rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                   >
                     보기
                   </button>
@@ -192,8 +192,8 @@ export default function LibraryPage() {
               onClick={() => setActiveFilter(option)}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 activeFilter === option
-                  ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                  : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {option}
@@ -210,8 +210,8 @@ export default function LibraryPage() {
                 onClick={() => setActiveTagFilter(tag)}
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                   activeTagFilter === tag
-                    ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                    : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                    : 'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {tag}
@@ -282,14 +282,14 @@ export default function LibraryPage() {
                     <button
                       type="button"
                       onClick={() => setViewingItem(item)}
-                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                      className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                     >
                       전체 보기
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCopy(item)}
-                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                      className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                     >
                       {copiedId === item.id ? '복사됨!' : '복사'}
                     </button>
@@ -314,7 +314,7 @@ export default function LibraryPage() {
             <button
               type="button"
               onClick={() => handleCopy(viewingItem)}
-              className="rounded-lg border border-violet-300 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+              className="rounded-lg border border-mint-300 px-3 py-1.5 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
             >
               {copiedId === viewingItem.id ? '복사됨!' : '복사'}
             </button>

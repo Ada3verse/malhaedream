@@ -30,7 +30,7 @@ export default function PromptRefineBox({ type = 'document', options, onRefine }
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-100 p-5 dark:border-slate-700 dark:bg-slate-800">
-      <h3 className="text-sm font-semibold text-navy-700 dark:text-slate-200">🔧 프롬프트 보완</h3>
+      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">🔧 프롬프트 보완</h3>
 
       <div className="mt-3">
         <TagToggleGroup options={resolvedOptions} onChange={setQuickFixes} />
@@ -41,7 +41,7 @@ export default function PromptRefineBox({ type = 'document', options, onRefine }
         onChange={(e) => setCustomRequest(e.target.value)}
         rows={2}
         placeholder="추가로 원하는 조건을 직접 입력하세요 (예: 문단을 3개로 나눠줘, 인사말을 먼저 써줘)"
-        className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+        className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
       />
 
       {error && (
@@ -53,7 +53,7 @@ export default function PromptRefineBox({ type = 'document', options, onRefine }
       <button
         type="button"
         onClick={handleRefine}
-        className="mt-3 w-full rounded-lg border-2 border-violet-600 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-500/10"
+        className="mt-3 w-full rounded-lg border-2 border-mint-600 py-2 text-sm font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500 dark:text-mint-400 dark:hover:bg-mint-500/10"
       >
         프롬프트 보완
       </button>

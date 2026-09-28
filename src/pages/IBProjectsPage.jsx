@@ -63,7 +63,7 @@ function ProjectCard({ project, onDelete, onEdit }) {
             onEdit(project)
           }}
           aria-label="프로젝트 편집"
-          className="text-slate-400 transition hover:text-navy-600 dark:hover:text-blue-400"
+          className="text-slate-400 transition hover:text-mint-700 dark:hover:text-blue-400"
         >
           ✏️
         </button>
@@ -80,16 +80,16 @@ function ProjectCard({ project, onDelete, onEdit }) {
         </button>
       </div>
 
-      <h2 className="pr-12 text-lg font-semibold text-navy-800 dark:text-white">{project.title}</h2>
+      <h2 className="pr-12 text-lg font-semibold text-slate-800 dark:text-white">{project.title}</h2>
 
       <div className="flex flex-wrap gap-1.5">
         {project.subject && (
-          <span className="rounded-full bg-navy-50 px-2.5 py-0.5 text-xs font-medium text-navy-700 dark:bg-slate-700 dark:text-slate-200">
+          <span className="rounded-full bg-mint-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200">
             {project.subject}
           </span>
         )}
         {project.mypYear && (
-          <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">
+          <span className="rounded-full bg-mint-100 px-2.5 py-0.5 text-xs font-medium text-mint-700 dark:bg-mint-500/20 dark:text-mint-300">
             {project.mypYear}
           </span>
         )}
@@ -124,7 +124,7 @@ function ProjectCard({ project, onDelete, onEdit }) {
         type="button"
         onClick={handleDownload}
         disabled={downloading}
-        className="mt-1 self-start rounded-lg border border-navy-300 px-3 py-1.5 text-xs font-medium text-navy-700 transition hover:bg-navy-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+        className="mt-1 self-start rounded-lg border border-mint-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-mint-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
       >
         {downloading ? '다운로드 중...' : '📥 xlsx 다운로드'}
       </button>
@@ -275,10 +275,10 @@ export default function IBProjectsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
         <Link
           to="/home"
-          className="text-sm text-navy-600 transition hover:text-navy-700 dark:text-white/90 dark:hover:text-white"
+          className="text-sm text-mint-700 transition hover:text-slate-700 dark:text-white/90 dark:hover:text-white"
         >
           ← 돌아가기
         </Link>
@@ -287,13 +287,13 @@ export default function IBProjectsPage() {
 
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-navy-800 dark:text-white">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
             🎓 내 IB 유닛 플랜 프로젝트
           </h1>
           <button
             type="button"
             onClick={openCreateModal}
-            className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+            className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
           >
             + 새 프로젝트 만들기
           </button>
@@ -335,7 +335,7 @@ export default function IBProjectsPage() {
                 type="button"
                 onClick={handleCreate}
                 disabled={creating}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 {creating ? '만드는 중...' : '만들기'}
               </button>
@@ -344,7 +344,7 @@ export default function IBProjectsPage() {
         >
           <div className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 프로젝트 제목
               </label>
               <input
@@ -352,18 +352,18 @@ export default function IBProjectsPage() {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="예: 과학 MYP2 생태계 단원"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 교과군
               </label>
               <select
                 value={newSubject}
                 onChange={(e) => setNewSubject(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               >
                 <option value="">선택하세요</option>
                 {ibData.subjects.map((subject) => (
@@ -375,7 +375,7 @@ export default function IBProjectsPage() {
             </div>
 
             <div>
-              <p className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">MYP 학년</p>
+              <p className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">MYP 학년</p>
               <div className="flex flex-wrap gap-2">
                 {ibData.mypYears.map((year) => {
                   const active = newMypYear === year
@@ -386,8 +386,8 @@ export default function IBProjectsPage() {
                       onClick={() => setNewMypYear(year)}
                       className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                         active
-                          ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                          ? 'border-mint-700 bg-mint-700 text-white dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       {year}
@@ -421,7 +421,7 @@ export default function IBProjectsPage() {
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={savingEdit}
-                className="flex-1 rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="flex-1 rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 {savingEdit ? '저장 중...' : '저장'}
               </button>
@@ -430,25 +430,25 @@ export default function IBProjectsPage() {
         >
           <div className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 프로젝트 제목
               </label>
               <input
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 교과군
               </label>
               <select
                 value={editSubject}
                 onChange={(e) => setEditSubject(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               >
                 <option value="">선택하세요</option>
                 {ibData.subjects.map((subject) => (
@@ -460,7 +460,7 @@ export default function IBProjectsPage() {
             </div>
 
             <div>
-              <p className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">MYP 학년</p>
+              <p className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">MYP 학년</p>
               <div className="flex flex-wrap gap-2">
                 {ibData.mypYears.map((year) => {
                   const active = editMypYear === year
@@ -471,8 +471,8 @@ export default function IBProjectsPage() {
                       onClick={() => setEditMypYear(year)}
                       className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                         active
-                          ? 'border-navy-600 bg-navy-600 text-white dark:border-blue-500 dark:bg-blue-500'
-                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                          ? 'border-mint-700 bg-mint-700 text-white dark:border-blue-500 dark:bg-blue-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       {year}
@@ -483,13 +483,13 @@ export default function IBProjectsPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 핵심 개념 (Key Concept)
               </label>
               <select
                 value={editKeyConcept}
                 onChange={(e) => setEditKeyConcept(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               >
                 <option value="">선택하세요</option>
                 {ibData.keyConcepts.map((concept) => (
@@ -501,13 +501,13 @@ export default function IBProjectsPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy-700 dark:text-slate-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 세계적 맥락 (Global Context)
               </label>
               <select
                 value={editGlobalContext}
                 onChange={(e) => setEditGlobalContext(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               >
                 <option value="">선택하세요</option>
                 {ibData.globalContexts.map((context) => (

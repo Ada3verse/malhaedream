@@ -39,8 +39,8 @@ export default function OptionCards({ options, onChange, value }) {
               onClick={() => handleSelect(option.value)}
               className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                 active
-                  ? 'border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-600/20 dark:border-violet-500 dark:bg-violet-500'
-                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-violet-500/50 dark:hover:bg-slate-700'
+                  ? 'border-mint-600 bg-mint-600 text-white shadow-md shadow-mint-600/20 dark:border-mint-500 dark:bg-mint-500'
+                  : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-mint-500/50 dark:hover:bg-slate-700'
               }`}
             >
               {option.label}
@@ -54,7 +54,7 @@ export default function OptionCards({ options, onChange, value }) {
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           placeholder="직접 입력하세요"
-          className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+          className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
         />
       )}
     </div>

@@ -16,7 +16,7 @@ function PromptField({ value, onChange, placeholder, disabled, rows = 8, textCla
         disabled={disabled}
         rows={rows}
         placeholder={placeholder}
-        className={`w-full resize-y rounded-lg border border-violet-100 p-4 text-sm transition focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-400/20 disabled:cursor-default dark:border-slate-600 ${textClassName}`}
+        className={`w-full resize-y rounded-lg border border-mint-100 p-4 text-sm transition focus:border-mint-400 focus:outline-none focus:ring-2 focus:ring-mint-400/20 disabled:cursor-default dark:border-slate-600 ${textClassName}`}
       />
     )
   }
@@ -24,7 +24,7 @@ function PromptField({ value, onChange, placeholder, disabled, rows = 8, textCla
   return (
     <div
       onClick={() => setIsEditing(true)}
-      className={`min-h-32 w-full cursor-text whitespace-pre-wrap rounded-lg border border-violet-100 p-4 text-sm leading-relaxed transition hover:border-violet-300 dark:border-slate-600 ${textClassName}`}
+      className={`min-h-32 w-full cursor-text whitespace-pre-wrap rounded-lg border border-mint-100 p-4 text-sm leading-relaxed transition hover:border-mint-300 dark:border-slate-600 ${textClassName}`}
       style={{ minHeight: `${rows * 1.5}rem` }}
     >
       {segments.length === 0 ? (
@@ -79,9 +79,9 @@ export default function PromptResultBox({
   const handleChangeKo = (value) => onEdit?.({ ...result, ko: value })
 
   return (
-    <div className="rounded-2xl border-2 border-violet-600 bg-[#faf5ff] p-5 shadow-md shadow-violet-200/60 dark:border-violet-500/40 dark:bg-slate-800">
+    <div className="rounded-2xl border-2 border-mint-600 bg-[#faf5ff] p-5 shadow-md shadow-mint-200/60 dark:border-mint-500/40 dark:bg-slate-800">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-navy-700 dark:text-slate-200">
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {refined ? '🔄 보완된 프롬프트' : (title ?? '생성된 프롬프트')}
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -89,14 +89,14 @@ export default function PromptResultBox({
             type="button"
             onClick={handleCopy}
             disabled={!copyTarget}
-            className="rounded-lg border border-violet-300 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+            className="rounded-lg border border-mint-300 px-3 py-1.5 text-xs font-medium text-mint-700 transition hover:bg-mint-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
           >
             {copied ? '복사됨!' : '복사'}
           </button>
           <button
             type="button"
             onClick={onSave}
-            className="rounded-lg border-2 border-violet-600 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-500/10"
+            className="rounded-lg border-2 border-mint-600 px-3 py-1.5 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500 dark:text-mint-400 dark:hover:bg-mint-500/10"
           >
             저장
           </button>

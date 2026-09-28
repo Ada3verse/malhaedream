@@ -49,8 +49,8 @@ const TEMPLATE_TYPE_LABELS = {
 }
 
 const TEMPLATE_TYPE_BADGE_STYLES = {
-  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
-  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+  document: 'bg-mint-50 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+  image: 'bg-mint-100 text-mint-700 dark:bg-mint-500/20 dark:text-mint-300',
 }
 
 const EMPTY_TEMPLATE_FORM = {
@@ -462,13 +462,13 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <header className="flex items-center justify-between border-b-2 border-violet-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
-        <span className="text-lg font-bold text-navy-600 dark:text-white">말해드림 관리자</span>
+      <header className="flex items-center justify-between border-b-2 border-mint-500 bg-white px-4 py-3 shadow-md dark:bg-[#1e293b] sm:px-6">
+        <span className="text-lg font-bold text-mint-700 dark:text-white">말해드림 관리자</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border border-navy-600 px-3 py-1.5 text-sm text-navy-600 transition hover:bg-navy-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+            className="rounded-lg border border-mint-700 px-3 py-1.5 text-sm text-mint-700 transition hover:bg-mint-50 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
           >
             로그아웃
           </button>
@@ -478,30 +478,30 @@ export default function AdminPage() {
 
       <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8 sm:px-6">
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">통계</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">통계</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
               <p className="text-xs text-sky-700 dark:text-sky-300">전체 가입자 수</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
+              <p className="mt-1 text-2xl font-semibold text-slate-800 dark:text-white">
                 {users.length}
               </p>
             </div>
             <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
               <p className="text-xs text-sky-700 dark:text-sky-300">전체 저장된 프롬프트 수</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
+              <p className="mt-1 text-2xl font-semibold text-slate-800 dark:text-white">
                 {loadingPrompts ? '-' : prompts.length}
               </p>
             </div>
             <div className="rounded-xl bg-sky-50 p-4 dark:bg-slate-700">
               <p className="text-xs text-sky-700 dark:text-sky-300">최근 7일간 생성된 프롬프트</p>
-              <p className="mt-1 text-2xl font-semibold text-navy-800 dark:text-white">
+              <p className="mt-1 text-2xl font-semibold text-slate-800 dark:text-white">
                 {loadingPrompts ? '-' : recentPromptsCount}
               </p>
             </div>
           </div>
 
           <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
-            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
               템플릿별 사용 횟수
             </h3>
             {loadingPrompts ? (
@@ -522,13 +522,13 @@ export default function AdminPage() {
                     </span>
                     <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
                       <div
-                        className="h-full rounded-full bg-violet-600 dark:bg-violet-500"
+                        className="h-full rounded-full bg-mint-600 dark:bg-mint-500"
                         style={{
                           width: `${(item.count / maxTemplateUsage) * 100}%`,
                         }}
                       />
                     </div>
-                    <span className="w-10 shrink-0 text-right font-medium text-navy-800 dark:text-white">
+                    <span className="w-10 shrink-0 text-right font-medium text-slate-800 dark:text-white">
                       {item.count}
                     </span>
                   </div>
@@ -539,7 +539,7 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">교사 계정 추가</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">교사 계정 추가</h2>
           <form
             onSubmit={handleAddUser}
             className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
@@ -556,7 +556,7 @@ export default function AdminPage() {
                 type="text"
                 value={newNickname}
                 onChange={(e) => setNewNickname(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <div className="sm:w-32">
@@ -575,12 +575,12 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <button
               type="submit"
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               추가
             </button>
@@ -589,7 +589,7 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">관리자 PIN 변경</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">관리자 PIN 변경</h2>
           <form
             onSubmit={handleChangeAdminPin}
             className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
@@ -610,7 +610,7 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setNewAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <div className="sm:w-32">
@@ -629,13 +629,13 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setConfirmAdminPin(e.target.value.replace(/\D/g, '').slice(0, 4))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm tracking-[0.3em] transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <button
               type="submit"
               disabled={changingAdminPin}
-              className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               {changingAdminPin ? '변경 중...' : '변경'}
             </button>
@@ -649,11 +649,11 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">교사 계정 목록</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">교사 계정 목록</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[480px] text-left text-sm">
               <thead>
-                <tr className="bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200">
+                <tr className="bg-mint-50 text-slate-700 dark:bg-slate-700 dark:text-slate-200">
                   <th className="rounded-l-lg py-2.5 pl-3 pr-4 font-medium">
                     닉네임
                   </th>
@@ -742,7 +742,7 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">템플릿 관리</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">템플릿 관리</h2>
 
           <div className="mt-4 flex flex-col gap-3">
             {loadingTemplates ? (
@@ -787,7 +787,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleEditTemplateClick(template)}
-                      className="rounded-lg border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                      className="rounded-lg border border-mint-300 px-3 py-1 text-xs font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                     >
                       수정
                     </button>
@@ -805,7 +805,7 @@ export default function AdminPage() {
           </div>
 
           <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
-            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
               {editingTemplateId ? '템플릿 수정' : '템플릿 추가'}
             </h3>
 
@@ -816,8 +816,8 @@ export default function AdminPage() {
                   onClick={() => setAddTab('form')}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                     addTab === 'form'
-                      ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                      : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                      : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   폼으로 추가
@@ -827,8 +827,8 @@ export default function AdminPage() {
                   onClick={() => setAddTab('json')}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                     addTab === 'json'
-                      ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                      : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                      ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                      : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
                   JSON으로 추가
@@ -849,8 +849,8 @@ export default function AdminPage() {
                       onClick={() => setTemplateForm((prev) => ({ ...prev, type }))}
                       className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                         templateForm.type === type
-                          ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                          ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                          : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       {TEMPLATE_TYPE_LABELS[type]}
@@ -865,7 +865,7 @@ export default function AdminPage() {
                     setTemplateForm((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="템플릿명 (예: 가정통신문)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <input
@@ -878,7 +878,7 @@ export default function AdminPage() {
                     }))
                   }
                   placeholder="설명 (예: 학부모에게 보내는 각종 안내문)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <div>
@@ -892,7 +892,7 @@ export default function AdminPage() {
                     }
                     rows={5}
                     placeholder="프롬프트 템플릿"
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                   />
                   <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                     사용 가능한 변수: {'{{name}}'} {'{{content}}'} {'{{tones}}'}{' '}
@@ -910,7 +910,7 @@ export default function AdminPage() {
                   }
                   rows={3}
                   placeholder={'조건 (줄바꿈으로 구분)\n예: 학부모가 읽기 쉽게 작성'}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <input
@@ -923,7 +923,7 @@ export default function AdminPage() {
                     }))
                   }
                   placeholder="빠른 수정 버튼 목록 (쉼표로 구분, 예: 더 구체적으로, 더 간결하게)"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 {templateError && (
@@ -933,7 +933,7 @@ export default function AdminPage() {
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                    className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
                   >
                     {editingTemplateId ? '저장' : '추가'}
                   </button>
@@ -959,14 +959,14 @@ export default function AdminPage() {
                   }}
                   rows={10}
                   placeholder={JSON_PLACEHOLDER}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                 />
 
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={handleJsonPreview}
-                    className="rounded-lg border-2 border-violet-600 px-4 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                    className="rounded-lg border-2 border-mint-600 px-4 py-2 text-sm font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500 dark:text-mint-400 dark:hover:bg-mint-500/10"
                   >
                     JSON 파싱 미리보기
                   </button>
@@ -974,7 +974,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={handleJsonSave}
-                      className="rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                      className="rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
                     >
                       Firestore에 저장
                     </button>
@@ -1021,7 +1021,7 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">공유 라이브러리 관리</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">공유 라이브러리 관리</h2>
 
           <div className="mt-4 flex flex-col gap-3">
             {loadingSharedPrompts ? (
@@ -1073,7 +1073,7 @@ export default function AdminPage() {
                     onClick={() =>
                       setVisibleSharedCount((count) => count + SHARED_PAGE_SIZE)
                     }
-                    className="self-center rounded-lg border border-violet-300 px-4 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+                    className="self-center rounded-lg border border-mint-300 px-4 py-2 text-sm font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
                   >
                     더 보기
                   </button>
@@ -1084,7 +1084,7 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="border-l-4 border-violet-600 pl-3 text-base font-semibold text-navy-800 dark:text-white">학사일정 관리</h2>
+          <h2 className="border-l-4 border-mint-600 pl-3 text-base font-semibold text-slate-800 dark:text-white">학사일정 관리</h2>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             매년 학사일정이 바뀌면 여기서 새로 추가하고, 지난 일정은 삭제해주세요.
           </p>
@@ -1130,7 +1130,7 @@ export default function AdminPage() {
           </div>
 
           <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700">
-            <h3 className="text-sm font-semibold text-navy-800 dark:text-white">학사일정 추가</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">학사일정 추가</h3>
 
             <form onSubmit={handleSchoolEventSubmit} className="mt-4 flex flex-col gap-3">
               <div className="flex flex-wrap gap-2">
@@ -1141,8 +1141,8 @@ export default function AdminPage() {
                     onClick={() => setSchoolEventForm((prev) => ({ ...prev, semester }))}
                     className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                       schoolEventForm.semester === semester
-                        ? 'border-violet-600 bg-violet-600 text-white dark:border-violet-500 dark:bg-violet-500'
-                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                        ? 'border-mint-600 bg-mint-600 text-white dark:border-mint-500 dark:bg-mint-500'
+                        : 'border-slate-200 bg-slate-100 text-slate-700 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     {semester}학기
@@ -1157,7 +1157,7 @@ export default function AdminPage() {
                   setSchoolEventForm((prev) => ({ ...prev, title: e.target.value }))
                 }
                 placeholder="행사명 (예: 중간고사)"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
 
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -1175,7 +1175,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       setSchoolEventForm((prev) => ({ ...prev, startDate: e.target.value }))
                     }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                   />
                 </div>
                 <div className="flex-1">
@@ -1192,7 +1192,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       setSchoolEventForm((prev) => ({ ...prev, endDate: e.target.value }))
                     }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                   />
                 </div>
                 <div className="sm:w-32">
@@ -1210,7 +1210,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       setSchoolEventForm((prev) => ({ ...prev, reminderDays: e.target.value }))
                     }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -1222,7 +1222,7 @@ export default function AdminPage() {
                   setSchoolEventForm((prev) => ({ ...prev, templates: e.target.value }))
                 }
                 placeholder="추천 템플릿 (쉼표로 구분, 예: 지필평가 문제, 형성평가 문항)"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
 
               <textarea
@@ -1232,7 +1232,7 @@ export default function AdminPage() {
                 }
                 rows={2}
                 placeholder="설명 (예: 중간고사 2주 전이에요. 시험 문제를 미리 준비해보세요.)"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
 
               {schoolEventError && (
@@ -1241,7 +1241,7 @@ export default function AdminPage() {
 
               <button
                 type="submit"
-                className="self-start rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="self-start rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:shadow-lg hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 추가
               </button>

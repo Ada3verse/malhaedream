@@ -12,8 +12,8 @@ const TYPE_LABELS = {
 }
 
 const TYPE_BADGE_STYLES = {
-  image: 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
-  document: 'bg-navy-50 text-navy-700 dark:bg-slate-700 dark:text-slate-200',
+  image: 'bg-mint-100 text-mint-700 dark:bg-mint-500/20 dark:text-mint-300',
+  document: 'bg-mint-50 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
 }
 
 function formatDate(timestamp) {
@@ -60,12 +60,12 @@ export default function SharedPromptPage() {
           <DarkModeToggle className="!border-slate-300 !text-slate-500 hover:!bg-slate-100 dark:!border-white/30 dark:!text-slate-300 dark:hover:!bg-white/10" />
         </div>
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-lg shadow-navy-600/30 dark:bg-blue-500"
+          className="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-lg shadow-mint-700/30 dark:bg-blue-500"
           style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
         >
           💬
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy-700 dark:text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-700 dark:text-white">
           말해드림
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -73,7 +73,7 @@ export default function SharedPromptPage() {
         </p>
         <Link
           to="/"
-          className="mt-2 rounded-lg border border-violet-300 px-4 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50 dark:border-violet-500/40 dark:text-violet-400 dark:hover:bg-violet-500/10"
+          className="mt-2 rounded-lg border border-mint-300 px-4 py-2 text-sm font-medium text-mint-700 transition hover:bg-mint-50 dark:border-mint-500/40 dark:text-mint-400 dark:hover:bg-mint-500/10"
         >
           서비스 바로가기
         </Link>
@@ -88,7 +88,7 @@ export default function SharedPromptPage() {
           </p>
         ) : (
           <>
-            <div className="rounded-2xl border-2 border-violet-600 bg-[#faf5ff] p-5 shadow-md shadow-violet-200/60 dark:border-violet-500/40 dark:bg-slate-800">
+            <div className="rounded-2xl border-2 border-mint-600 bg-[#faf5ff] p-5 shadow-md shadow-mint-200/60 dark:border-mint-500/40 dark:bg-slate-800">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -115,7 +115,7 @@ export default function SharedPromptPage() {
                 </div>
               )}
 
-              <div className="mt-3 whitespace-pre-wrap rounded-lg border border-violet-100 bg-white/70 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+              <div className="mt-3 whitespace-pre-wrap rounded-lg border border-mint-100 bg-white/70 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
                 {prompt.content}
               </div>
 
@@ -127,7 +127,7 @@ export default function SharedPromptPage() {
                 type="button"
                 onClick={handleCopy}
                 style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
-                className="mt-4 w-full rounded-lg py-3 text-base font-semibold text-white shadow-md shadow-navy-600/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="mt-4 w-full rounded-lg py-3 text-base font-semibold text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 {copied ? '복사됨!' : '프롬프트 복사'}
               </button>
@@ -137,14 +137,14 @@ export default function SharedPromptPage() {
               <AiShortcutLinks isCopied={copied} />
             </div>
 
-            <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-navy-100 bg-navy-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800">
-              <p className="text-sm font-medium text-navy-800 dark:text-slate-200">
+            <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-mint-100 bg-mint-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800">
+              <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                 말해드림에서 나만의 프롬프트를 만들어보세요!
               </p>
               <Link
                 to="/"
                 style={{ background: 'linear-gradient(135deg, #1e3a5f, #7c3aed)' }}
-                className="rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-navy-600/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+                className="rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-mint-700/20 transition hover:brightness-110 hover:shadow-lg dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
               >
                 말해드림 시작하기
               </Link>

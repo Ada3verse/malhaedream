@@ -26,7 +26,7 @@ export default function PrivacyPolicyModal({ onClose }) {
       <div className="mt-5 flex flex-col gap-4">
         {SECTIONS.map((section) => (
           <div key={section.heading}>
-            <h3 className="font-semibold text-navy-800">{section.heading}</h3>
+            <h3 className="font-semibold text-slate-800">{section.heading}</h3>
             <p className="mt-1 text-slate-600">{section.body}</p>
           </div>
         ))}

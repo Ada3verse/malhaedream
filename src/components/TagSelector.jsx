@@ -2,13 +2,13 @@ import { useState } from 'react'
 
 const TAG_BASE_CLASS = 'rounded-full border px-3 py-1.5 text-sm font-medium transition'
 const TAG_ACTIVE_CLASS =
-  'border-navy-600 bg-navy-600 text-white shadow-sm shadow-navy-600/20 dark:border-blue-500 dark:bg-blue-500'
+  'border-mint-700 bg-mint-700 text-white shadow-sm shadow-mint-700/20 dark:border-blue-500 dark:bg-blue-500'
 const TAG_INACTIVE_CLASS =
-  'border-slate-200 bg-slate-100 text-slate-600 hover:border-navy-300 hover:bg-navy-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
+  'border-slate-200 bg-slate-100 text-slate-600 hover:border-mint-300 hover:bg-mint-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-500/50 dark:hover:bg-slate-700'
 const TAG_HIGHLIGHT_CLASS =
-  'border-navy-400 bg-navy-50 text-navy-700 ring-1 ring-navy-300 hover:bg-navy-100 dark:border-blue-400/60 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-400/40 dark:hover:bg-blue-500/20'
+  'border-mint-400 bg-mint-50 text-slate-700 ring-1 ring-mint-300 hover:bg-mint-100 dark:border-blue-400/60 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-400/40 dark:hover:bg-blue-500/20'
 const TAG_ADD_CLASS =
-  'rounded-full border border-dashed border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:border-navy-400 hover:text-navy-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400'
+  'rounded-full border border-dashed border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:border-mint-400 hover:text-mint-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-blue-500/50 dark:hover:text-blue-400'
 
 export default function TagSelector({ categories, selected, onChange, placeholder, highlightedTags = [] }) {
   const [openCategories, setOpenCategories] = useState({})
@@ -82,12 +82,12 @@ export default function TagSelector({ categories, selected, onChange, placeholde
                 onChange={(e) => handleCustomTextChange(category.label, e.target.value)}
                 onKeyDown={(e) => handleCustomKeyDown(category.label, e)}
                 placeholder={placeholder ?? '직접 입력 후 Enter'}
-                className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-600/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm transition focus:border-mint-700 focus:outline-none focus:ring-2 focus:ring-mint-700/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               />
               <button
                 type="button"
                 onClick={() => handleAddCustom(category.label)}
-                className="shrink-0 rounded-lg bg-navy-600 px-3 py-1.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500"
+                className="shrink-0 rounded-lg bg-mint-700 px-3 py-1.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500"
               >
                 추가
               </button>

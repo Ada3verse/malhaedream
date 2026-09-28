@@ -29,7 +29,7 @@ export default function Modal({
         className={`flex max-h-[80vh] w-full ${maxWidthClass} flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-slate-800`}
       >
         <div
-          className="border-b-2 border-violet-500 px-6 py-4"
+          className="border-b-2 border-mint-500 px-6 py-4"
           style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a9e 100%)' }}
         >
           <h2 className="text-lg font-bold text-white">{title}</h2>
@@ -44,7 +44,7 @@ export default function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full rounded-lg bg-gradient-to-br from-navy-600 to-violet-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
+              className="w-full rounded-lg bg-gradient-to-br from-mint-700 to-mint-600 py-2.5 text-sm font-medium text-white transition hover:brightness-110 dark:bg-blue-500 dark:bg-none dark:hover:bg-blue-600"
             >
               닫기
             </button>
