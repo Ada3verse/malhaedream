@@ -34,14 +34,11 @@ const STEPS = [
     ),
   },
   {
-    title: '복사 후 사용',
+    title: 'AI에서 바로 열기',
     body: (
       <ul className="flex flex-col gap-1">
-        <li>· [복사] 버튼을 눌러 프롬프트를 복사하세요.</li>
-        <li>
-          · ChatGPT(chat.openai.com), Claude(claude.ai), Gemini(gemini.google.com)에
-          붙여넣기!
-        </li>
+        <li>· 프롬프트가 생성되면 하단에 ChatGPT · Claude · Gemini 버튼이 활성화돼요.</li>
+        <li>· 버튼을 누르면 프롬프트가 자동으로 입력된 상태로 AI가 열려요! (복사 불필요)</li>
         <li>· 결과가 마음에 든다면 [저장] 버튼으로 보관함에 저장하세요.</li>
       </ul>
     ),

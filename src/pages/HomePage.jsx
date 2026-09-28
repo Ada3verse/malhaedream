@@ -231,27 +231,67 @@ export default function HomePage() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {showBanner && (
-          <div className="mb-5 rounded-2xl border border-mint-100 bg-mint-50 p-5 dark:border-slate-700 dark:bg-slate-800">
+          <div className="mb-5 rounded-2xl border border-mint-200 bg-mint-50 p-5 dark:border-mint-800/40 dark:bg-slate-800">
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-base font-semibold text-slate-800 dark:text-white">
-                💡 말해드림 사용법
+                👋 말해드림에 오신 걸 환영해요!
               </h2>
               <button
                 type="button"
                 onClick={handleDismissBanner}
                 aria-label="안내 닫기"
-                className="rounded-lg px-2 py-1 text-sm text-slate-500 transition hover:bg-mint-50 dark:text-slate-400 dark:hover:bg-slate-700"
+                className="shrink-0 rounded-lg px-2 py-1 text-sm text-slate-400 transition hover:bg-mint-100 dark:text-slate-500 dark:hover:bg-slate-700"
               >
                 ✕
               </button>
             </div>
-            <ol className="mt-3 flex flex-col gap-1.5 text-sm text-slate-700 dark:text-slate-300">
-              {GUIDE_STEPS.map((step, index) => (
-                <li key={step}>
-                  {CIRCLED_NUMBERS[index]} {step}
-                </li>
+
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              키워드 몇 가지만 선택하면 AI용 프롬프트를 자동으로 만들어드려요.
+            </p>
+
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {[
+                {
+                  label: '📨 가정통신문',
+                  preview: '"가을 소풍 안내문, 격식체, A4 1장 분량으로 작성해줘"',
+                },
+                {
+                  label: '🖼️ 이미지 생성',
+                  preview: '"중학교 교실, 따뜻한 햇살, 수채화 스타일, 학생들이 토론하는 장면"',
+                },
+                {
+                  label: '📚 수업 지도안',
+                  preview: '"정보 교과 1학년, 피지컬 컴퓨팅 단원, 45분, 모둠 활동 포함"',
+                },
+              ].map((ex) => (
+                <div
+                  key={ex.label}
+                  className="rounded-xl border border-mint-200 bg-white px-4 py-3 dark:border-slate-600 dark:bg-slate-700/60"
+                >
+                  <p className="text-xs font-semibold text-mint-700 dark:text-mint-300">{ex.label}</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 italic">{ex.preview}</p>
+                </div>
               ))}
-            </ol>
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <ol className="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400 sm:flex-row sm:gap-4">
+                {GUIDE_STEPS.map((step, index) => (
+                  <li key={step} className="flex items-center gap-1">
+                    <span className="font-semibold text-mint-600 dark:text-mint-400">{CIRCLED_NUMBERS[index]}</span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+              <button
+                type="button"
+                onClick={handleDismissBanner}
+                className="text-xs text-slate-400 underline underline-offset-2 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+              >
+                다음부터 보지 않기
+              </button>
+            </div>
           </div>
         )}
 
