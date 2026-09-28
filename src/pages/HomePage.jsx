@@ -13,6 +13,25 @@ import UsageGuideModal from '../components/UsageGuideModal'
 const IMAGE_TEMPLATE_NAME = '이미지 생성 프롬프트'
 
 const GUIDE_SEEN_KEY = 'malhaedream_guide_seen'
+
+function isBannerHidden() {
+  try {
+    const raw = localStorage.getItem(GUIDE_SEEN_KEY)
+    if (!raw) return false
+    const { until } = JSON.parse(raw)
+    if (!until) return true // 구버전 '다신 보지 않음' 호환
+    return Date.now() < until
+  } catch {
+    return false
+  }
+}
+
+function hideBanner(days) {
+  try {
+    const until = days === Infinity ? null : Date.now() + days * 24 * 60 * 60 * 1000
+    localStorage.setItem(GUIDE_SEEN_KEY, JSON.stringify({ until }))
+  } catch {}
+}
 const RECENT_PROMPTS_LIMIT = 3
 
 const TYPE_LABELS = {
@@ -111,9 +130,7 @@ export default function HomePage() {
   const [copiedId, setCopiedId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [showBanner, setShowBanner] = useState(
-    () => !localStorage.getItem(GUIDE_SEEN_KEY),
-  )
+  const [showBanner, setShowBanner] = useState(() => !isBannerHidden())
   const [showGuideModal, setShowGuideModal] = useState(false)
 
   useEffect(() => {
@@ -151,11 +168,6 @@ export default function HomePage() {
     } catch {
       showToast('복사에 실패했습니다. 직접 선택 후 복사해주세요.', 'error')
     }
-  }
-
-  const handleDismissBanner = () => {
-    localStorage.setItem(GUIDE_SEEN_KEY, 'true')
-    setShowBanner(false)
   }
 
   const handleMoveTemplate = async (index, direction) => {
@@ -238,7 +250,7 @@ export default function HomePage() {
               </h2>
               <button
                 type="button"
-                onClick={handleDismissBanner}
+                onClick={() => setShowBanner(false)}
                 aria-label="안내 닫기"
                 className="shrink-0 rounded-lg px-2 py-1 text-sm text-slate-400 transition hover:bg-mint-100 dark:text-slate-500 dark:hover:bg-slate-700"
               >
@@ -284,13 +296,25 @@ export default function HomePage() {
                   </li>
                 ))}
               </ol>
-              <button
-                type="button"
-                onClick={handleDismissBanner}
-                className="text-xs text-slate-400 underline underline-offset-2 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
-              >
-                다음부터 보지 않기
-              </button>
+              <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+                {[
+                  { label: '오늘 하루 보지 않기', days: 1 },
+                  { label: '일주일 보지 않기', days: 7 },
+                  { label: '다시 보지 않기', days: Infinity },
+                ].map(({ label, days }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      hideBanner(days)
+                      setShowBanner(false)
+                    }}
+                    className="underline underline-offset-2 transition hover:text-slate-600 dark:hover:text-slate-300"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
