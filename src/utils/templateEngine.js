@@ -254,6 +254,14 @@ function isEmptyValue(value) {
   return !value || value === '(입력 없음)'
 }
 
+const FORM_MODE_SUFFIX =
+  '위 내용을 바탕으로 IB MYP 유닛 플랜 양식의 해당 칸에 바로 붙여넣을 수 있도록, 간결하고 완성된 문장으로만 작성해주세요. 추가 설명 없이 양식 입력값만 주세요.'
+
+function appendFormModeSuffix(ko, promptMode) {
+  if (promptMode !== 'form') return ko
+  return `${ko}\n\n${FORM_MODE_SUFFIX}`
+}
+
 export function generateIBInquiryQuestionsPrompt({
   subject,
   mypYear,
@@ -261,6 +269,10 @@ export function generateIBInquiryQuestionsPrompt({
   globalContext,
   explorationSelected,
   statementKeyword,
+  factualHint,
+  conceptualHint,
+  debatableHint,
+  promptMode,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -271,14 +283,22 @@ export function generateIBInquiryQuestionsPrompt({
   if (!isEmptyValue(explorationSelected)) infoLines.push(`- 탐구 세부: ${explorationSelected}`)
   if (!isEmptyValue(statementKeyword)) infoLines.push(`- 단원 키워드: ${statementKeyword}`)
 
+  const hintLines = []
+  if (!isEmptyValue(factualHint)) hintLines.push(`- 사실적 질문 방향: ${factualHint.trim()}`)
+  if (!isEmptyValue(conceptualHint)) hintLines.push(`- 개념적 질문 방향: ${conceptualHint.trim()}`)
+  if (!isEmptyValue(debatableHint)) hintLines.push(`- 논쟁적 질문 방향: ${debatableHint.trim()}`)
+
+  const requestBlock = hintLines.length
+    ? `[작성 방향]\n${hintLines.join('\n')}\n\n위 방향을 참고해서 아래 3가지 유형의 탐구 질문을 각각 1~2개씩 작성해주세요.`
+    : `[작성 요청]\n아래 3가지 유형의 탐구 질문을 각각 1~2개씩 작성해주세요.`
+
   const ko = `당신은 IB MYP 교육과정 설계 전문가입니다.
 아래 조건에 맞는 탐구 질문 3종을 작성해주세요.
 
 [단원 정보]
 ${infoLines.join('\n')}
 
-[작성 요청]
-아래 3가지 유형의 탐구 질문을 각각 1~2개씩 작성해주세요.
+${requestBlock}
 
 1. 사실적 질문 (Factual Question)
 - 단원에서 학생이 알아야 할 사실·개념·정의를 묻는 질문
@@ -297,7 +317,7 @@ ${infoLines.join('\n')}
 
 각 질문 뒤에 이 질문이 왜 이 단원에 적합한지 한 줄 이유도 함께 써주세요.`
 
-  return { ko }
+  return { ko: appendFormModeSuffix(ko, promptMode) }
 }
 
 export function generateIBStatementPrompt({
@@ -308,6 +328,7 @@ export function generateIBStatementPrompt({
   globalContext,
   explorationSelected,
   statementKeyword,
+  promptMode,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -337,7 +358,7 @@ ${infoLines.join('\n')}
 - 이 진술문에서 핵심 개념/관련 개념/세계적 맥락이 어떻게 반영됐는지 한 줄 설명
 - 이 진술문을 선택했을 때 어울리는 탐구 질문 방향 한 줄 제안`
 
-  return { ko }
+  return { ko: appendFormModeSuffix(ko, promptMode) }
 }
 
 function joinIfArray(value) {
@@ -350,6 +371,7 @@ export function generateIBAssessmentPrompt({
   summativeDescription,
   grasps,
   formativeNotes,
+  promptMode,
 }) {
   const infoLines = [`- 교과군: ${subject}`, `- MYP 학년: ${mypYear}`]
 
@@ -392,10 +414,10 @@ S (Standards / 성공 기준)
 
 마지막으로, 이 총괄 평가와 연계할 수 있는 형성평가 아이디어를 1~2개 짧게 제안해주세요.`
 
-  return { ko }
+  return { ko: appendFormModeSuffix(ko, promptMode) }
 }
 
-export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments }) {
+export function generateIBFormativePrompt({ subject, mypYear, formativeAssessments, promptMode }) {
   const formativeLines = buildFormativeLines(formativeAssessments)
   const formativeBlock = formativeLines.length ? formativeLines.join('\n') : '  (입력된 계획 없음)'
 
@@ -427,7 +449,7 @@ ${formativeBlock}
 4. 총괄 평가와의 연계
    - 이 형성평가 결과가 총괄 평가 준비에 어떻게 도움이 되는지`
 
-  return { ko }
+  return { ko: appendFormModeSuffix(ko, promptMode) }
 }
 
 export function generateIBATLPrompt({
@@ -436,6 +458,7 @@ export function generateIBATLPrompt({
   atlSelected,
   lessonActivity,
   lessonActivityDescription,
+  promptMode,
 }) {
   const infoLines = [`- 교과군: ${subject}`]
   if (!isEmptyValue(mypYear)) infoLines.push(`- MYP 학년: ${mypYear}`)
@@ -467,7 +490,7 @@ ${infoLines.join('\n')}
 4. NEIS 세부능력특기사항 기재 시 참고할 수 있는 문장 예시를 1개 작성해주세요.
    (학생이 이 ATL 기능을 잘 발휘한 경우를 가정해서 작성)`
 
-  return { ko }
+  return { ko: appendFormModeSuffix(ko, promptMode) }
 }
 
 export function refinePrompt(originalPrompt, quickFixes, customRequest) {

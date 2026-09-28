@@ -575,6 +575,10 @@ export default function IBPromptPage() {
   // 섹션별 작성
   const [sectionSubject, setSectionSubject] = useState('')
   const [activeSection, setActiveSection] = useState('inquiry')
+  const [promptMode, setPromptMode] = useState('free') // 'free' | 'form'
+  const [factualHint, setFactualHint] = useState('')
+  const [conceptualHint, setConceptualHint] = useState('')
+  const [debatableHint, setDebatableHint] = useState('')
   const [sectionKeyConcept, setSectionKeyConcept] = useState('')
   const [sectionRelatedConceptsSelected, setSectionRelatedConceptsSelected] = useState([])
   const [sectionRelatedConceptsCustom, setSectionRelatedConceptsCustom] = useState('')
@@ -779,6 +783,10 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionUnitKeyword.trim() || '(입력 없음)',
+          factualHint: factualHint.trim(),
+          conceptualHint: conceptualHint.trim(),
+          debatableHint: debatableHint.trim(),
+          promptMode,
         }),
       )
     } else if (activeSection === 'statement') {
@@ -803,6 +811,7 @@ export default function IBPromptPage() {
           globalContext: sectionGlobalContext,
           explorationSelected: sectionExploration,
           statementKeyword: sectionStatementKeyword.trim(),
+          promptMode,
         }),
       )
     } else if (activeSection === 'assessment') {
@@ -820,6 +829,7 @@ export default function IBPromptPage() {
           grasps: sectionGrasps,
           formativeNotes:
             sectionFormativeStages.length > 0 ? buildFormativeNotes(sectionFormativeStages) : undefined,
+          promptMode,
         }),
       )
     } else if (activeSection === 'atl') {
@@ -834,6 +844,7 @@ export default function IBPromptPage() {
           atlSelected,
           lessonActivity: sectionLessonActivitySelected,
           lessonActivityDescription: sectionLessonActivityDescriptionText.trim(),
+          promptMode,
         }),
       )
     } else if (activeSection === 'formative') {
@@ -846,6 +857,7 @@ export default function IBPromptPage() {
           subject: sectionSubject,
           mypYear,
           formativeAssessments: sectionFormativeStages,
+          promptMode,
         }),
       )
     }
@@ -1251,6 +1263,38 @@ export default function IBPromptPage() {
               })}
             </div>
 
+            <div>
+              <div className="mb-5 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPromptMode('free')}
+                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                    promptMode === 'free'
+                      ? 'border-indigo-600 bg-indigo-600 text-white'
+                      : 'border-gray-300 bg-white text-gray-600 hover:border-indigo-400'
+                  }`}
+                >
+                  자유 작성용
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPromptMode('form')}
+                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                    promptMode === 'form'
+                      ? 'border-indigo-600 bg-indigo-600 text-white'
+                      : 'border-gray-300 bg-white text-gray-600 hover:border-indigo-400'
+                  }`}
+                >
+                  양식 채우기용
+                </button>
+              </div>
+              <p className="mb-4 text-sm text-gray-500">
+                {promptMode === 'free'
+                  ? 'AI와 대화하듯 자유롭게 해당 섹션을 작성할 수 있도록 프롬프트를 생성해요.'
+                  : 'IB MYP 유닛 플랜 양식 칸에 바로 붙여넣을 수 있는 형태로 지시해요.'}
+              </p>
+            </div>
+
             {projectId && project && (
               <Accordion title="📎 저장된 다른 섹션 결과 참고하기">
                 {(() => {
@@ -1309,6 +1353,42 @@ export default function IBPromptPage() {
                     className={INPUT_CLASS}
                   />
                 </Field>
+
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">사실적 질문 (Factual)</p>
+                    <p className="mb-1 text-xs text-gray-400">정답이 있는 기초 지식 확인 질문이에요.</p>
+                    <textarea
+                      value={factualHint}
+                      onChange={(e) => setFactualHint(e.target.value)}
+                      rows={2}
+                      placeholder="예: 광합성은 어떻게 일어나는가?"
+                      className={`${INPUT_CLASS} resize-y`}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">개념적 질문 (Conceptual)</p>
+                    <p className="mb-1 text-xs text-gray-400">핵심 개념을 탐구하는 열린 질문이에요.</p>
+                    <textarea
+                      value={conceptualHint}
+                      onChange={(e) => setConceptualHint(e.target.value)}
+                      rows={2}
+                      placeholder="예: 변화는 왜 항상 균형을 요구하는가?"
+                      className={`${INPUT_CLASS} resize-y`}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">논쟁적 질문 (Debatable)</p>
+                    <p className="mb-1 text-xs text-gray-400">다양한 관점이 존재하는 깊은 토론 질문이에요.</p>
+                    <textarea
+                      value={debatableHint}
+                      onChange={(e) => setDebatableHint(e.target.value)}
+                      rows={2}
+                      placeholder="예: 과학 기술 발전은 항상 인류에게 이로운가?"
+                      className={`${INPUT_CLASS} resize-y`}
+                    />
+                  </div>
+                </div>
               </>
             )}
 

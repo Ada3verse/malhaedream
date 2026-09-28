@@ -30,3 +30,7 @@ functions/.env
 functions/.env.*
 functions/node_modules
 
+
+# Python
+__pycache__/
+*.pyc
