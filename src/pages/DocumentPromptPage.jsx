@@ -432,7 +432,7 @@ export default function DocumentPromptPage() {
 
           {result && <PromptFollowUpBox type="document" toolLabel="ChatGPT/Claude/Gemini" />}
 
-          {result && <AiShortcutLinks isCopied={isCopied} />}
+          {result && <AiShortcutLinks isCopied={isCopied} prompt={stripMarkers(result.ko)} />}
 
           {result && <FileUploadGuideBox type="document" />}
         </div>

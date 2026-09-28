@@ -276,7 +276,7 @@ export default function ImagePromptPage() {
 
           {result && <PromptFollowUpBox type="image" toolLabel="ChatGPT/Gemini" />}
 
-          {result && <AiShortcutLinks isCopied={isCopied} links={['ChatGPT', 'Gemini']} />}
+          {result && <AiShortcutLinks isCopied={isCopied} links={['ChatGPT', 'Gemini']} prompt={stripMarkers(result.ko)} />}
 
           {result && <FileUploadGuideBox type="image" />}
         </div>
