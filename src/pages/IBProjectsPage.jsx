@@ -33,13 +33,13 @@ function ProjectCard({ project, onDelete, onEdit }) {
 
   // 목록 조회(getIBProjects)가 이미 sections를 포함한 전체 문서를 반환하므로 별도 재조회 없이 사용.
   // 다운로드는 클릭의 사용자 제스처 컨텍스트 안에서 동기적으로 실행해야 브라우저가 차단하지 않는다.
-  const handleDownload = (e) => {
+  const handleDownload = async (e) => {
     e.stopPropagation()
     setDownloading(true)
     try {
-      exportIBProjectToXlsx(project)
-    } catch {
-      showToast('다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+      await exportIBProjectToXlsx(project)
+    } catch (error) {
+      showToast(error.message || '다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
     } finally {
       setDownloading(false)
     }

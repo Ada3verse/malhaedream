@@ -1044,7 +1044,13 @@ export default function IBPromptPage() {
               </button>
               <button
                 type="button"
-                onClick={() => exportIBProjectToXlsx(project)}
+                onClick={async () => {
+                  try {
+                    await exportIBProjectToXlsx(project)
+                  } catch (error) {
+                    showToast(error.message || '다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error')
+                  }
+                }}
                 className="text-xs font-medium text-navy-600 underline-offset-2 hover:underline dark:text-blue-400"
               >
                 📥 xlsx 다운로드

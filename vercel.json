@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/export-ib-xlsx.py": {
+      "runtime": "python3.9"
+    }
+  }
+}
